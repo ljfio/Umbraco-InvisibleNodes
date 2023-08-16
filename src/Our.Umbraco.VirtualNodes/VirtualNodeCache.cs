@@ -14,9 +14,9 @@ public class VirtualNodeCache : IVirtualNodeCache
         _cache = caches.IsolatedCaches.GetOrCreate<VirtualNodeCache>();
     }
 
-    public int GetRoute(string host, string path)
+    public int? GetRoute(string host, string path)
     {
-        return _cache.GetCacheItem<int>(GenerateKey(host, path));
+        return _cache.GetCacheItem<int?>(GenerateKey(host, path));
     }
 
     public void StoreRoute(string host, string path, int id)

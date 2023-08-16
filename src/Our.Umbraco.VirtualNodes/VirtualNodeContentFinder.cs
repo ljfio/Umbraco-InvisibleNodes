@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Our.Umbraco.VirtualNodes.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
@@ -12,13 +13,16 @@ public class VirtualNodeContentFinder : IContentFinder
 {
     private readonly IUmbracoContextAccessor _umbracoContextAccessor;
     private readonly IVariationContextAccessor _variationContextAccessor;
+    private readonly IVirtualNodeCache _virtualNodeCache;
 
     public VirtualNodeContentFinder(
         IUmbracoContextAccessor umbracoContextAccessor, 
-        IVariationContextAccessor variationContextAccessor)
+        IVariationContextAccessor variationContextAccessor,
+        IVirtualNodeCache virtualNodeCache)
     {
         _umbracoContextAccessor = umbracoContextAccessor;
         _variationContextAccessor = variationContextAccessor;
+        _virtualNodeCache = virtualNodeCache;
     }
 
     /// <inheritdoc />
@@ -27,14 +31,31 @@ public class VirtualNodeContentFinder : IContentFinder
         if (!_umbracoContextAccessor.TryGetUmbracoContext(out var context) || context.Content is null)
             return false;
 
-        string route = request.Uri.AbsolutePath.Trim('/');
+        string host = request.Uri.Host;
+        string path = request.Uri.AbsolutePath.Trim('/');
+
+        int? cached = _virtualNodeCache.GetRoute(host, path);
+
+        if (cached.HasValue)
+        {
+            var cachedContent = context.Content.GetById(cached.Value);
+
+            if (cachedContent is not null)
+            {
+                request.SetPublishedContent(cachedContent);
+                return true;
+            }
+            
+            _virtualNodeCache.ClearRoute(host, path);
+        }
+        
         string? culture = request.Culture;
 
         var root = request.Domain is not null
             ? context.Content.GetById(request.Domain.ContentId)
             : context.Content.GetAtRoot(culture).FirstOrDefault();
 
-        string[] segments = route.Split('/');
+        string[] segments = path.Split('/');
 
         if (root is null || segments.Length == 0)
         {
@@ -46,6 +67,7 @@ public class VirtualNodeContentFinder : IContentFinder
 
         if (foundNode is not null)
         {
+            _virtualNodeCache.StoreRoute(host, path, foundNode.Id);
             request.SetPublishedContent(foundNode);
             return true;
         }
