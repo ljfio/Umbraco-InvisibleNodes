@@ -76,7 +76,7 @@ public class VirtualNodeContentFinder : IContentFinder
     }
 
     /// <summary>
-    /// Walks the published content tree to locate a that may be virtually hidden
+    /// Walks the published content tree to locate a node that may be virtually hidden
     /// </summary>
     /// <param name="node"></param>
     /// <param name="segments"></param>
@@ -86,7 +86,7 @@ public class VirtualNodeContentFinder : IContentFinder
     {
         string segment = segments.First();
 
-        if (segments.Length == 0 && string.Equals(node.UrlSegment(_variationContextAccessor, culture), segment))
+        if (segments.Length == 1 && string.Equals(node.UrlSegment(_variationContextAccessor, culture), segment))
         {
             return node;
         }
