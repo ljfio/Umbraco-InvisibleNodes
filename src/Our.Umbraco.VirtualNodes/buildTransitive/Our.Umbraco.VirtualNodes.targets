@@ -1,0 +1,21 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OurUmbracoVirtualNodesContentFilesPath>$(MSBuildThisFileDirectory)..\App_Plugins\Our.Umbraco.VirtualNodes\**\*.*</OurUmbracoVirtualNodesContentFilesPath>
+  </PropertyGroup>
+
+  <Target Name="CopyOurUmbracoVirtualNodesAssets" BeforeTargets="Build">
+    <ItemGroup>
+      <OurUmbracoVirtualNodesContentFiles Include="$(OurUmbracoVirtualNodesContentFilesPath)" />
+    </ItemGroup>
+    <Message Text="Copying Our.Umbraco.VirtualNodes files: $(OurUmbracoVirtualNodesContentFilesPath) - #@(OurUmbracoVirtualNodesContentFiles->Count()) files" Importance="high" />
+    <Copy SourceFiles="@(OurUmbracoVirtualNodesContentFiles)" DestinationFiles="@(OurUmbracoVirtualNodesContentFiles->'$(MSBuildProjectDirectory)\App_Plugins\Our.Umbraco.VirtualNodes\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="ClearOurUmbracoVirtualNodesAssets" BeforeTargets="Clean">
+    <ItemGroup>
+      <OurUmbracoVirtualNodesDir Include="$(MSBuildProjectDirectory)\App_Plugins\Our.Umbraco.VirtualNodes\" />
+    </ItemGroup>
+    <Message Text="Clear old Our.Umbraco.VirtualNodes data" Importance="high" />
+    <RemoveDir Directories="@(OurUmbracoVirtualNodesDir)" />
+  </Target>
+</Project>
