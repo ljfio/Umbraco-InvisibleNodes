@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
     <ContentTargetFolders>.</ContentTargetFolders>
     <Product>Our.Umbraco.VirtualNodes</Product>
     <PackageId>Our.Umbraco.VirtualNodes</PackageId>
@@ -8,6 +7,7 @@
     <Description>...</Description>
     <PackageTags>umbraco plugin package</PackageTags>
     <Nullable>enable</Nullable>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,5 +22,9 @@
 
   <ItemGroup>
     <Folder Include="App_Plugins\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Our.Umbraco.VirtualNodes.Core\Our.Umbraco.VirtualNodes.Core.csproj" />
   </ItemGroup>
 </Project>

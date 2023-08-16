@@ -7,7 +7,10 @@ public class VirtualNodeComposer : IComposer
 {
     public void Compose(IUmbracoBuilder builder)
     {
-        builder.ContentFinders().Insert<VirtualNodeContentFinder>();
-        builder.UrlProviders().Insert<VirtualNodeUrlProvider>();
+        builder.ContentFinders()
+            .Insert<VirtualNodeContentFinder>();
+        
+        builder.UrlProviders()
+            .Insert<VirtualNodeUrlProvider>();
     }
 }

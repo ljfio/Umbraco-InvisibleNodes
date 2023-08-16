@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.VirtualNodes", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.VirtualNodes.Tests", "Our.Umbraco.VirtualNodes.Tests\Our.Umbraco.VirtualNodes.Tests.csproj", "{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Umbraco", "Umbraco", "{786844FD-1815-4389-9C7A-37EFE2624101}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.VirtualNodes.Core", "Our.Umbraco.VirtualNodes.Core\Our.Umbraco.VirtualNodes.Core.csproj", "{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,14 @@ Global
 		{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{75CB6D92-3214-406E-A9C5-97E79AA84B8C} = {786844FD-1815-4389-9C7A-37EFE2624101}
+		{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB} = {786844FD-1815-4389-9C7A-37EFE2624101}
+		{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0} = {786844FD-1815-4389-9C7A-37EFE2624101}
 	EndGlobalSection
 EndGlobal

@@ -1,11 +1,13 @@
+using Our.Umbraco.VirtualNodes.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
 
-namespace Our.Umbraco.VirtualNodes;
-
-public class VirtualNodeRulesManager : IVirtualNodeRulesManager
+namespace Our.Umbraco.VirtualNodes
 {
-    public bool IsVirtualNode(IPublishedContent content)
+    public class VirtualNodeRulesManager : IVirtualNodeRulesManager
     {
-        throw new System.NotImplementedException();
+        public bool IsVirtualNode(IPublishedContent content)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
