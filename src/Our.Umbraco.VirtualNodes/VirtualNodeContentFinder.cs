@@ -14,15 +14,18 @@ public class VirtualNodeContentFinder : IContentFinder
     private readonly IUmbracoContextAccessor _umbracoContextAccessor;
     private readonly IVariationContextAccessor _variationContextAccessor;
     private readonly IVirtualNodeCache _virtualNodeCache;
+    private readonly IVirtualNodeRulesManager _rulesManager;
 
     public VirtualNodeContentFinder(
         IUmbracoContextAccessor umbracoContextAccessor, 
         IVariationContextAccessor variationContextAccessor,
-        IVirtualNodeCache virtualNodeCache)
+        IVirtualNodeCache virtualNodeCache,
+        IVirtualNodeRulesManager rulesManager)
     {
         _umbracoContextAccessor = umbracoContextAccessor;
         _variationContextAccessor = variationContextAccessor;
         _virtualNodeCache = virtualNodeCache;
+        _rulesManager = rulesManager;
     }
 
     /// <inheritdoc />
@@ -106,7 +109,7 @@ public class VirtualNodeContentFinder : IContentFinder
                     return grandChild;
             }
 
-            if (child.IsVirtualNode())
+            if (child.IsVirtualNode(_rulesManager))
             {
                 var hiddenChild = WalkContentTree(child, segments, culture);
 

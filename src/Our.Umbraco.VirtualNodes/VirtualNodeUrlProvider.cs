@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Our.Umbraco.VirtualNodes.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
@@ -13,15 +14,18 @@ public class VirtualNodeUrlProvider : IUrlProvider
     private readonly IUmbracoContextAccessor _umbracoContextAccessor;
     private readonly IVariationContextAccessor _variationContextAccessor;
     private readonly ISiteDomainMapper _siteDomainMapper;
+    private readonly IVirtualNodeRulesManager _rulesManager;
 
     public VirtualNodeUrlProvider(
         IUmbracoContextAccessor umbracoContextAccessor,
         IVariationContextAccessor variationContextAccessor,
-        ISiteDomainMapper siteDomainMapper)
+        ISiteDomainMapper siteDomainMapper, 
+        IVirtualNodeRulesManager rulesManager)
     {
         _siteDomainMapper = siteDomainMapper;
         _variationContextAccessor = variationContextAccessor;
         _umbracoContextAccessor = umbracoContextAccessor;
+        _rulesManager = rulesManager;
     }
 
     /// <inheritdoc />
@@ -102,7 +106,7 @@ public class VirtualNodeUrlProvider : IUrlProvider
     private string GenerateRoute(IPublishedContent content, string? culture = null)
     {
         var segments = content.AncestorsOrSelf()
-            .Where(ancestor => !ancestor.IsVirtualNode() && ancestor.Level > 1)
+            .Where(ancestor => !ancestor.IsVirtualNode(_rulesManager) && ancestor.Level > 1)
             .Select(ancestor => ancestor.UrlSegment(_variationContextAccessor, culture))
             .Reverse()
             .ToList();
