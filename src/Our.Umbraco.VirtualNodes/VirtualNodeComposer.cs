@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+using Our.Umbraco.VirtualNodes.Core;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 
@@ -12,5 +14,9 @@ public class VirtualNodeComposer : IComposer
         
         builder.UrlProviders()
             .Insert<VirtualNodeUrlProvider>();
+
+        builder.Services
+            .AddSingleton<IVirtualNodeCache, VirtualNodeCache>()
+            .AddSingleton<IVirtualNodeRulesManager, VirtualNodeRulesManager>();
     }
 }
