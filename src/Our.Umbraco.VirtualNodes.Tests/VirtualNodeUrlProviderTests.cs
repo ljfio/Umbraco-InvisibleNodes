@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Moq;
+using Our.Umbraco.VirtualNodes.Core;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
@@ -16,11 +17,21 @@ public class VirtualNodeUrlProviderTests
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
+        
+        var rulesManager = new Mock<IVirtualNodeRulesManager>();
+        
+        rulesManager
+            .Setup(m => m.IsVirtualNode(It.IsAny<IPublishedContent>()))
+            .Returns(false);
 
         var root = GenerateNode("Home", "home");
         var uri = new Uri("https://example.org/");
 
-        var provider = new VirtualNodeUrlProvider(umbracoContextAccessor, variationContextAccessor, siteDomainMapper);
+        var provider = new VirtualNodeUrlProvider(
+            umbracoContextAccessor,
+            variationContextAccessor,
+            siteDomainMapper,
+            rulesManager.Object);
 
         // Act
         var url = provider.GetUrl(root, UrlMode.Default, null, uri);
@@ -40,12 +51,22 @@ public class VirtualNodeUrlProviderTests
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
+        var rulesManager = new Mock<IVirtualNodeRulesManager>();
+        
+        rulesManager
+            .Setup(m => m.IsVirtualNode(It.IsAny<IPublishedContent>()))
+            .Returns(false);
+        
         var root = GenerateNode("Home", "home");
         var page = GenerateNode("Page", "page", root);
 
         var uri = new Uri("https://example.org/page/");
 
-        var provider = new VirtualNodeUrlProvider(umbracoContextAccessor, variationContextAccessor, siteDomainMapper);
+        var provider = new VirtualNodeUrlProvider(
+            umbracoContextAccessor,
+            variationContextAccessor,
+            siteDomainMapper,
+            rulesManager.Object);
 
         // Act
         var url = provider.GetUrl(page, UrlMode.Default, null, uri);
@@ -65,13 +86,23 @@ public class VirtualNodeUrlProviderTests
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
+        var rulesManager = new Mock<IVirtualNodeRulesManager>();
+        
+        rulesManager
+            .Setup(m => m.IsVirtualNode(It.IsAny<IPublishedContent>()))
+            .Returns(false);
+        
         var root = GenerateNode("Home", "home");
         var page = GenerateNode("Page", "page", root);
         var nested = GenerateNode("Nested Page", "nested", page);
 
         var uri = new Uri("https://example.org/page/nested/");
 
-        var provider = new VirtualNodeUrlProvider(umbracoContextAccessor, variationContextAccessor, siteDomainMapper);
+        var provider = new VirtualNodeUrlProvider(
+            umbracoContextAccessor,
+            variationContextAccessor,
+            siteDomainMapper,
+            rulesManager.Object);
 
         // Act
         var url = provider.GetUrl(nested, UrlMode.Default, null, uri);
