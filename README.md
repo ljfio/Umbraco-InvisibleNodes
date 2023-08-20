@@ -27,9 +27,11 @@ For Umbraco 10:
 
 ```json
 {
-  "VirtualNode": [
-    "hiddenNode"
-  ]
+  "VirtualNode": {
+    "ContentTypes": [
+      "hiddenNode"
+    ]
+  }
 }
 ```
 
