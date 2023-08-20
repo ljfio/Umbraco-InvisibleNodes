@@ -13,18 +13,15 @@ namespace Our.UmbracoCms.VirtualNodes
     public class VirtualNodeContentFinder : IContentFinder
     {
         private readonly IUmbracoContextAccessor _umbracoContextAccessor;
-        private readonly IVariationContextAccessor _variationContextAccessor;
         private readonly IVirtualNodeCache _nodeCache;
         private readonly IVirtualNodeRulesManager _rulesManager;
 
         public VirtualNodeContentFinder(
             IUmbracoContextAccessor umbracoContextAccessor,
-            IVariationContextAccessor variationContextAccessor,
             IVirtualNodeCache nodeCache,
             IVirtualNodeRulesManager rulesManager)
         {
             _umbracoContextAccessor = umbracoContextAccessor;
-            _variationContextAccessor = variationContextAccessor;
             _nodeCache = nodeCache;
             _rulesManager = rulesManager;
         }
