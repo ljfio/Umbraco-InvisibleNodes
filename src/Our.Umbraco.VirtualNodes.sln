@@ -17,6 +17,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.VirtualNodes.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.UmbracoCms.VirtualNodes.Core", "Our.UmbracoCms.VirtualNodes.Core\Our.UmbracoCms.VirtualNodes.Core.csproj", "{1A547645-E1D4-41BA-A256-D900EB66F27C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository", "Repository", "{506049C3-6BE7-4D4A-8BAA-1F9A9B81EB16}"
+	ProjectSection(SolutionItems) = preProject
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
