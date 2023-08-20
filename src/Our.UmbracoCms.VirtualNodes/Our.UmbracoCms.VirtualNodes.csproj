@@ -1,5 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+        <Product>Our.UmbracoCms.VirtualNodes</Product>
+        <PackageId>Our.UmbracoCms.VirtualNodes</PackageId>
+        <Title>Our.UmbracoCms.VirtualNodes</Title>
+        <Description>...</Description>
+        <PackageTags>umbraco plugin package</PackageTags>
         <TargetFramework>net48</TargetFramework>
     </PropertyGroup>
     
