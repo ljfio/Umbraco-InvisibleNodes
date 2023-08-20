@@ -14,16 +14,13 @@ namespace Our.UmbracoCms.VirtualNodes
 {
     public class VirtualNodeUrlProvider : IUrlProvider
     {
-        private readonly IUmbracoContextAccessor _umbracoContextAccessor;
         private readonly ISiteDomainHelper _siteDomainHelper;
         private readonly IVirtualNodeRulesManager _rulesManager;
 
         public VirtualNodeUrlProvider(
-            IUmbracoContextAccessor umbracoContextAccessor,
             ISiteDomainHelper siteDomainHelper,
             IVirtualNodeRulesManager rulesManager)
         {
-            _umbracoContextAccessor = umbracoContextAccessor;
             _siteDomainHelper = siteDomainHelper;
             _rulesManager = rulesManager;
         }

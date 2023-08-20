@@ -5,23 +5,19 @@ using System.Linq;
 using Our.UmbracoCms.VirtualNodes.Core;
 using Umbraco.Core;
 using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Web;
 using Umbraco.Web.Routing;
 
 namespace Our.UmbracoCms.VirtualNodes
 {
     public class VirtualNodeContentFinder : IContentFinder
     {
-        private readonly IUmbracoContextAccessor _umbracoContextAccessor;
         private readonly IVirtualNodeCache _nodeCache;
         private readonly IVirtualNodeRulesManager _rulesManager;
 
         public VirtualNodeContentFinder(
-            IUmbracoContextAccessor umbracoContextAccessor,
             IVirtualNodeCache nodeCache,
             IVirtualNodeRulesManager rulesManager)
         {
-            _umbracoContextAccessor = umbracoContextAccessor;
             _nodeCache = nodeCache;
             _rulesManager = rulesManager;
         }
@@ -29,9 +25,9 @@ namespace Our.UmbracoCms.VirtualNodes
         /// <inheritdoc />
         public bool TryFindContent(PublishedRequest request)
         {
-            var context = _umbracoContextAccessor.UmbracoContext;
+            var context = request.UmbracoContext;
 
-            if (context is null || context.Content == null)
+            if (context == null || context.Content == null)
                 return false;
 
             string host = request.Uri.Host;
