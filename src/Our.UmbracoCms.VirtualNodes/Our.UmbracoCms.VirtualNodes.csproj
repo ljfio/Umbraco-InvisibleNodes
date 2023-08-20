@@ -9,6 +9,10 @@
     </PropertyGroup>
     
     <ItemGroup>
+      <PackageReference Include="MinVer" Version="4.3.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="UmbracoCms.Web" Version="8.18.8" />
     </ItemGroup>
     
