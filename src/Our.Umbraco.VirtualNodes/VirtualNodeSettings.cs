@@ -7,5 +7,7 @@ namespace Our.Umbraco.VirtualNodes;
 
 public class VirtualNodeSettings
 {
+    public const string VirtualNode = "VirtualNode";
+    
     public string[] ContentTypes { get; set; } = Array.Empty<string>();
 }

@@ -14,9 +14,12 @@ public class VirtualNodeComposer : IComposer
     {
         builder.ContentFinders()
             .Insert<VirtualNodeContentFinder>();
-        
+
         builder.UrlProviders()
             .Insert<VirtualNodeUrlProvider>();
+
+        builder.Services
+            .Configure<VirtualNodeSettings>(builder.Config.GetSection(VirtualNodeSettings.VirtualNode));
 
         builder.Services
             .AddSingleton<IVirtualNodeCache, VirtualNodeCache>()
