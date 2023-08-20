@@ -14,6 +14,9 @@ namespace Our.UmbracoCms.VirtualNodes
             composition.RegisterFor<IVirtualNodeCache, VirtualNodeCache>(Lifetime.Singleton);
             composition.RegisterFor<IVirtualNodeRulesManager, VirtualNodeRulesManager>(Lifetime.Singleton);
 
+            composition.UrlProviders()
+                .Append<VirtualNodeUrlProvider>();
+
             composition.ContentFinders()
                 .Append<VirtualNodeContentFinder>();
         }
