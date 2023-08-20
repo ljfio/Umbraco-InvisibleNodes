@@ -6,6 +6,7 @@
         <Title>Our.Umbraco.VirtualNodes.Core</Title>
         <Description>...</Description>
         <PackageTags>umbraco plugin package</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -19,4 +20,7 @@
       <PackageReference Include="Umbraco.Cms.Core" Version="10.3.2" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
 </Project>

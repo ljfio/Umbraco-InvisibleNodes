@@ -5,6 +5,7 @@
         <Title>Our.UmbracoCms.VirtualNodes</Title>
         <Description>...</Description>
         <PackageTags>umbraco plugin package</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <TargetFramework>net48</TargetFramework>
     </PropertyGroup>
     
@@ -18,5 +19,9 @@
     
     <ItemGroup>
       <ProjectReference Include="..\Our.UmbracoCms.VirtualNodes.Core\Our.UmbracoCms.VirtualNodes.Core.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 </Project>

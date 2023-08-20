@@ -6,6 +6,7 @@
     <Title>Our.Umbraco.VirtualNodes</Title>
     <Description>...</Description>
     <PackageTags>umbraco plugin package</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Nullable>enable</Nullable>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
@@ -22,6 +23,7 @@
   <ItemGroup>
     <Content Include="App_Plugins\Our.Umbraco.VirtualNodes\**" ExcludeFromSingleFile="true" CopyToPublishDirectory="Always" />
     <None Include="buildTransitive\**" Pack="true" PackagePath="buildTransitive" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
