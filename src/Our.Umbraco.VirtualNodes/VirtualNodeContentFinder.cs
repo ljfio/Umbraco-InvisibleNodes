@@ -65,8 +65,7 @@ public class VirtualNodeContentFinder : IContentFinder
 
         if (root is null || segments.Length == 0)
         {
-            request.SetPublishedContent(root);
-            return true;
+            return false;
         }
 
         var foundNode = WalkContentTree(root, segments, culture);
@@ -108,7 +107,7 @@ public class VirtualNodeContentFinder : IContentFinder
 
                 var grandChild = WalkContentTree(child, childSegments, culture);
 
-                if (grandChild != null)
+                if (grandChild is not null)
                     return grandChild;
             }
 
