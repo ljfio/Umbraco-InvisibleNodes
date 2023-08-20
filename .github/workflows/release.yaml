@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  release:
+    types: ["created"]
+
+env:
+  SOLUTION_PATH: src/Our.Umbraco.VirtualNodes.sln
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        global-json-file: src/global.json
+        dotnet-version: |
+          6.x
+    - name: Restore
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+    - name: Build
+      run: dotnet build --no-restore -c Release ${{ env.SOLUTION_PATH }}
+    - name: Pack
+      run: dotnet pack -c Release ${{ env.SOLUTION_PATH }} -o publish/
+    - name: Publish
+      run: dotnet nuget push publish/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s nuget.org
