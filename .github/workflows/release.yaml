@@ -18,7 +18,6 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        global-json-file: src/global.json
         dotnet-version: |
           6.x
     - name: Restore
@@ -26,6 +25,6 @@ jobs:
     - name: Build
       run: dotnet build --no-restore -c Release ${{ env.SOLUTION_PATH }}
     - name: Pack
-      run: dotnet pack -c Release ${{ env.SOLUTION_PATH }} -o publish/
+      run: dotnet pack --no-build -c Release ${{ env.SOLUTION_PATH }} -o publish/
     - name: Publish
       run: dotnet nuget push publish/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s nuget.org
