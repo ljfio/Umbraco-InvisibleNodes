@@ -1,4 +1,4 @@
-# Umbraco VirtualNodes
+# Umbraco Invisible Nodes
 
 The package for Umbraco 8 and 10 that hides nodes in the content tree from being visible to front end users.
 
@@ -6,7 +6,7 @@ Inspired by Sotiris Filippidis (DotSee)'s [VirtualNodes][virtualnodes] and [Omit
 
 ## Introduction
 
-Consider the following content tree, you want to hide the categories from the generated URL. You know the Products have a unique name. Using the VirtualNodes package you can configure it to hide the Product Category document type.
+Consider the following content tree, you want to hide the categories from the generated URL. You know the Products have a unique name. Using the InvisibleNodes package you can configure it to hide the Product Category document type.
 
 ```mermaid
 flowchart
@@ -20,7 +20,7 @@ flowchart
 ```
 
 Before the URL for Product 1 would be: `/products/product-category-1/product-1`.
-After using and configuring VirtualNodes the URL would be: `/products/product-1`.
+After using and configuring Invisible Nodes package the URL would be: `/products/product-1`.
 
 ## Installation
 
@@ -29,24 +29,24 @@ Currently both Umbraco 8 and 10 are supported.
 For Umbraco 10:
 
 ```pwsh
-dotnet add package Our.Umbraco.VirtualNodes
+dotnet add package Our.Umbraco.InvisibleNodes
 ```
 
 For Umbraco 8:
 
 ```pwsh
-Install-Package Our.UmbracoCms.VirtualNodes
+Install-Package Our.UmbracoCms.InvisibleNodes
 ```
 
 ## Usage
 
-To make a node virtual, you can configure the app settings to make a content type a virtual node content type.
+To make a node invisible, you can configure the app settings to make a content type an invisible node content type.
 
 For Umbraco 10:
 
 ```json
 {
-  "VirtualNode": {
+  "InvisibleNodes": {
     "ContentTypes": [
       "hiddenNode"
     ]
@@ -57,7 +57,7 @@ For Umbraco 10:
 For Umbraco 8:
 
 ```xml
-<add key="VirtualNode" value="hiddenNode" />
+<add key="InvisibleNodes" value="hiddenNode" />
 ```
 
 ## Contributing
@@ -81,6 +81,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-[github]: https://github.com/ljfio/Umbraco-VirtualNodes
-[virtualnodes]: https://github.com/sotirisf/Umbraco-VirtualNodes
+[github]: https://github.com/ljfio/Umbraco-InvisibleNodes
+[virtualnodes]: https://github.com/sotirisf/Umbraco-InvisibleNodes
 [omitsegments]: https://github.com/sotirisf/Umbraco-OmitSegmentsUrlProvider

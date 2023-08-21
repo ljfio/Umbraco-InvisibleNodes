@@ -6,17 +6,17 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <Product>Our.Umbraco.VirtualNodes</Product>
-    <PackageId>Our.Umbraco.VirtualNodes</PackageId>
-    <Title>Our.Umbraco.VirtualNodes</Title>
+    <Product>Our.Umbraco.InvisibleNodes</Product>
+    <PackageId>Our.Umbraco.InvisibleNodes</PackageId>
+    <Title>Our.Umbraco.InvisibleNodes</Title>
     <Description>Virtual Nodes for Umbraco 10</Description>
     <PackageTags>umbraco plugin package</PackageTags>
     <Authors>Luke Fisher</Authors>
     <Copyright>Copyright 2023 Luke Fisher</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/ljfio/Umbraco-VirtualNodes</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/ljfio/Umbraco-VirtualNodes.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/ljfio/Umbraco-InvisibleNodes</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ljfio/Umbraco-InvisibleNodes.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="App_Plugins\Our.Umbraco.VirtualNodes\**" ExcludeFromSingleFile="true" CopyToPublishDirectory="Always" />
+    <Content Include="App_Plugins\Our.Umbraco.InvisibleNodes\**" ExcludeFromSingleFile="true" CopyToPublishDirectory="Always" />
     <None Include="buildTransitive\**" Pack="true" PackagePath="buildTransitive" />
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
@@ -40,6 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Our.Umbraco.VirtualNodes.Core\Our.Umbraco.VirtualNodes.Core.csproj" />
+    <ProjectReference Include="..\Our.Umbraco.InvisibleNodes.Core\Our.Umbraco.InvisibleNodes.Core.csproj" />
   </ItemGroup>
 </Project>

@@ -2,19 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Text;
-using Our.Umbraco.VirtualNodes.Core;
+using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Web.Common.Controllers;
 using Umbraco.Extensions;
 
-namespace Our.Umbraco.VirtualNodes;
+namespace Our.Umbraco.InvisibleNodes;
 
-public class VirtualNodeCache : IVirtualNodeCache
+public class InvisibleNodeCache : IInvisibleNodeCache
 {
     private readonly IAppPolicyCache _cache;
 
-    public VirtualNodeCache(AppCaches caches)
+    public InvisibleNodeCache(AppCaches caches)
     {
-        _cache = caches.IsolatedCaches.GetOrCreate<VirtualNodeCache>();
+        _cache = caches.IsolatedCaches.GetOrCreate<InvisibleNodeCache>();
     }
 
     public int? GetRoute(string host, string path)
@@ -44,7 +45,7 @@ public class VirtualNodeCache : IVirtualNodeCache
 
     private string GenerateKey(string? host = null, string? path = null)
     {
-        var builder = new StringBuilder(nameof(VirtualNodeCache))
+        var builder = new StringBuilder(nameof(InvisibleNodeCache))
             .Append("::Route::");
 
         if (!string.IsNullOrEmpty(host))

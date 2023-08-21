@@ -3,23 +3,23 @@
 
 using System.Linq;
 using Microsoft.Extensions.Options;
-using Our.Umbraco.VirtualNodes.Core;
+using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
 
-namespace Our.Umbraco.VirtualNodes;
+namespace Our.Umbraco.InvisibleNodes;
 
-public class VirtualNodeRulesManager : IVirtualNodeRulesManager
+public class InvisibleNodeRulesManager : IInvisibleNodeRulesManager
 {
-    private VirtualNodeSettings _settings;
+    private InvisibleNodeSettings _settings;
     
-    public VirtualNodeRulesManager(
-        IOptionsMonitor<VirtualNodeSettings> optionsMonitor)
+    public InvisibleNodeRulesManager(
+        IOptionsMonitor<InvisibleNodeSettings> optionsMonitor)
     {
         _settings = optionsMonitor.CurrentValue;
         optionsMonitor.OnChange(settings => _settings = settings);
     }
 
-    public bool IsVirtualNode(IPublishedContent content)
+    public bool IsInvisibleNode(IPublishedContent content)
     {
         return _settings.ContentTypes.Contains(content.ContentType.Alias);
     }

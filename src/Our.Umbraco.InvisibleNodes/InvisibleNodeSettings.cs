@@ -3,11 +3,11 @@
 
 using System;
 
-namespace Our.Umbraco.VirtualNodes;
+namespace Our.Umbraco.InvisibleNodes;
 
-public class VirtualNodeSettings
+public class InvisibleNodeSettings
 {
-    public const string VirtualNode = "VirtualNode";
+    public const string InvisibleNode = "InvisibleNode";
     
     public string[] ContentTypes { get; set; } = Array.Empty<string>();
 }

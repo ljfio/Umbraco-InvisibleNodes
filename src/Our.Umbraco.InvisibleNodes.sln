@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.VirtualNodes", "Our.Umbraco.VirtualNodes\Our.Umbraco.VirtualNodes.csproj", "{75CB6D92-3214-406E-A9C5-97E79AA84B8C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.InvisibleNodes", "Our.Umbraco.InvisibleNodes\Our.Umbraco.InvisibleNodes.csproj", "{75CB6D92-3214-406E-A9C5-97E79AA84B8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.VirtualNodes.Tests", "Our.Umbraco.VirtualNodes.Tests\Our.Umbraco.VirtualNodes.Tests.csproj", "{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.InvisibleNodes.Tests", "Our.Umbraco.InvisibleNodes.Tests\Our.Umbraco.InvisibleNodes.Tests.csproj", "{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.UmbracoCms.VirtualNodes", "Our.UmbracoCms.VirtualNodes\Our.UmbracoCms.VirtualNodes.csproj", "{C41B7F7F-5BBC-45ED-82BC-903084871E3B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.UmbracoCms.InvisibleNodes", "Our.UmbracoCms.InvisibleNodes\Our.UmbracoCms.InvisibleNodes.csproj", "{C41B7F7F-5BBC-45ED-82BC-903084871E3B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Umbraco", "Umbraco", "{786844FD-1815-4389-9C7A-37EFE2624101}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UmbracoCms", "UmbracoCms", "{8B440744-1334-4351-A3AD-470293237046}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.VirtualNodes.Core", "Our.Umbraco.VirtualNodes.Core\Our.Umbraco.VirtualNodes.Core.csproj", "{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.InvisibleNodes.Core", "Our.Umbraco.InvisibleNodes.Core\Our.Umbraco.InvisibleNodes.Core.csproj", "{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.UmbracoCms.VirtualNodes.Core", "Our.UmbracoCms.VirtualNodes.Core\Our.UmbracoCms.VirtualNodes.Core.csproj", "{1A547645-E1D4-41BA-A256-D900EB66F27C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.UmbracoCms.InvisibleNodes.Core", "Our.UmbracoCms.InvisibleNodes.Core\Our.UmbracoCms.InvisibleNodes.Core.csproj", "{1A547645-E1D4-41BA-A256-D900EB66F27C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository", "Repository", "{506049C3-6BE7-4D4A-8BAA-1F9A9B81EB16}"
 	ProjectSection(SolutionItems) = preProject

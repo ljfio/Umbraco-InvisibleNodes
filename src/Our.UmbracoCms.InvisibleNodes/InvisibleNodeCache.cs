@@ -1,20 +1,19 @@
 // Copyright 2023 Luke Fisher
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Text;
-using Our.UmbracoCms.VirtualNodes.Core;
+using Our.UmbracoCms.InvisibleNodes.Core;
 using Umbraco.Core.Cache;
 
-namespace Our.UmbracoCms.VirtualNodes
+namespace Our.UmbracoCms.InvisibleNodes
 {
-    public class VirtualNodeCache : IVirtualNodeCache
+    public class InvisibleNodeCache : IInvisibleNodeCache
     {
         private readonly IAppPolicyCache _cache;
 
-        public VirtualNodeCache(AppCaches appCaches)
+        public InvisibleNodeCache(AppCaches appCaches)
         {
-            _cache = appCaches.IsolatedCaches.GetOrCreate<VirtualNodeCache>();
+            _cache = appCaches.IsolatedCaches.GetOrCreate<InvisibleNodeCache>();
         }
 
         public int? GetRoute(string host, string path)
@@ -44,7 +43,7 @@ namespace Our.UmbracoCms.VirtualNodes
 
         private string GenerateKey(string host = null, string path = null)
         {
-            var builder = new StringBuilder(nameof(VirtualNodeCache))
+            var builder = new StringBuilder(nameof(InvisibleNodeCache))
                 .Append("::Route::");
 
             if (!string.IsNullOrEmpty(host))

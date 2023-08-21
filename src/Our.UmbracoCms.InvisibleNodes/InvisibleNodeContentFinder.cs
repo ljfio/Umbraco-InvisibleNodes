@@ -2,21 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Linq;
-using Our.UmbracoCms.VirtualNodes.Core;
+using Our.UmbracoCms.InvisibleNodes.Core;
 using Umbraco.Core;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Web.Routing;
 
-namespace Our.UmbracoCms.VirtualNodes
+namespace Our.UmbracoCms.InvisibleNodes
 {
-    public class VirtualNodeContentFinder : IContentFinder
+    public class InvisibleNodeContentFinder : IContentFinder
     {
-        private readonly IVirtualNodeCache _nodeCache;
-        private readonly IVirtualNodeRulesManager _rulesManager;
+        private readonly IInvisibleNodeCache _nodeCache;
+        private readonly IInvisibleNodeRulesManager _rulesManager;
 
-        public VirtualNodeContentFinder(
-            IVirtualNodeCache nodeCache,
-            IVirtualNodeRulesManager rulesManager)
+        public InvisibleNodeContentFinder(
+            IInvisibleNodeCache nodeCache,
+            IInvisibleNodeRulesManager rulesManager)
         {
             _nodeCache = nodeCache;
             _rulesManager = rulesManager;
@@ -104,7 +104,7 @@ namespace Our.UmbracoCms.VirtualNodes
                         return grandChild;
                 }
 
-                if (child.IsVirtualNode(_rulesManager))
+                if (child.IsInvisibleNode(_rulesManager))
                 {
                     var hiddenChild = WalkContentTree(child, segments, culture);
 

@@ -4,30 +4,30 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Our.Umbraco.VirtualNodes.Core;
+using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Extensions;
 
-namespace Our.Umbraco.VirtualNodes;
+namespace Our.Umbraco.InvisibleNodes;
 
-public class VirtualNodeContentFinder : IContentFinder
+public class InvisibleNodeContentFinder : IContentFinder
 {
     private readonly IUmbracoContextAccessor _umbracoContextAccessor;
     private readonly IVariationContextAccessor _variationContextAccessor;
-    private readonly IVirtualNodeCache _virtualNodeCache;
-    private readonly IVirtualNodeRulesManager _rulesManager;
+    private readonly IInvisibleNodeCache _invisibleNodeCache;
+    private readonly IInvisibleNodeRulesManager _rulesManager;
 
-    public VirtualNodeContentFinder(
+    public InvisibleNodeContentFinder(
         IUmbracoContextAccessor umbracoContextAccessor, 
         IVariationContextAccessor variationContextAccessor,
-        IVirtualNodeCache virtualNodeCache,
-        IVirtualNodeRulesManager rulesManager)
+        IInvisibleNodeCache invisibleNodeCache,
+        IInvisibleNodeRulesManager rulesManager)
     {
         _umbracoContextAccessor = umbracoContextAccessor;
         _variationContextAccessor = variationContextAccessor;
-        _virtualNodeCache = virtualNodeCache;
+        _invisibleNodeCache = invisibleNodeCache;
         _rulesManager = rulesManager;
     }
 
@@ -40,7 +40,7 @@ public class VirtualNodeContentFinder : IContentFinder
         string host = request.Uri.Host;
         string path = request.Uri.AbsolutePath.Trim('/');
 
-        int? cached = _virtualNodeCache.GetRoute(host, path);
+        int? cached = _invisibleNodeCache.GetRoute(host, path);
 
         if (cached.HasValue)
         {
@@ -52,7 +52,7 @@ public class VirtualNodeContentFinder : IContentFinder
                 return true;
             }
             
-            _virtualNodeCache.ClearRoute(host, path);
+            _invisibleNodeCache.ClearRoute(host, path);
         }
         
         string? culture = request.Culture;
@@ -72,7 +72,7 @@ public class VirtualNodeContentFinder : IContentFinder
 
         if (foundNode is not null)
         {
-            _virtualNodeCache.StoreRoute(host, path, foundNode.Id);
+            _invisibleNodeCache.StoreRoute(host, path, foundNode.Id);
             request.SetPublishedContent(foundNode);
             return true;
         }
@@ -111,7 +111,7 @@ public class VirtualNodeContentFinder : IContentFinder
                     return grandChild;
             }
 
-            if (child.IsVirtualNode(_rulesManager))
+            if (child.IsInvisibleNode(_rulesManager))
             {
                 var hiddenChild = WalkContentTree(child, segments, culture);
 

@@ -1,20 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net48</TargetFramework>
+        <RootNamespace>Our.UmbracoCms.InvisibleNodes.Core</RootNamespace>
     </PropertyGroup>
     
     <PropertyGroup>
-        <Product>Our.UmbracoCms.VirtualNodes.Core</Product>
-        <PackageId>Our.UmbracoCms.VirtualNodes.Core</PackageId>
-        <Title>Our.UmbracoCms.VirtualNodes.Core</Title>
+        <Product>Our.UmbracoCms.InvisibleNodes.Core</Product>
+        <PackageId>Our.UmbracoCms.InvisibleNodes.Core</PackageId>
+        <Title>Our.UmbracoCms.InvisibleNodes.Core</Title>
         <Description>Virtual Nodes for Umbraco 10</Description>
         <PackageTags>umbraco plugin package</PackageTags>
         <Authors>Luke Fisher</Authors>
         <Copyright>Copyright 2023 Luke Fisher</Copyright>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/ljfio/Umbraco-VirtualNodes</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/ljfio/Umbraco-VirtualNodes.git</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/ljfio/Umbraco-InvisibleNodes</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/ljfio/Umbraco-InvisibleNodes.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 

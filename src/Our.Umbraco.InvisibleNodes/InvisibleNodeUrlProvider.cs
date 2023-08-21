@@ -4,26 +4,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Our.Umbraco.VirtualNodes.Core;
+using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Extensions;
 
-namespace Our.Umbraco.VirtualNodes;
+namespace Our.Umbraco.InvisibleNodes;
 
-public class VirtualNodeUrlProvider : IUrlProvider
+public class InvisibleNodeUrlProvider : IUrlProvider
 {
     private readonly IUmbracoContextAccessor _umbracoContextAccessor;
     private readonly IVariationContextAccessor _variationContextAccessor;
     private readonly ISiteDomainMapper _siteDomainMapper;
-    private readonly IVirtualNodeRulesManager _rulesManager;
+    private readonly IInvisibleNodeRulesManager _rulesManager;
 
-    public VirtualNodeUrlProvider(
+    public InvisibleNodeUrlProvider(
         IUmbracoContextAccessor umbracoContextAccessor,
         IVariationContextAccessor variationContextAccessor,
         ISiteDomainMapper siteDomainMapper, 
-        IVirtualNodeRulesManager rulesManager)
+        IInvisibleNodeRulesManager rulesManager)
     {
         _siteDomainMapper = siteDomainMapper;
         _variationContextAccessor = variationContextAccessor;
@@ -109,7 +109,7 @@ public class VirtualNodeUrlProvider : IUrlProvider
     private string GenerateRoute(IPublishedContent content, string? culture = null)
     {
         var segments = content.AncestorsOrSelf()
-            .Where(ancestor => !ancestor.IsVirtualNode(_rulesManager) && ancestor.Level > 1)
+            .Where(ancestor => !ancestor.IsInvisibleNode(_rulesManager) && ancestor.Level > 1)
             .Select(ancestor => ancestor.UrlSegment(_variationContextAccessor, culture))
             .Reverse()
             .ToList();

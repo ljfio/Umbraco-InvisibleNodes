@@ -4,22 +4,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Our.UmbracoCms.VirtualNodes.Core;
+using Our.UmbracoCms.InvisibleNodes.Core;
 using Umbraco.Core;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Web;
 using Umbraco.Web.Routing;
 
-namespace Our.UmbracoCms.VirtualNodes
+namespace Our.UmbracoCms.InvisibleNodes
 {
-    public class VirtualNodeUrlProvider : IUrlProvider
+    public class InvisibleNodeUrlProvider : IUrlProvider
     {
         private readonly ISiteDomainHelper _siteDomainHelper;
-        private readonly IVirtualNodeRulesManager _rulesManager;
+        private readonly IInvisibleNodeRulesManager _rulesManager;
 
-        public VirtualNodeUrlProvider(
+        public InvisibleNodeUrlProvider(
             ISiteDomainHelper siteDomainHelper,
-            IVirtualNodeRulesManager rulesManager)
+            IInvisibleNodeRulesManager rulesManager)
         {
             _siteDomainHelper = siteDomainHelper;
             _rulesManager = rulesManager;
@@ -108,7 +108,7 @@ namespace Our.UmbracoCms.VirtualNodes
         private string GenerateRoute(IPublishedContent content, string culture = null)
         {
             var segments = content.AncestorsOrSelf()
-                .Where(ancestor => !ancestor.IsVirtualNode(_rulesManager) && ancestor.Level > 1)
+                .Where(ancestor => !ancestor.IsInvisibleNode(_rulesManager) && ancestor.Level > 1)
                 .Select(ancestor => ancestor.UrlSegment(culture))
                 .Reverse()
                 .ToList();

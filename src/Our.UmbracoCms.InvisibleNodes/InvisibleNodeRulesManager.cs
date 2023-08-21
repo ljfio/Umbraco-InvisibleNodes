@@ -3,16 +3,16 @@
 
 using System.Configuration;
 using System.Linq;
-using Our.UmbracoCms.VirtualNodes.Core;
+using Our.UmbracoCms.InvisibleNodes.Core;
 using Umbraco.Core.Models.PublishedContent;
 
-namespace Our.UmbracoCms.VirtualNodes
+namespace Our.UmbracoCms.InvisibleNodes
 {
-    public class VirtualNodeRulesManager : IVirtualNodeRulesManager
+    public class InvisibleNodeRulesManager : IInvisibleNodeRulesManager
     {
         private readonly string[] _contentTypes;
 
-        public VirtualNodeRulesManager()
+        public InvisibleNodeRulesManager()
         {
             string value = ConfigurationManager.AppSettings.Get("VirtualNode") ?? string.Empty;
 
@@ -22,7 +22,7 @@ namespace Our.UmbracoCms.VirtualNodes
                 .ToArray();
         }
 
-        public bool IsVirtualNode(IPublishedContent content)
+        public bool IsInvisibleNode(IPublishedContent content)
         {
             return _contentTypes.Contains(content.ContentType.Alias);
         }

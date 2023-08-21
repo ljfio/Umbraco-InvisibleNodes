@@ -1,9 +1,9 @@
 // Copyright 2023 Luke Fisher
 // SPDX-License-Identifier: Apache-2.0
 
-namespace Our.UmbracoCms.VirtualNodes.Core
+namespace Our.UmbracoCms.InvisibleNodes.Core
 {
-    public interface IVirtualNodeCache
+    public interface IInvisibleNodeCache
     {
         int? GetRoute(string host, string path);
         void StoreRoute(string host, string path, int id);

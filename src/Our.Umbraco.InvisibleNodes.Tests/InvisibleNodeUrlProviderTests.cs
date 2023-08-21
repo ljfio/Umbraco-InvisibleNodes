@@ -1,14 +1,14 @@
 using FluentAssertions;
 using Moq;
-using Our.Umbraco.VirtualNodes.Core;
+using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
 
-namespace Our.Umbraco.VirtualNodes.Tests;
+namespace Our.Umbraco.InvisibleNodes.Tests;
 
-public class VirtualNodeUrlProviderTests
+public class InvisibleNodeUrlProviderTests
 {
     [Fact]
     public void DefaultRoot()
@@ -18,16 +18,16 @@ public class VirtualNodeUrlProviderTests
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
         
-        var rulesManager = new Mock<IVirtualNodeRulesManager>();
+        var rulesManager = new Mock<IInvisibleNodeRulesManager>();
         
         rulesManager
-            .Setup(m => m.IsVirtualNode(It.IsAny<IPublishedContent>()))
+            .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
         var root = GenerateNode("Home", "home");
         var uri = new Uri("https://example.org/");
 
-        var provider = new VirtualNodeUrlProvider(
+        var provider = new InvisibleNodeUrlProvider(
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
@@ -51,10 +51,10 @@ public class VirtualNodeUrlProviderTests
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var rulesManager = new Mock<IVirtualNodeRulesManager>();
+        var rulesManager = new Mock<IInvisibleNodeRulesManager>();
         
         rulesManager
-            .Setup(m => m.IsVirtualNode(It.IsAny<IPublishedContent>()))
+            .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
         
         var root = GenerateNode("Home", "home");
@@ -62,7 +62,7 @@ public class VirtualNodeUrlProviderTests
 
         var uri = new Uri("https://example.org/page/");
 
-        var provider = new VirtualNodeUrlProvider(
+        var provider = new InvisibleNodeUrlProvider(
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
@@ -86,10 +86,10 @@ public class VirtualNodeUrlProviderTests
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var rulesManager = new Mock<IVirtualNodeRulesManager>();
+        var rulesManager = new Mock<IInvisibleNodeRulesManager>();
         
         rulesManager
-            .Setup(m => m.IsVirtualNode(It.IsAny<IPublishedContent>()))
+            .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
         
         var root = GenerateNode("Home", "home");
@@ -98,7 +98,7 @@ public class VirtualNodeUrlProviderTests
 
         var uri = new Uri("https://example.org/page/nested/");
 
-        var provider = new VirtualNodeUrlProvider(
+        var provider = new InvisibleNodeUrlProvider(
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,

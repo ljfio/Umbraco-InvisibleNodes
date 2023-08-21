@@ -4,8 +4,8 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-
         <IsPackable>false</IsPackable>
+        <RootNamespace>Our.Umbraco.InvisibleNodes.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Our.Umbraco.VirtualNodes\Our.Umbraco.VirtualNodes.csproj" />
+      <ProjectReference Include="..\Our.Umbraco.InvisibleNodes\Our.Umbraco.InvisibleNodes.csproj" />
     </ItemGroup>
 
 </Project>
