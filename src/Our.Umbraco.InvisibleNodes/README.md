@@ -1,14 +1,14 @@
-# Our.Umbraco.VirtualNodes
+# Our.Umbraco.InvisibleNodes
 
 ## Installation
 
 ```pwsh
-dotnet add package Our.Umbraco.VirtualNodes
+dotnet add package Our.Umbraco.InvisibleNodes
 ```
 
 ## Usage
 
-To make a node virtual, you can configure the app settings to make a content type a virtual node content type.
+To make a node invisible, you can configure the app settings to make a content type a invisible node content type.
 
 ```json
 {

@@ -1,14 +1,14 @@
-# Our.UmbracoCms.VirtualNodes
+# Our.UmbracoCms.InvisibleNodes
 
 ## Installation
 
 ```pwsh
-Install-Package Our.UmbracoCms.VirtualNodes
+Install-Package Our.UmbracoCms.InvisibleNodes
 ```
 
 ## Usage
 
-To make a node virtual, you can configure the app settings to make a content type a virtual node content type.
+To make a node invisible, you can configure the app settings to make a content type a invisible node content type.
 
 ```xml
 <add key="InvisibleNodes" value="hiddenNode" />

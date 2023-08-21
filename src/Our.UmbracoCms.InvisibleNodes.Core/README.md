@@ -1,4 +1,4 @@
-# Our.UmbracoCms.VirtualNodes.Core
+# Our.UmbracoCms.InvisibleNodes.Core
 
 ## License
 
