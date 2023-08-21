@@ -3,12 +3,12 @@
         <TargetFramework>net48</TargetFramework>
         <RootNamespace>Our.UmbracoCms.InvisibleNodes</RootNamespace>
     </PropertyGroup>
-    
+
     <PropertyGroup>
         <Product>Our.UmbracoCms.InvisibleNodes</Product>
         <PackageId>Our.UmbracoCms.InvisibleNodes</PackageId>
         <Title>Our.UmbracoCms.InvisibleNodes</Title>
-        <Description>Virtual Nodes for Umbraco 10</Description>
+        <Description>Invisible Nodes for Umbraco 8</Description>
         <PackageTags>umbraco plugin package</PackageTags>
         <Authors>Luke Fisher</Authors>
         <Copyright>Copyright 2023 Luke Fisher</Copyright>
@@ -18,7 +18,7 @@
         <RepositoryUrl>https://github.com/ljfio/Umbraco-InvisibleNodes.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
-    
+
     <ItemGroup>
       <PackageReference Include="MinVer" Version="4.3.0">
         <PrivateAssets>all</PrivateAssets>
@@ -26,11 +26,11 @@
       </PackageReference>
       <PackageReference Include="UmbracoCms.Web" Version="8.18.8" />
     </ItemGroup>
-    
+
     <ItemGroup>
       <ProjectReference Include="..\Our.UmbracoCms.InvisibleNodes.Core\Our.UmbracoCms.InvisibleNodes.Core.csproj" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>

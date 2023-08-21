@@ -3,12 +3,12 @@
         <TargetFramework>net48</TargetFramework>
         <RootNamespace>Our.UmbracoCms.InvisibleNodes.Core</RootNamespace>
     </PropertyGroup>
-    
+
     <PropertyGroup>
         <Product>Our.UmbracoCms.InvisibleNodes.Core</Product>
         <PackageId>Our.UmbracoCms.InvisibleNodes.Core</PackageId>
         <Title>Our.UmbracoCms.InvisibleNodes.Core</Title>
-        <Description>Virtual Nodes for Umbraco 10</Description>
+        <Description>Invisible Nodes for Umbraco 8</Description>
         <PackageTags>umbraco plugin package</PackageTags>
         <Authors>Luke Fisher</Authors>
         <Copyright>Copyright 2023 Luke Fisher</Copyright>
@@ -26,7 +26,7 @@
       </PackageReference>
       <PackageReference Include="UmbracoCms.Core" Version="8.18.8" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
