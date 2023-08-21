@@ -14,7 +14,7 @@ namespace Our.UmbracoCms.InvisibleNodes
 
         public InvisibleNodeRulesManager()
         {
-            string value = ConfigurationManager.AppSettings.Get("VirtualNode") ?? string.Empty;
+            string value = ConfigurationManager.AppSettings.Get("InvisibleNodes") ?? string.Empty;
 
             _contentTypes = value
                 .Split(',')

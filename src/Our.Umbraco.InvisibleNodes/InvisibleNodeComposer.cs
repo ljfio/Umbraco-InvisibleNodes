@@ -19,7 +19,7 @@ public class InvisibleNodeComposer : IComposer
             .Insert<InvisibleNodeUrlProvider>();
 
         builder.Services
-            .Configure<InvisibleNodeSettings>(builder.Config.GetSection(InvisibleNodeSettings.InvisibleNode));
+            .Configure<InvisibleNodeSettings>(builder.Config.GetSection(InvisibleNodeSettings.InvisibleNodes));
         
         builder.Services
             .AddSingleton<IInvisibleNodeCache, InvisibleNodeCache>()

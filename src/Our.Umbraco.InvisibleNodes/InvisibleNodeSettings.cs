@@ -7,7 +7,7 @@ namespace Our.Umbraco.InvisibleNodes;
 
 public class InvisibleNodeSettings
 {
-    public const string InvisibleNode = "InvisibleNode";
+    public const string InvisibleNodes = "InvisibleNodes";
     
     public string[] ContentTypes { get; set; } = Array.Empty<string>();
 }

@@ -12,7 +12,7 @@ To make a node virtual, you can configure the app settings to make a content typ
 
 ```json
 {
-  "VirtualNode": {
+  "InvisibleNodes": {
     "ContentTypes": [
       "hiddenNode"
     ]

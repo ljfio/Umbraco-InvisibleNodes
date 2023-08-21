@@ -11,7 +11,7 @@ Install-Package Our.UmbracoCms.VirtualNodes
 To make a node virtual, you can configure the app settings to make a content type a virtual node content type.
 
 ```xml
-<add key="VirtualNode" value="hiddenNode" />
+<add key="InvisibleNodes" value="hiddenNode" />
 ```
 
 ## License
