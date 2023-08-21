@@ -5,7 +5,7 @@ on:
     types: ["created"]
 
 env:
-  SOLUTION_PATH: src/Our.Umbraco.VirtualNodes.sln
+  SOLUTION_PATH: src/Our.Umbraco.InvisibleNodes.sln
 
 jobs:
   build:

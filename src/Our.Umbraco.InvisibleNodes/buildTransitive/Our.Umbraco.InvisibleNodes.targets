@@ -1,0 +1,21 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OurUmbracoInvisibleNodesContentFilesPath>$(MSBuildThisFileDirectory)..\App_Plugins\Our.Umbraco.InvisibleNodes\**\*.*</OurUmbracoInvisibleNodesContentFilesPath>
+  </PropertyGroup>
+
+  <Target Name="CopyOurUmbracoInvisibleNodesAssets" BeforeTargets="Build">
+    <ItemGroup>
+      <OurUmbracoInvisibleNodesContentFiles Include="$(OurUmbracoInvisibleNodesContentFilesPath)" />
+    </ItemGroup>
+    <Message Text="Copying Our.Umbraco.InvisibleNodes files: $(OurUmbracoInvisibleNodesContentFilesPath) - #@(OurUmbracoInvisibleNodesContentFiles->Count()) files" Importance="high" />
+    <Copy SourceFiles="@(OurUmbracoInvisibleNodesContentFiles)" DestinationFiles="@(OurUmbracoInvisibleNodesContentFiles->'$(MSBuildProjectDirectory)\App_Plugins\Our.Umbraco.InvisibleNodes\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="ClearOurUmbracoInvisibleNodesAssets" BeforeTargets="Clean">
+    <ItemGroup>
+      <OurUmbracoInvisibleNodesDir Include="$(MSBuildProjectDirectory)\App_Plugins\Our.Umbraco.InvisibleNodes\" />
+    </ItemGroup>
+    <Message Text="Clear old Our.Umbraco.InvisibleNodes data" Importance="high" />
+    <RemoveDir Directories="@(OurUmbracoInvisibleNodesDir)" />
+  </Target>
+</Project>
