@@ -1,6 +1,6 @@
 # Umbraco Invisible Nodes
 
-The package for Umbraco 8 and 10 that hides nodes in the content tree from being visible to front end users.
+The package for Umbraco 8 and 10+ that hides nodes in the content tree making them 'invisible' to front end users.
 
 Inspired by Sotiris Filippidis (DotSee)'s [VirtualNodes][virtualnodes] and [OmitSegmentsUrlProvider][omitsegments] packages.
 
@@ -26,13 +26,13 @@ After using and configuring Invisible Nodes package the URL would be: `/products
 
 Currently both Umbraco 8 and 10 are supported.
 
-For Umbraco 10:
+### Umbraco 10+
 
 ```pwsh
 dotnet add package Our.Umbraco.InvisibleNodes
 ```
 
-For Umbraco 8:
+### Umbraco 8
 
 ```pwsh
 Install-Package Our.UmbracoCms.InvisibleNodes
@@ -42,7 +42,7 @@ Install-Package Our.UmbracoCms.InvisibleNodes
 
 To make a node invisible, you can configure the app settings to make a content type an invisible node content type.
 
-For Umbraco 10:
+### Umbraco 10+
 
 ```json
 {
@@ -54,7 +54,7 @@ For Umbraco 10:
 }
 ```
 
-For Umbraco 8:
+### Umbraco 8
 
 ```xml
 <add key="InvisibleNodes" value="hiddenNode" />
@@ -82,5 +82,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 [github]: https://github.com/ljfio/Umbraco-InvisibleNodes
-[virtualnodes]: https://github.com/sotirisf/Umbraco-InvisibleNodes
+[virtualnodes]: https://github.com/sotirisf/Umbraco-VirtualNodes
 [omitsegments]: https://github.com/sotirisf/Umbraco-OmitSegmentsUrlProvider

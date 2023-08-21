@@ -8,7 +8,7 @@
         <Product>Our.Umbraco.InvisibleNodes.Core</Product>
         <PackageId>Our.Umbraco.InvisibleNodes.Core</PackageId>
         <Title>Our.Umbraco.InvisibleNodes.Core</Title>
-        <Description>Invisible Nodes for Umbraco 10</Description>
+        <Description>Invisible Nodes for Umbraco 10+</Description>
         <PackageTags>umbraco plugin package</PackageTags>
         <Authors>Luke Fisher</Authors>
         <Copyright>Copyright 2023 Luke Fisher</Copyright>
