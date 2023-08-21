@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <ContentTargetFolders>.</ContentTargetFolders>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -25,10 +25,18 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <PackageReference Include="Umbraco.Cms.Web.Website" Version="10.3.2" />
     <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="10.3.2" />
   </ItemGroup>
-
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="11.4.2" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="11.4.2" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Content Include="App_Plugins\Our.Umbraco.InvisibleNodes\**" ExcludeFromSingleFile="true" CopyToPublishDirectory="Always" />
     <None Include="buildTransitive\**" Pack="true" PackagePath="buildTransitive" />
