@@ -1,7 +1,26 @@
 # Umbraco VirtualNodes
 
-The Virtual Nodes package makes nodes in Umbraco invisible.
-They can be seen from the backoffice but are excluded from the generated URLs. 
+The package for Umbraco 8 and 10 that hides nodes in the content tree from being visible to front end users.
+
+Inspired by Sotiris Filippidis (DotSee)'s [VirtualNodes][virtualnodes] and [OmitSegmentsUrlProvider][omitsegments] packages.
+
+## Introduction
+
+Consider the following content tree, you want to hide the categories from the generated URL. You know the Products have a unique name. Using the VirtualNodes package you can configure it to hide the Product Category document type.
+
+```mermaid
+flowchart
+    home(Home)---products
+    products(Products)---productCategory1(Product Category)
+    products(Products)---productCategory2
+    productCategory1(Product Category 1)---product1(Product 1)
+    productCategory1---product2(Product 2)
+    productCategory2(Product Category 2)---product3(Product 3)
+    productCategory1---product4(Product 4)
+```
+
+Before the URL for Product 1 would be: `/products/product-category-1/product-1`.
+After using and configuring VirtualNodes the URL would be: `/products/product-1`.
 
 ## Installation
 
@@ -63,3 +82,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 [github]: https://github.com/ljfio/Umbraco-VirtualNodes
+[virtualnodes]: https://github.com/sotirisf/Umbraco-VirtualNodes
+[omitsegments]: https://github.com/sotirisf/Umbraco-OmitSegmentsUrlProvider
