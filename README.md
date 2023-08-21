@@ -1,5 +1,9 @@
 # Umbraco Invisible Nodes
 
+[![status](https://img.shields.io/github/actions/workflow/status/ljfio/Umbraco-InvisibleNodes/ci.yaml)][build]
+[![license](https://img.shields.io/github/license/ljfio/Umbraco-VirtualNodes)][license]
+[![nuget](https://img.shields.io/nuget/v/Our.Umbraco.InvisibleNodes)][nuget]
+
 The package for Umbraco 8 and 10+ that hides nodes in the content tree making them 'invisible' to front end users.
 
 Inspired by Sotiris Filippidis (DotSee)'s [VirtualNodes][virtualnodes] and [OmitSegmentsUrlProvider][omitsegments] packages.
@@ -84,3 +88,6 @@ limitations under the License.
 [github]: https://github.com/ljfio/Umbraco-InvisibleNodes
 [virtualnodes]: https://github.com/sotirisf/Umbraco-VirtualNodes
 [omitsegments]: https://github.com/sotirisf/Umbraco-OmitSegmentsUrlProvider
+[build]: https://github.com/ljfio/Umbraco-InvisibleNodes/actions/workflows/ci.yaml
+[license]: https://github.com/ljfio/Umbraco-InvisibleNodes/blob/main/LICENSE
+[nuget]: https://www.nuget.org/packages/Our.Umbraco.InvisibleNodes/
