@@ -114,6 +114,87 @@ public class InvisibleNodeUrlProviderTests
         url.Culture.Should().BeNull();
     }
 
+    [Fact]
+    public void ReturnsDefaultInvisible()
+    {
+        // Arrange
+        var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
+        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
+        var siteDomainMapper = new SiteDomainMapper();
+        
+        var root = GenerateNode("Home", "home");
+        var page = GenerateNode("Page", "page", root);
+        var invisible = GenerateNode("Invisible", "invisible", page);
+
+        var rulesManager = new Mock<IInvisibleNodeRulesManager>();
+
+        rulesManager
+            .Setup(m => m.IsInvisibleNode(It.IsNotIn(invisible)))
+            .Returns(false);
+
+        rulesManager
+            .Setup(m => m.IsInvisibleNode(It.IsIn(invisible)))
+            .Returns(true);
+
+        var uri = new Uri("https://example.org/");
+
+        var provider = new InvisibleNodeUrlProvider(
+            umbracoContextAccessor,
+            variationContextAccessor,
+            siteDomainMapper,
+            rulesManager.Object);
+
+        // Act
+        var url = provider.GetUrl(invisible, UrlMode.Default, null, uri);
+
+        // Assert
+        url.Should().NotBeNull();
+        url.Text.Should().Be("/page/");
+        url.IsUrl.Should().Be(true);
+        url.Culture.Should().BeNull();
+    }
+    
+    [Fact]
+    public void ReturnsDefaultNestedHidden()
+    {
+        // Arrange
+        var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
+        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
+        var siteDomainMapper = new SiteDomainMapper();
+        
+        var root = GenerateNode("Home", "home");
+        var page = GenerateNode("Page", "page", root);
+        var invisible = GenerateNode("Invisible", "invisible", page);
+        var hidden = GenerateNode("Hidden", "hidden", invisible);
+
+        var rulesManager = new Mock<IInvisibleNodeRulesManager>();
+
+        rulesManager
+            .Setup(m => m.IsInvisibleNode(It.IsNotIn(invisible)))
+            .Returns(false);
+
+        rulesManager
+            .Setup(m => m.IsInvisibleNode(It.IsIn(invisible)))
+            .Returns(true);
+
+        var uri = new Uri("https://example.org/");
+
+        var provider = new InvisibleNodeUrlProvider(
+            umbracoContextAccessor,
+            variationContextAccessor,
+            siteDomainMapper,
+            rulesManager.Object);
+
+        // Act
+        var url = provider.GetUrl(hidden, UrlMode.Default, null, uri);
+
+        // Assert
+        url.Should().NotBeNull();
+        url.Text.Should().Be("/page/hidden/");
+        url.IsUrl.Should().Be(true);
+        url.Culture.Should().BeNull();
+    }
+
     private IPublishedContent GenerateNode(
         string name,
         string segment,
