@@ -11,15 +11,15 @@ namespace Our.Umbraco.InvisibleNodes.Tests;
 public class InvisibleNodeUrlProviderTests
 {
     [Fact]
-    public void DefaultRoot()
+    public void ReturnsDefaultRoot()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
-        
+
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
-        
+
         rulesManager
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
@@ -44,7 +44,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void DefaultNested1Level()
+    public void ReturnsDefaultNested1Level()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
@@ -52,15 +52,15 @@ public class InvisibleNodeUrlProviderTests
         var siteDomainMapper = new SiteDomainMapper();
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
-        
+
         rulesManager
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
-        
+
         var root = GenerateNode("Home", "home");
         var page = GenerateNode("Page", "page", root);
 
-        var uri = new Uri("https://example.org/page/");
+        var uri = new Uri("https://example.org/");
 
         var provider = new InvisibleNodeUrlProvider(
             umbracoContextAccessor,
@@ -87,16 +87,16 @@ public class InvisibleNodeUrlProviderTests
         var siteDomainMapper = new SiteDomainMapper();
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
-        
+
         rulesManager
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
-        
+
         var root = GenerateNode("Home", "home");
         var page = GenerateNode("Page", "page", root);
-        var nested = GenerateNode("Nested Page", "nested", page);
+        var nested = GenerateNode("Nested", "nested", page);
 
-        var uri = new Uri("https://example.org/page/nested/");
+        var uri = new Uri("https://example.org/");
 
         var provider = new InvisibleNodeUrlProvider(
             umbracoContextAccessor,
@@ -203,13 +203,13 @@ public class InvisibleNodeUrlProviderTests
     {
         var mock = new Mock<IPublishedContent>();
         var mockType = new Mock<IPublishedContentType>();
-        
+
         mockType.Setup(m => m.Variations)
             .Returns(string.IsNullOrEmpty(culture) ? ContentVariation.Nothing : ContentVariation.Culture);
 
         mock.Setup(m => m.ContentType)
             .Returns(mockType.Object);
-        
+
         string key = culture ?? string.Empty;
 
         var cultures = new Dictionary<string, PublishedCultureInfo>();
