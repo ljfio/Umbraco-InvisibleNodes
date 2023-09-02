@@ -22,7 +22,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     public InvisibleNodeUrlProvider(
         IUmbracoContextAccessor umbracoContextAccessor,
         IVariationContextAccessor variationContextAccessor,
-        ISiteDomainMapper siteDomainMapper, 
+        ISiteDomainMapper siteDomainMapper,
         IInvisibleNodeRulesManager rulesManager)
     {
         _siteDomainMapper = siteDomainMapper;
@@ -53,12 +53,10 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         if (mappedDomain is null)
             return UrlInfo.Url(route, culture);
 
-        var builder = new UriBuilder(mappedDomain.Uri)
-        {
-            Path = WebPath.Combine(mappedDomain.Uri.AbsolutePath, route)
-        };
+        if (!Uri.TryCreate(mappedDomain.Uri, route, out var uri))
+            return null;
 
-        return UrlInfo.Url(builder.ToString(), culture);
+        return UrlInfo.Url(uri.ToString(), culture);
     }
 
     /// <inheritdoc />
@@ -89,12 +87,10 @@ public class InvisibleNodeUrlProvider : IUrlProvider
 
         foreach (var mappedDomain in mappedDomains)
         {
-            var builder = new UriBuilder(mappedDomain.Uri)
-            {
-                Path = WebPath.Combine(mappedDomain.Uri.AbsolutePath, route)
-            };
+            if (!Uri.TryCreate(mappedDomain.Uri, route, out var uri))
+                continue;
 
-            urls.Add(UrlInfo.Url(builder.ToString()));
+            urls.Add(UrlInfo.Url(uri.ToString()));
         }
 
         return urls;

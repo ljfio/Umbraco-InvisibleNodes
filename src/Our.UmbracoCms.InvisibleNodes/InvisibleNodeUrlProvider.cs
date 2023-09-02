@@ -27,8 +27,8 @@ namespace Our.UmbracoCms.InvisibleNodes
 
         /// <inheritdoc />
         public UrlInfo GetUrl(
-            UmbracoContext umbracoContext, 
-            IPublishedContent content, 
+            UmbracoContext umbracoContext,
+            IPublishedContent content,
             UrlMode mode,
             string culture,
             Uri current)
@@ -52,12 +52,10 @@ namespace Our.UmbracoCms.InvisibleNodes
             if (mappedDomain == null)
                 return UrlInfo.Url(route, culture);
 
-            var builder = new UriBuilder(mappedDomain.Uri)
-            {
-                Path = DomainUtilities.PathRelativeToDomain(mappedDomain.Uri, route),
-            };
+            if (!Uri.TryCreate(mappedDomain.Uri, route, out var uri))
+                return null;
 
-            return UrlInfo.Url(builder.ToString(), culture);
+            return UrlInfo.Url(uri.ToString(), culture);
         }
 
         /// <inheritdoc />
@@ -88,12 +86,10 @@ namespace Our.UmbracoCms.InvisibleNodes
 
             foreach (var mappedDomain in mappedDomains)
             {
-                var builder = new UriBuilder(mappedDomain.Uri)
-                {
-                    Path = DomainUtilities.PathRelativeToDomain(mappedDomain.Uri, route)
-                };
+                if (!Uri.TryCreate(mappedDomain.Uri, route, out var uri))
+                    continue;
 
-                urls.Add(UrlInfo.Url(builder.ToString()));
+                urls.Add(UrlInfo.Url(uri.ToString()));
             }
 
             return urls;
