@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using Our.UmbracoCms.InvisibleNodes.Core;
+using Umbraco.Core;
 using Umbraco.Core.Composing;
 using Umbraco.Web;
 
@@ -19,6 +20,9 @@ namespace Our.UmbracoCms.InvisibleNodes
 
             composition.ContentFinders()
                 .Append<InvisibleNodeContentFinder>();
+
+            composition.Components()
+                .Append<InvisibleNodeComponent>();
         }
     }
 }

@@ -3,8 +3,10 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Our.Umbraco.InvisibleNodes.Core;
+using Our.Umbraco.InvisibleNodes.Notifications;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
+using Umbraco.Cms.Core.Notifications;
 
 namespace Our.Umbraco.InvisibleNodes;
 
@@ -24,5 +26,7 @@ public class InvisibleNodeComposer : IComposer
         builder.Services
             .AddSingleton<IInvisibleNodeCache, InvisibleNodeCache>()
             .AddSingleton<IInvisibleNodeRulesManager, InvisibleNodeRulesManager>();
+
+        builder.AddNotificationHandler<ContentPublishedNotification, InvalidateOnPublishNotificationHandler>();
     }
 }
