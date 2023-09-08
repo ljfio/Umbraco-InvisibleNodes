@@ -15,7 +15,7 @@ public class InvisibleNodeUrlProviderTests
     #region Default URL Mode
 
     [Fact]
-    public void ReturnsDefaultRoot()
+    public void GetUrl_Returns_DefaultRoot()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
@@ -48,7 +48,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void ReturnsDefaultNested1Level()
+    public void GetUrl_Returns_DefaultNested1Level()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
@@ -83,7 +83,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void ReturnsDefaultNested2Levels()
+    public void GetUrl_Returns_DefaultNested2Levels()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
@@ -119,7 +119,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void ReturnsDefaultInvisible()
+    public void GetUrl_Returns_DefaultInvisible()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
@@ -159,7 +159,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void ReturnsDefaultNestedHidden()
+    public void GetUrl_Returns_DefaultNestedHidden()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
@@ -204,7 +204,7 @@ public class InvisibleNodeUrlProviderTests
     #region Absolute URL Mode
 
     [Fact]
-    public void ReturnsAbsoluteRoot()
+    public void GetUrl_Returns_AbsoluteRoot()
     {
         // Arrange
         var domain = GenerateDomain("example.org", 1);
@@ -239,7 +239,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void ReturnsAbsoluteNested1Level()
+    public void GetUrl_Returns_AbsoluteNested1Level()
     {
         // Arrange
         var domain = GenerateDomain("example.org", 1);
@@ -276,7 +276,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void ReturnsAbsoluteNested2Levels()
+    public void GetUrl_Returns_AbsoluteNested2Levels()
     {
         // Arrange
         var domain = GenerateDomain("example.org", 1);
@@ -314,7 +314,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void ReturnsAbsoluteInvisible()
+    public void GetUrl_Returns_AbsoluteInvisible()
     {
         // Arrange
         var domain = GenerateDomain("example.org", 1);
@@ -356,7 +356,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void ReturnsAbsoluteNestedHidden()
+    public void GetUrl_Returns_AbsoluteNestedHidden()
     {
         // Arrange
         var domain = GenerateDomain("example.org", 1);
