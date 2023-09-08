@@ -445,6 +445,10 @@ public class InvisibleNodeUrlProviderTests
             mockDomainCache
                 .Setup(m => m.GetAll(It.IsAny<bool>()))
                 .Returns(domains);
+
+            mockDomainCache
+                .Setup(m => m.GetAssigned(It.IsAny<int>(), It.IsAny<bool>()))
+                .Returns(domains);
         }
 
         var mockPublishedContentCache = new Mock<IPublishedContentCache>();
