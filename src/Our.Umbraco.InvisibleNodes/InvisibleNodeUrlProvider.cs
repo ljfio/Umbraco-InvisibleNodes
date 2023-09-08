@@ -76,12 +76,12 @@ public class InvisibleNodeUrlProvider : IUrlProvider
 
         var domainCache = umbracoContext.Domains;
 
-        var domainAndUris = domainCache.GetAll(false)
+        var domainAndUris = domainCache.GetAssigned(id)
             .Select(domain => new DomainAndUri(domain, current))
             .ToList();
 
-        var mappedDomains =
-            _siteDomainMapper.MapDomains(domainAndUris, current, true, null, domainCache.DefaultCulture);
+        var mappedDomains = _siteDomainMapper
+            .MapDomains(domainAndUris, current, true, null, domainCache.DefaultCulture);
 
         var urls = new List<UrlInfo>();
 
