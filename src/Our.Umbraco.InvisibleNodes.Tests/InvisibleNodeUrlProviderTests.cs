@@ -28,7 +28,7 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode("Home", "home");
+        var root = GenerateNode(1, "Home", "home");
         var uri = new Uri("https://example.org/");
 
         var provider = new InvisibleNodeUrlProvider(
@@ -61,8 +61,8 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode("Home", "home");
-        var page = GenerateNode("Page", "page", root);
+        var root = GenerateNode(1, "Home", "home");
+        var page = GenerateNode(2, "Page", "page", root);
 
         var uri = new Uri("https://example.org/");
 
@@ -96,9 +96,9 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode("Home", "home");
-        var page = GenerateNode("Page", "page", root);
-        var nested = GenerateNode("Nested", "nested", page);
+        var root = GenerateNode(1, "Home", "home");
+        var page = GenerateNode(2, "Page", "page", root);
+        var nested = GenerateNode(3, "Nested", "nested", page);
 
         var uri = new Uri("https://example.org/");
 
@@ -126,9 +126,9 @@ public class InvisibleNodeUrlProviderTests
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = GenerateNode("Home", "home");
-        var page = GenerateNode("Page", "page", root);
-        var invisible = GenerateNode("Invisible", "invisible", page);
+        var root = GenerateNode(1, "Home", "home");
+        var page = GenerateNode(2, "Page", "page", root);
+        var invisible = GenerateNode(3, "Invisible", "invisible", page);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -166,10 +166,10 @@ public class InvisibleNodeUrlProviderTests
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = GenerateNode("Home", "home");
-        var page = GenerateNode("Page", "page", root);
-        var invisible = GenerateNode("Invisible", "invisible", page);
-        var hidden = GenerateNode("Hidden", "hidden", invisible);
+        var root = GenerateNode(1, "Home", "home");
+        var page = GenerateNode(2, "Page", "page", root);
+        var invisible = GenerateNode(3, "Invisible", "invisible", page);
+        var hidden = GenerateNode(4, "Hidden", "hidden", invisible);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -219,7 +219,7 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode("Home", "home");
+        var root = GenerateNode(1, "Home", "home");
         var uri = new Uri("https://example.org/");
 
         var provider = new InvisibleNodeUrlProvider(
@@ -254,8 +254,8 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode("Home", "home");
-        var page = GenerateNode("Page", "page", root);
+        var root = GenerateNode(1, "Home", "home");
+        var page = GenerateNode(2, "Page", "page", root);
 
         var uri = new Uri("https://example.org/");
 
@@ -291,9 +291,9 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode("Home", "home");
-        var page = GenerateNode("Page", "page", root);
-        var nested = GenerateNode("Nested", "nested", page);
+        var root = GenerateNode(1, "Home", "home");
+        var page = GenerateNode(2, "Page", "page", root);
+        var nested = GenerateNode(3, "Nested", "nested", page);
 
         var uri = new Uri("https://example.org/");
 
@@ -323,9 +323,9 @@ public class InvisibleNodeUrlProviderTests
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = GenerateNode("Home", "home");
-        var page = GenerateNode("Page", "page", root);
-        var invisible = GenerateNode("Invisible", "invisible", page);
+        var root = GenerateNode(1, "Home", "home");
+        var page = GenerateNode(2, "Page", "page", root);
+        var invisible = GenerateNode(3, "Invisible", "invisible", page);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -365,10 +365,10 @@ public class InvisibleNodeUrlProviderTests
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = GenerateNode("Home", "home");
-        var page = GenerateNode("Page", "page", root);
-        var invisible = GenerateNode("Invisible", "invisible", page);
-        var hidden = GenerateNode("Hidden", "hidden", invisible);
+        var root = GenerateNode(1, "Home", "home");
+        var page = GenerateNode(2, "Page", "page", root);
+        var invisible = GenerateNode(3, "Invisible", "invisible", page);
+        var hidden = GenerateNode(4, "Hidden", "hidden", invisible);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -470,6 +470,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     private IPublishedContent GenerateNode(
+        int id,
         string name,
         string segment,
         IPublishedContent? parent = null,
@@ -490,6 +491,9 @@ public class InvisibleNodeUrlProviderTests
         {
             [key] = new(key, name, segment, DateTime.Now)
         };
+
+        mock.Setup(m => m.Id)
+            .Returns(id);
 
         mock.Setup(m => m.Level)
             .Returns(parent?.Level + 1 ?? 1);
