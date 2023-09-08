@@ -400,6 +400,84 @@ public class InvisibleNodeUrlProviderTests
 
     #endregion
 
+    #region GetOtherUrls
+
+    [Fact]
+    public void GetOtherUrls_Returns_EmptyForMatchingRoot()
+    {
+        // Arrange
+        var domains = GenerateDomains("example.org");
+
+        var root = GenerateNode(1, "Home", "");
+
+        var umbracoContextAccessor = GenerateUmbracoContextAccessor(
+            domains: domains,
+            content: root.AsEnumerableOfOne());
+
+        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
+        var siteDomainMapper = new SiteDomainMapper();
+
+        var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
+
+        mockRulesManager
+            .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
+            .Returns(false);
+
+        var uri = new Uri("https://example.org/");
+
+        var provider = new InvisibleNodeUrlProvider(
+            umbracoContextAccessor,
+            variationContextAccessor,
+            siteDomainMapper,
+            mockRulesManager.Object);
+
+        // Act
+        var urls = provider.GetOtherUrls(root.Id, uri);
+
+        // Assert
+        urls.Should().NotBeNull();
+        urls.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void GetOtherUrls_Returns_1UrlForMatchingRoot()
+    {
+        // Arrange
+        var domains = GenerateDomains("example.org", "example.com");
+
+        var root = GenerateNode(1, "Home", "");
+
+        var umbracoContextAccessor = GenerateUmbracoContextAccessor(
+            domains: domains,
+            content: root.AsEnumerableOfOne());
+
+        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
+        var siteDomainMapper = new SiteDomainMapper();
+
+        var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
+
+        mockRulesManager
+            .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
+            .Returns(false);
+
+        var uri = new Uri("https://example.org/");
+
+        var provider = new InvisibleNodeUrlProvider(
+            umbracoContextAccessor,
+            variationContextAccessor,
+            siteDomainMapper,
+            mockRulesManager.Object);
+
+        // Act
+        var urls = provider.GetOtherUrls(root.Id, uri);
+
+        // Assert
+        urls.Should().NotBeNullOrEmpty();
+        urls.Should().ContainSingle(value => value.Text == "https://example.com/");
+    }
+
+    #endregion
+
     private IEnumerable<Domain> GenerateDomains(params string[] urls)
     {
         int current = 1;
