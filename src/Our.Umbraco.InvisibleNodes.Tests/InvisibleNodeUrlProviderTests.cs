@@ -207,7 +207,7 @@ public class InvisibleNodeUrlProviderTests
     public void ReturnsAbsoluteRoot()
     {
         // Arrange
-        var domain = new Domain(1, "example.org", 1, null, false, 0);
+        var domain = GenerateDomain("example.org", 1);
         var umbracoContextAccessor = GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -242,7 +242,7 @@ public class InvisibleNodeUrlProviderTests
     public void ReturnsAbsoluteNested1Level()
     {
         // Arrange
-        var domain = new Domain(1, "example.org", 1, null, false, 0);
+        var domain = GenerateDomain("example.org", 1);
         var umbracoContextAccessor = GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -279,7 +279,7 @@ public class InvisibleNodeUrlProviderTests
     public void ReturnsAbsoluteNested2Levels()
     {
         // Arrange
-        var domain = new Domain(1, "example.org", 1, null, false, 0);
+        var domain = GenerateDomain("example.org", 1);
         var umbracoContextAccessor = GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -317,7 +317,7 @@ public class InvisibleNodeUrlProviderTests
     public void ReturnsAbsoluteInvisible()
     {
         // Arrange
-        var domain = new Domain(1, "example.org", 1, null, false, 0);
+        var domain = GenerateDomain("example.org", 1);
         var umbracoContextAccessor = GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -359,7 +359,7 @@ public class InvisibleNodeUrlProviderTests
     public void ReturnsAbsoluteNestedHidden()
     {
         // Arrange
-        var domain = new Domain(1, "example.org", 1, null, false, 0);
+        var domain = GenerateDomain("example.org", 1);
         var umbracoContextAccessor = GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -399,6 +399,25 @@ public class InvisibleNodeUrlProviderTests
     }
 
     #endregion
+
+    private IEnumerable<Domain> GenerateDomains(params string[] urls)
+    {
+        int current = 1;
+
+        foreach (var url in urls)
+        {
+            yield return GenerateDomain(url, current++);
+        }
+    }
+
+    private Domain GenerateDomain(string url, int id)
+    {
+#if NET7_0_OR_GREATER
+        return new Domain(id, url, id, null, false, id);
+#else
+        return new Domain(id, url, id, null, false);
+#endif
+    }
 
     private IUmbracoContextAccessor GenerateUmbracoContextAccessor(
         IEnumerable<Domain>? domains = null,
