@@ -45,8 +45,7 @@ public class InvisibleNodeCache : IInvisibleNodeCache
 
     private string GenerateKey(string? host = null, string? path = null)
     {
-        var builder = new StringBuilder(nameof(InvisibleNodeCache))
-            .Append("::Route::");
+        var builder = new StringBuilder("Route::");
 
         if (!string.IsNullOrEmpty(host))
             builder
