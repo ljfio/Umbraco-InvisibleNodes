@@ -11,12 +11,12 @@ using Umbraco.Extensions;
 
 namespace Our.Umbraco.InvisibleNodes.Notifications;
 
-public class InvalidateOnPublisedhNotificationHandler : INotificationHandler<ContentPublishedNotification>
+public class InvalidateOnPublishedNotificationHandler : INotificationHandler<ContentPublishedNotification>
 {
     private readonly IInvisibleNodeCache _invisibleNodeCache;
     private readonly IPublishedUrlProvider _publishedUrlProvider;
 
-    public InvalidateOnPublisedhNotificationHandler(
+    public InvalidateOnPublishedNotificationHandler(
         IInvisibleNodeCache invisibleNodeCache,
         IPublishedUrlProvider publishedUrlProvider)
     {
