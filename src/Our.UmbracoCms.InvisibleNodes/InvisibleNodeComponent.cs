@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
-using System.Collections.Generic;
 using Our.UmbracoCms.InvisibleNodes.Core;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -20,8 +19,6 @@ namespace Our.UmbracoCms.InvisibleNodes
         private readonly IInvisibleNodeCache _invisibleNodeCache;
         private readonly IUmbracoContextAccessor _umbracoContextAccessor;
 
-        private readonly IDictionary<int, IList<string>> _previousUrls = new Dictionary<int, IList<string>>();
-
         public InvisibleNodeComponent(
             IInvisibleNodeCache invisibleNodeCache,
             IUmbracoContextAccessor umbracoContextAccessor)
@@ -34,12 +31,10 @@ namespace Our.UmbracoCms.InvisibleNodes
         {
             ContentService.Published += ContentServiceOnPublished;
             ContentService.Moving += ContentServiceOnMoving;
-            ContentService.Moved += ContentServiceOnMoved;
         }
 
         public void Terminate()
         {
-            ContentService.Moved -= ContentServiceOnMoved;
             ContentService.Moving -= ContentServiceOnMoving;
             ContentService.Published -= ContentServiceOnPublished;
         }
@@ -65,7 +60,7 @@ namespace Our.UmbracoCms.InvisibleNodes
 
         #endregion
 
-        #region Moving / Moved
+        #region Moving
 
         private void ContentServiceOnMoving(IContentService sender, MoveEventArgs<IContent> e)
         {
@@ -75,36 +70,17 @@ namespace Our.UmbracoCms.InvisibleNodes
             {
                 var entity = moveEventInfo.Entity;
 
-                var urls = new List<string>();
-
                 foreach (var culture in entity.PublishedCultures)
                 {
-                    urls.Add(umbracoContext.UrlProvider.GetUrl(entity.Id, UrlMode.Absolute, culture));
-                }
+                    string url = umbracoContext.UrlProvider.GetUrl(entity.Id, UrlMode.Absolute, culture);
 
-                _previousUrls[entity.Id] = urls;
-            }
-        }
+                    var uri = new Uri(url);
 
-        private void ContentServiceOnMoved(IContentService sender, MoveEventArgs<IContent> e)
-        {
-            foreach (var moveEventInfo in e.MoveInfoCollection)
-            {
-                var entity = moveEventInfo.Entity;
-
-                if (_previousUrls.TryGetValue(entity.Id, out var urls))
-                {
-                    foreach (var url in urls)
-                    {
-                        var uri = new Uri(url);
-                        _invisibleNodeCache.ClearRoute(uri.Host, uri.AbsolutePath);
-                    }
-
-                    _previousUrls.Remove(entity.Id);
+                    _invisibleNodeCache.ClearRoute(uri.Host, uri.AbsolutePath);
                 }
             }
         }
-
+        
         #endregion
     }
 }

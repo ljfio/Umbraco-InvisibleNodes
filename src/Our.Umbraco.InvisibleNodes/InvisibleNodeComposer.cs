@@ -27,7 +27,8 @@ public class InvisibleNodeComposer : IComposer
             .AddSingleton<IInvisibleNodeCache, InvisibleNodeCache>()
             .AddSingleton<IInvisibleNodeRulesManager, InvisibleNodeRulesManager>();
 
-        builder.AddNotificationHandler<ContentPublishedNotification, InvalidateOnPublishedNotificationHandler>();
-        builder.AddNotificationHandler<ContentMovedNotification, InvalidateOnMovedNotificationHandler>();
+        builder
+            .AddNotificationHandler<ContentPublishedNotification, InvalidateCacheNotificationHandler>()
+            .AddNotificationHandler<ContentMovingNotification, InvalidateCacheNotificationHandler>();
     }
 }
