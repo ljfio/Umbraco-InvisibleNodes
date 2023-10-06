@@ -6,21 +6,24 @@
 
 The package for Umbraco 8 and 10+ that hides nodes in the content tree making them 'invisible' to front end users.
 
+Use this package to create logical groupings for nodes, where you want to exclude that grouping node from the generated URL.
+
 Inspired by Sotiris Filippidis (DotSee)'s [VirtualNodes][virtualnodes] and [OmitSegmentsUrlProvider][omitsegments] packages.
 
-## Introduction
+## Example
 
-Consider the following content tree, you want to hide the categories from the generated URL. You know the Products have a unique name. Using the InvisibleNodes package you can configure it to hide the Product Category document type.
+Consider the following content tree, you know the Products have a unique name and they always will.
+Using the Invisible Nodes package you can configure it to hide the Product Category document type.
 
 ```mermaid
 flowchart
-    home(Home)---products
-    products(Products)---productCategory1(Product Category)
-    products(Products)---productCategory2
-    productCategory1(Product Category 1)---product1(Product 1)
-    productCategory1---product2(Product 2)
-    productCategory2(Product Category 2)---product3(Product 3)
-    productCategory1---product4(Product 4)
+    home("Home (home)")---products("Products (productsIndex)")
+    products---productCategory1("Product Category 1 (productCategory)")
+    products---productCategory2("Product Category 2 (productCategory)")
+    productCategory1---product1("Product 1 (product)")
+    productCategory1---product2("Product 2 (product)")
+    productCategory2---product3("Product 3 (product)")
+    productCategory1---product4("Product 4 (product)")
 ```
 
 Before the URL for Product 1 would be: `/products/product-category-1/product-1`.
@@ -28,7 +31,7 @@ After using and configuring Invisible Nodes package the URL would be: `/products
 
 ## Installation
 
-Currently both Umbraco 8 and 10 are supported.
+Currently both Umbraco 8 and 10+ are supported.
 
 ### Umbraco 10+
 
