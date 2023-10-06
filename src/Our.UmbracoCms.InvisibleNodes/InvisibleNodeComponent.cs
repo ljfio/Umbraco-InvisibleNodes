@@ -38,49 +38,33 @@ namespace Our.UmbracoCms.InvisibleNodes
             ContentService.Moving -= ContentServiceOnMoving;
             ContentService.Published -= ContentServiceOnPublished;
         }
-
-        #region Published
-
+        
         private void ContentServiceOnPublished(IContentService sender, ContentPublishedEventArgs e)
         {
             var umbracoContext = _umbracoContextAccessor.UmbracoContext;
 
             foreach (var publishedEntity in e.PublishedEntities.EmptyNull())
-            {
-                foreach (var culture in publishedEntity.PublishedCultures)
-                {
-                    string url = umbracoContext.UrlProvider.GetUrl(publishedEntity.Id, UrlMode.Absolute, culture);
-
-                    var uri = new Uri(url);
-
-                    _invisibleNodeCache.ClearRoute(uri.Host, uri.AbsolutePath);
-                }
-            }
+                RemoveEntityFromCache(umbracoContext, publishedEntity);
         }
-
-        #endregion
-
-        #region Moving
-
+        
         private void ContentServiceOnMoving(IContentService sender, MoveEventArgs<IContent> e)
         {
             var umbracoContext = _umbracoContextAccessor.UmbracoContext;
 
             foreach (var moveEventInfo in e.MoveInfoCollection)
+                RemoveEntityFromCache(umbracoContext, moveEventInfo.Entity);
+        }
+
+        private void RemoveEntityFromCache(UmbracoContext umbracoContext, IContent entity)
+        {
+            foreach (var culture in entity.PublishedCultures)
             {
-                var entity = moveEventInfo.Entity;
+                string url = umbracoContext.UrlProvider.GetUrl(entity.Id, UrlMode.Absolute, culture);
 
-                foreach (var culture in entity.PublishedCultures)
-                {
-                    string url = umbracoContext.UrlProvider.GetUrl(entity.Id, UrlMode.Absolute, culture);
+                var uri = new Uri(url);
 
-                    var uri = new Uri(url);
-
-                    _invisibleNodeCache.ClearRoute(uri.Host, uri.AbsolutePath);
-                }
+                _invisibleNodeCache.ClearRoute(uri.Host, uri.AbsolutePath);
             }
         }
-        
-        #endregion
     }
 }
