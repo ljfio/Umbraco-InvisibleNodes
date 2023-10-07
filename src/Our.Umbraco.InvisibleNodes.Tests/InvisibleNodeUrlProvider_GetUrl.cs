@@ -1,21 +1,19 @@
 using FluentAssertions;
 using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
-using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
-using Umbraco.Cms.Core.PublishedCache;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Extensions;
 
 namespace Our.Umbraco.InvisibleNodes.Tests;
 
-public class InvisibleNodeUrlProviderTests
+public class InvisibleNodeUrlProvider_GetUrl
 {
     #region Default URL Mode
-
+    
     [Fact]
-    public void GetUrl_Returns_DefaultRoot()
+    public void Should_Return_DefaultRoot()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
@@ -28,7 +26,7 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode(1, "Home", "home");
+        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
         var uri = new Uri("https://example.org/");
 
         var provider = new InvisibleNodeUrlProvider(
@@ -48,7 +46,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void GetUrl_Returns_DefaultNested1Level()
+    public void Should_Return_DefaultNested1Level()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
@@ -61,8 +59,8 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode(1, "Home", "home");
-        var page = GenerateNode(2, "Page", "page", root);
+        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
 
         var uri = new Uri("https://example.org/");
 
@@ -83,7 +81,7 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void GetUrl_Returns_DefaultNested2Levels()
+    public void Should_Return_DefaultNested2Levels()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
@@ -96,9 +94,9 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode(1, "Home", "home");
-        var page = GenerateNode(2, "Page", "page", root);
-        var nested = GenerateNode(3, "Nested", "nested", page);
+        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
+        var nested = UmbracoTestHelper.GenerateNode(3, "Nested", "nested", page);
 
         var uri = new Uri("https://example.org/");
 
@@ -119,16 +117,16 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void GetUrl_Returns_DefaultInvisible()
+    public void Should_Return_DefaultInvisible()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = GenerateNode(1, "Home", "home");
-        var page = GenerateNode(2, "Page", "page", root);
-        var invisible = GenerateNode(3, "Invisible", "invisible", page);
+        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
+        var invisible = UmbracoTestHelper.GenerateNode(3, "Invisible", "invisible", page);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -159,17 +157,17 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void GetUrl_Returns_DefaultNestedHidden()
+    public void Should_Return_DefaultNestedHidden()
     {
         // Arrange
         var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = GenerateNode(1, "Home", "home");
-        var page = GenerateNode(2, "Page", "page", root);
-        var invisible = GenerateNode(3, "Invisible", "invisible", page);
-        var hidden = GenerateNode(4, "Hidden", "hidden", invisible);
+        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
+        var invisible = UmbracoTestHelper.GenerateNode(3, "Invisible", "invisible", page);
+        var hidden = UmbracoTestHelper.GenerateNode(4, "Hidden", "hidden", invisible);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -204,11 +202,11 @@ public class InvisibleNodeUrlProviderTests
     #region Absolute URL Mode
 
     [Fact]
-    public void GetUrl_Returns_AbsoluteRoot()
+    public void Should_Return_AbsoluteRoot()
     {
         // Arrange
-        var domain = GenerateDomain("example.org", 1);
-        var umbracoContextAccessor = GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
+        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1);
+        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
@@ -219,7 +217,7 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode(1, "Home", "home");
+        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
         var uri = new Uri("https://example.org/");
 
         var provider = new InvisibleNodeUrlProvider(
@@ -239,11 +237,11 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void GetUrl_Returns_AbsoluteNested1Level()
+    public void Should_Return_AbsoluteNested1Level()
     {
         // Arrange
-        var domain = GenerateDomain("example.org", 1);
-        var umbracoContextAccessor = GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
+        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1);
+        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
@@ -254,8 +252,8 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode(1, "Home", "home");
-        var page = GenerateNode(2, "Page", "page", root);
+        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
 
         var uri = new Uri("https://example.org/");
 
@@ -276,11 +274,11 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void GetUrl_Returns_AbsoluteNested2Levels()
+    public void Should_Return_AbsoluteNested2Levels()
     {
         // Arrange
-        var domain = GenerateDomain("example.org", 1);
-        var umbracoContextAccessor = GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
+        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1);
+        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
@@ -291,9 +289,9 @@ public class InvisibleNodeUrlProviderTests
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = GenerateNode(1, "Home", "home");
-        var page = GenerateNode(2, "Page", "page", root);
-        var nested = GenerateNode(3, "Nested", "nested", page);
+        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
+        var nested = UmbracoTestHelper.GenerateNode(3, "Nested", "nested", page);
 
         var uri = new Uri("https://example.org/");
 
@@ -314,18 +312,18 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void GetUrl_Returns_AbsoluteInvisible()
+    public void Should_Return_AbsoluteInvisible()
     {
         // Arrange
-        var domain = GenerateDomain("example.org", 1);
-        var umbracoContextAccessor = GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
+        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1);
+        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = GenerateNode(1, "Home", "home");
-        var page = GenerateNode(2, "Page", "page", root);
-        var invisible = GenerateNode(3, "Invisible", "invisible", page);
+        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
+        var invisible = UmbracoTestHelper.GenerateNode(3, "Invisible", "invisible", page);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -356,19 +354,19 @@ public class InvisibleNodeUrlProviderTests
     }
 
     [Fact]
-    public void GetUrl_Returns_AbsoluteNestedHidden()
+    public void Should_Return_AbsoluteNestedHidden()
     {
         // Arrange
-        var domain = GenerateDomain("example.org", 1);
-        var umbracoContextAccessor = GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
+        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1);
+        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = GenerateNode(1, "Home", "home");
-        var page = GenerateNode(2, "Page", "page", root);
-        var invisible = GenerateNode(3, "Invisible", "invisible", page);
-        var hidden = GenerateNode(4, "Hidden", "hidden", invisible);
+        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
+        var invisible = UmbracoTestHelper.GenerateNode(3, "Invisible", "invisible", page);
+        var hidden = UmbracoTestHelper.GenerateNode(4, "Hidden", "hidden", invisible);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -397,195 +395,6 @@ public class InvisibleNodeUrlProviderTests
         url.IsUrl.Should().Be(true);
         url.Culture.Should().BeNull();
     }
-
+    
     #endregion
-
-    #region GetOtherUrls
-
-    [Fact]
-    public void GetOtherUrls_Returns_EmptyForMatchingRoot()
-    {
-        // Arrange
-        var domains = GenerateDomains("example.org");
-
-        var root = GenerateNode(1, "Home", "");
-
-        var umbracoContextAccessor = GenerateUmbracoContextAccessor(
-            domains: domains,
-            content: root.AsEnumerableOfOne());
-
-        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
-        var siteDomainMapper = new SiteDomainMapper();
-
-        var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
-
-        mockRulesManager
-            .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
-            .Returns(false);
-
-        var uri = new Uri("https://example.org/");
-
-        var provider = new InvisibleNodeUrlProvider(
-            umbracoContextAccessor,
-            variationContextAccessor,
-            siteDomainMapper,
-            mockRulesManager.Object);
-
-        // Act
-        var urls = provider.GetOtherUrls(root.Id, uri);
-
-        // Assert
-        urls.Should().NotBeNull();
-        urls.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void GetOtherUrls_Returns_1UrlForMatchingRoot()
-    {
-        // Arrange
-        var domains = GenerateDomains("example.org", "example.com");
-
-        var root = GenerateNode(1, "Home", "");
-
-        var umbracoContextAccessor = GenerateUmbracoContextAccessor(
-            domains: domains,
-            content: root.AsEnumerableOfOne());
-
-        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
-        var siteDomainMapper = new SiteDomainMapper();
-
-        var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
-
-        mockRulesManager
-            .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
-            .Returns(false);
-
-        var uri = new Uri("https://example.org/");
-
-        var provider = new InvisibleNodeUrlProvider(
-            umbracoContextAccessor,
-            variationContextAccessor,
-            siteDomainMapper,
-            mockRulesManager.Object);
-
-        // Act
-        var urls = provider.GetOtherUrls(root.Id, uri);
-
-        // Assert
-        urls.Should().NotBeNullOrEmpty();
-        urls.Should().ContainSingle(value => value.Text == "https://example.com/");
-    }
-
-    #endregion
-
-    private IEnumerable<Domain> GenerateDomains(params string[] urls)
-    {
-        int current = 1;
-
-        foreach (var url in urls)
-        {
-            yield return GenerateDomain(url, current++);
-        }
-    }
-
-    private Domain GenerateDomain(string url, int id)
-    {
-#if NET7_0_OR_GREATER
-        return new Domain(id, url, id, null, false, id);
-#else
-        return new Domain(id, url, id, null, false);
-#endif
-    }
-
-    private IUmbracoContextAccessor GenerateUmbracoContextAccessor(
-        IEnumerable<Domain>? domains = null,
-        IEnumerable<IPublishedContent>? content = null)
-    {
-        var mockUmbracoContextAccessor = new Mock<IUmbracoContextAccessor>();
-
-        var umbracoContext = GenerateUmbracoContext(domains, content);
-
-        mockUmbracoContextAccessor
-            .Setup(m => m.TryGetUmbracoContext(out umbracoContext))
-            .Returns(true);
-
-        return mockUmbracoContextAccessor.Object;
-    }
-
-    private IUmbracoContext GenerateUmbracoContext(
-        IEnumerable<Domain>? domains = null,
-        IEnumerable<IPublishedContent>? content = null)
-    {
-        var mockDomainCache = new Mock<IDomainCache>();
-
-        if (domains is not null)
-        {
-            mockDomainCache
-                .Setup(m => m.GetAll(It.IsAny<bool>()))
-                .Returns(domains);
-
-            mockDomainCache
-                .Setup(m => m.GetAssigned(It.IsAny<int>(), It.IsAny<bool>()))
-                .Returns(domains);
-        }
-
-        var mockPublishedContentCache = new Mock<IPublishedContentCache>();
-
-        if (content is not null)
-        {
-            mockPublishedContentCache
-                .Setup(m => m.GetById(It.IsAny<int>()))
-                .Returns((int id) => content.FirstOrDefault(c => c.Id == id));
-        }
-
-        var mockUmbracoContext = new Mock<IUmbracoContext>();
-
-        mockUmbracoContext
-            .Setup(m => m.Domains)
-            .Returns(mockDomainCache.Object);
-
-        mockUmbracoContext
-            .Setup(m => m.Content)
-            .Returns(mockPublishedContentCache.Object);
-
-        return mockUmbracoContext.Object;
-    }
-
-    private IPublishedContent GenerateNode(
-        int id,
-        string name,
-        string segment,
-        IPublishedContent? parent = null,
-        string? culture = null)
-    {
-        var mock = new Mock<IPublishedContent>();
-        var mockType = new Mock<IPublishedContentType>();
-
-        mockType.Setup(m => m.Variations)
-            .Returns(string.IsNullOrEmpty(culture) ? ContentVariation.Nothing : ContentVariation.Culture);
-
-        mock.Setup(m => m.ContentType)
-            .Returns(mockType.Object);
-
-        string key = culture ?? string.Empty;
-
-        var cultures = new Dictionary<string, PublishedCultureInfo>
-        {
-            [key] = new(key, name, segment, DateTime.Now)
-        };
-
-        mock.Setup(m => m.Id)
-            .Returns(id);
-
-        mock.Setup(m => m.Level)
-            .Returns(parent?.Level + 1 ?? 1);
-
-        mock.Setup(m => m.Cultures)
-            .Returns(cultures);
-
-        mock.Setup(m => m.Parent)
-            .Returns(parent);
-
-        return mock.Object;
-    }
 }
