@@ -4,7 +4,6 @@
 using System.Text;
 using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Cache;
-using Umbraco.Cms.Web.Common.Controllers;
 using Umbraco.Extensions;
 
 namespace Our.Umbraco.InvisibleNodes;

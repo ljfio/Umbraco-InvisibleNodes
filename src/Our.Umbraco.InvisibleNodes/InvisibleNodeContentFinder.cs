@@ -1,7 +1,6 @@
 // Copyright 2023 Luke Fisher
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Our.Umbraco.InvisibleNodes.Core;
