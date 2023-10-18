@@ -10,7 +10,7 @@
     <PackageId>Our.Umbraco.InvisibleNodes</PackageId>
     <Title>Our.Umbraco.InvisibleNodes</Title>
     <Description>Invisible Nodes for Umbraco 10+</Description>
-    <PackageTags>umbraco plugin package</PackageTags>
+    <PackageTags>umbraco plugin package umbraco-marketplace</PackageTags>
     <Authors>Luke Fisher</Authors>
     <Copyright>Copyright 2023 Luke Fisher</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
