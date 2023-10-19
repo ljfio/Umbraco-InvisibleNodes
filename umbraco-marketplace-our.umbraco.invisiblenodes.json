@@ -1,7 +1,7 @@
 {
   "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
-  "Title": "Invisible Nodes",
-  "Description": "Make nodes 'invisible' in Umbraco 8 and 10+",
+  "Title": "Invisible Nodes for Umbraco 10+",
+  "Description": "Make nodes 'invisible' in Umbraco 10+",
   "Category": "Developer Tools",
   "AlternateCategory": "Editor Tools",
   "LicenseTypes": [
@@ -9,7 +9,7 @@
   ],
   "AuthorDetails": {
     "Name": "Luke Fisher",
-    "ImageUrl": "https://www.gravatar.com/avatar/007830f1fe986c55a1b1047c10dd2a0d",
+    "ImageUrl": "https://www.gravatar.com/avatar/8bf98d1d6ea81a5e467b030a5a0b4798.jpg?s=400",
     "SyncContributorsFromRepository": true
   },
   "VersionSpecificPackageIds": [

@@ -70,7 +70,6 @@ To make a node invisible, you can configure the app settings to make a content t
 ## Contributing
 
 Please raise any issues with the package on [GitHub][github].
-Pull requests are also welcome.
 
 ## License
 

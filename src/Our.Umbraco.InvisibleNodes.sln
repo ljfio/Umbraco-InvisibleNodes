@@ -21,7 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository", "Repository", 
 	ProjectSection(SolutionItems) = preProject
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
-		..\umbraco-marketplace.json = ..\umbraco-marketplace.json
+		..\umbraco-marketplace-our.umbraco.invisiblenodes.json = ..\umbraco-marketplace-our.umbraco.invisiblenodes.json
+		..\umbraco-marketplace-our.umbracocms.invisiblenodes.json = ..\umbraco-marketplace-our.umbracocms.invisiblenodes.json
 	EndProjectSection
 EndProject
 Global
