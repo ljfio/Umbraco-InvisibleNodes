@@ -12,7 +12,7 @@ using Umbraco.Core.Services;
 using Umbraco.Core.Services.Implement;
 using Umbraco.Web;
 
-namespace Our.UmbracoCms.InvisibleNodes
+namespace Our.UmbracoCms.InvisibleNodes.Composing
 {
     public class InvisibleNodeComponent : IComponent
     {

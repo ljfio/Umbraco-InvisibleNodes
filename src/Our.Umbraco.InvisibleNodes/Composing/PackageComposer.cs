@@ -8,9 +8,9 @@ using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
 
-namespace Our.Umbraco.InvisibleNodes;
+namespace Our.Umbraco.InvisibleNodes.Composing;
 
-public class InvisibleNodeComposer : IComposer
+public class PackageComposer : IComposer
 {
     public void Compose(IUmbracoBuilder builder)
     {

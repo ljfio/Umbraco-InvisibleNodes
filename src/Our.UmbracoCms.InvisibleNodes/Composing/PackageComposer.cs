@@ -6,9 +6,9 @@ using Umbraco.Core;
 using Umbraco.Core.Composing;
 using Umbraco.Web;
 
-namespace Our.UmbracoCms.InvisibleNodes
+namespace Our.UmbracoCms.InvisibleNodes.Composing
 {
-    public class InvisibleNodeComposer : IUserComposer
+    public class PackageComposer : IUserComposer
     {
         public void Compose(Composition composition)
         {
