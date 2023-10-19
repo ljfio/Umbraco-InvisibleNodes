@@ -4,7 +4,7 @@
 [![license](https://img.shields.io/github/license/ljfio/Umbraco-VirtualNodes)][license]
 [![nuget](https://img.shields.io/nuget/v/Our.UmbracoCms.InvisibleNodes)][nuget]
 
-The package for Umbraco 8 and 10+ that hides nodes in the content tree making them 'invisible' to front end users.
+The package for Umbraco 8 that hides nodes in the content tree making them 'invisible' to front end users.
 
 Use this package to create logical groupings for nodes, where you want to exclude that grouping node from the generated URL.
 
