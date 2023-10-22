@@ -12,6 +12,7 @@ namespace Our.UmbracoCms.InvisibleNodes.Composing
     {
         public void Compose(Composition composition)
         {
+            composition.RegisterFor<IInvisibleNodeLocator, InvisibleNodeLocator>(Lifetime.Singleton);
             composition.RegisterFor<IInvisibleNodeCache, InvisibleNodeCache>(Lifetime.Singleton);
             composition.RegisterFor<IInvisibleNodeRulesManager, InvisibleNodeRulesManager>(Lifetime.Singleton);
 

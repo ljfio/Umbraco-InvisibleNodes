@@ -24,6 +24,7 @@ public class PackageComposer : IComposer
             .Configure<InvisibleNodeSettings>(builder.Config.GetSection(InvisibleNodeSettings.InvisibleNodes));
         
         builder.Services
+            .AddSingleton<IInvisibleNodeLocator, InvisibleNodeLocator>()
             .AddSingleton<IInvisibleNodeCache, InvisibleNodeCache>()
             .AddSingleton<IInvisibleNodeRulesManager, InvisibleNodeRulesManager>();
 

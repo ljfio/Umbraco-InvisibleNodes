@@ -12,14 +12,14 @@ namespace Our.UmbracoCms.InvisibleNodes
     public class InvisibleNodeContentFinder : IContentFinder
     {
         private readonly IInvisibleNodeCache _nodeCache;
-        private readonly IInvisibleNodeRulesManager _rulesManager;
+        private readonly IInvisibleNodeLocator _nodeLocator;
 
         public InvisibleNodeContentFinder(
             IInvisibleNodeCache nodeCache,
-            IInvisibleNodeRulesManager rulesManager)
+            IInvisibleNodeLocator nodeLocator)
         {
             _nodeCache = nodeCache;
-            _rulesManager = rulesManager;
+            _nodeLocator = nodeLocator;
         }
 
         /// <inheritdoc />
@@ -54,14 +54,10 @@ namespace Our.UmbracoCms.InvisibleNodes
                 ? context.Content.GetById(request.Domain.ContentId)
                 : context.Content.GetAtRoot(culture).FirstOrDefault();
 
-            string[] segments = path.Split('/');
-
-            if (root == null || segments.Length == 0)
-            {
+            if (root == null)
                 return false;
-            }
 
-            var foundNode = WalkContentTree(root, segments, culture);
+            var foundNode = _nodeLocator.Locate(root, path, culture);
 
             if (foundNode != null)
             {
@@ -71,49 +67,6 @@ namespace Our.UmbracoCms.InvisibleNodes
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Walks the published content tree to locate a node that may be virtually hidden
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="segments"></param>
-        /// <param name="culture"></param>
-        /// <returns></returns>
-        private IPublishedContent WalkContentTree(IPublishedContent node, string[] segments, string culture)
-        {
-            string segment = segments.First();
-
-            if (segments.Length == 1 && string.Equals(node.UrlSegment(culture), segment))
-            {
-                return node;
-            }
-
-            string[] childSegments = segments.Skip(1).ToArray();
-
-            foreach (var child in node.Children.EmptyNull())
-            {
-                if (string.Equals(child.UrlSegment(culture), segment))
-                {
-                    if (segments.Length == 1)
-                        return child;
-
-                    var grandChild = WalkContentTree(child, childSegments, culture);
-
-                    if (grandChild != null)
-                        return grandChild;
-                }
-
-                if (child.IsInvisibleNode(_rulesManager))
-                {
-                    var hiddenChild = WalkContentTree(child, segments, culture);
-
-                    if (hiddenChild != null)
-                        return hiddenChild;
-                }
-            }
-
-            return null;
         }
     }
 }
