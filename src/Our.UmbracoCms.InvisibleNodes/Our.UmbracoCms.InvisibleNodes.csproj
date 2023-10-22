@@ -24,7 +24,7 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="UmbracoCms.Web" Version="8.18.8" />
+      <PackageReference Include="UmbracoCms.Web" Version="[8.18.8,8.999]" />
     </ItemGroup>
 
     <ItemGroup>
