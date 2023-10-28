@@ -90,6 +90,7 @@ public static class UmbracoTestHelper
         string name,
         string segment,
         IPublishedContent? parent = null,
+        IEnumerable<IPublishedContent>? children = null,
         string? culture = null)
     {
         var mock = new Mock<IPublishedContent>();
@@ -119,6 +120,10 @@ public static class UmbracoTestHelper
 
         mock.Setup(m => m.Parent)
             .Returns(parent);
+
+        if (children is not null)
+            mock.Setup(m => m.Children)
+                .Returns(children);
 
         return mock.Object;
     }
