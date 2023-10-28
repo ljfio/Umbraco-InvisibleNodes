@@ -30,7 +30,7 @@ public class InvalidateCacheNotificationHandler :
 
     public void Handle(ContentPublishedNotification notification)
     {
-        foreach (var publishedEntity in notification.PublishedEntities.EmptyNull()) 
+        foreach (var publishedEntity in notification.PublishedEntities.EmptyNull())
             RemoveEntityFromCache(publishedEntity);
     }
 
