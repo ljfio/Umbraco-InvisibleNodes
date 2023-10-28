@@ -28,10 +28,12 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
         if (node is null)
             throw new ArgumentNullException(nameof(node));
 
-        if (string.IsNullOrEmpty(path))
+        string? trimmedPath = path?.Trim('/');
+        
+        if (string.IsNullOrEmpty(trimmedPath))
             return null;
 
-        string[] segments = path.Split('/');
+        string[] segments = trimmedPath.Split('/');
         
         if (segments.Length == 0)
             return null;

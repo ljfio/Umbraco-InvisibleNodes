@@ -32,7 +32,7 @@ public class InvisibleNodeContentFinder : IContentFinder
             return false;
 
         string host = request.Uri.Host;
-        string path = request.Uri.AbsolutePath.Trim('/');
+        string path = request.Uri.AbsolutePath;
 
         int? cached = _invisibleNodeCache.GetRoute(host, path);
 
