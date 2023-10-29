@@ -29,4 +29,4 @@ jobs:
     - name: Pack
       run: dotnet pack --no-build -c Release ${{ env.SOLUTION_PATH }} -o publish/
     - name: Publish
-      run: dotnet nuget push ./publish/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s nuget.org --skip-duplicate
+      run: gci -Recurse -Filter *.nupkg ./publish/ | foreach { dotnet nuget push $_.FullName -k ${{ secrets.NUGET_API_KEY }} -s nuget.org --skip-duplicate }
