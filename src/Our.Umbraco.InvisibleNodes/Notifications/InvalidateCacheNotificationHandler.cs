@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Linq;
 using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Events;
 using Umbraco.Cms.Core.Models;
@@ -48,7 +49,10 @@ public class InvalidateCacheNotificationHandler :
 
     private void RemoveEntityFromCache(IContent entity)
     {
-        foreach (var culture in entity.PublishedCultures)
+        var cultures = entity.PublishedCultures
+            .Append(null);
+        
+        foreach (var culture in cultures)
         {
             string url = _publishedUrlProvider.GetUrl(entity.Id, UrlMode.Absolute, culture);
             
