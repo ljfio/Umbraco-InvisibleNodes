@@ -13,7 +13,7 @@ using Umbraco.Extensions;
 namespace Our.Umbraco.InvisibleNodes.Notifications;
 
 public class InvalidateCacheNotificationHandler :
-    INotificationHandler<ContentPublishedNotification>,
+    INotificationHandler<ContentSavingNotification>,
     INotificationHandler<ContentMovingNotification>,
     INotificationHandler<ContentMovingToRecycleBinNotification>
 {
@@ -28,9 +28,9 @@ public class InvalidateCacheNotificationHandler :
         _publishedUrlProvider = publishedUrlProvider;
     }
 
-    public void Handle(ContentPublishedNotification notification)
+    public void Handle(ContentSavingNotification notification)
     {
-        foreach (var publishedEntity in notification.PublishedEntities.EmptyNull())
+        foreach (var publishedEntity in notification.SavedEntities.EmptyNull())
             RemoveEntityFromCache(publishedEntity);
     }
 
@@ -51,6 +51,9 @@ public class InvalidateCacheNotificationHandler :
         foreach (var culture in entity.PublishedCultures)
         {
             string url = _publishedUrlProvider.GetUrl(entity.Id, UrlMode.Absolute, culture);
+            
+            if (string.IsNullOrEmpty(url) || url.Equals("#"))
+                continue;
 
             var uri = new Uri(url);
 

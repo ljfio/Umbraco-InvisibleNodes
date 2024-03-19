@@ -29,7 +29,8 @@ public class PackageComposer : IComposer
             .AddSingleton<IInvisibleNodeRulesManager, InvisibleNodeRulesManager>();
 
         builder
-            .AddNotificationHandler<ContentPublishedNotification, InvalidateCacheNotificationHandler>()
-            .AddNotificationHandler<ContentMovingNotification, InvalidateCacheNotificationHandler>();
+            .AddNotificationHandler<ContentSavingNotification, InvalidateCacheNotificationHandler>()
+            .AddNotificationHandler<ContentMovingNotification, InvalidateCacheNotificationHandler>()
+            .AddNotificationHandler<ContentMovingToRecycleBinNotification, InvalidateCacheNotificationHandler>();
     }
 }
