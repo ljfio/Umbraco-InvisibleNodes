@@ -50,10 +50,12 @@ public class InvisibleNodeCache : IInvisibleNodeCache
             builder
                 .Append(host);
 
-        if (!string.IsNullOrEmpty(path))
+        string? trimmedPath = path?.Trim('/');
+
+        if (!string.IsNullOrEmpty(trimmedPath))
             builder
                 .Append("::")
-                .Append(path);
+                .Append(trimmedPath);
 
         return builder.ToString();
     }
