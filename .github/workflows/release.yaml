@@ -6,6 +6,7 @@ on:
 
 env:
   SOLUTION_PATH: src/Our.Umbraco.InvisibleNodes.sln
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
 jobs:
   build:
