@@ -31,7 +31,7 @@ public class InvisibleNodeContentFinder : IContentFinder
         if (!_umbracoContextAccessor.TryGetUmbracoContext(out var context) || context.Content is null)
             return false;
 
-        string host = request.Uri.Host;
+        string host = request.Uri.Authority;
         string path = request.Uri.AbsolutePath;
 
         int? cached = _invisibleNodeCache.GetRoute(host, path);

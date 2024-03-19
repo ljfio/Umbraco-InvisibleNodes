@@ -62,7 +62,7 @@ public class InvalidateCacheNotificationHandler :
         foreach (var url in urls)
         {
             var uri = new Uri(url);
-            _invisibleNodeCache.ClearRoute(uri.Host, uri.AbsolutePath);
+            _invisibleNodeCache.ClearRoute(uri.Authority, uri.AbsolutePath);
         }
     }
 }
