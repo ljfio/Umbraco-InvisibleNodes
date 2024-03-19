@@ -50,17 +50,18 @@ public class InvalidateCacheNotificationHandler :
     private void RemoveEntityFromCache(IContent entity)
     {
         var cultures = entity.PublishedCultures
-            .Append(null);
+            .Append(null)
+            .Distinct();
+
+        var urls = cultures
+            .Select(culture => _publishedUrlProvider.GetUrl(entity.Id, UrlMode.Absolute, culture))
+            .Where(url => !string.IsNullOrEmpty(url) && !url.Equals("#"))
+            .Distinct()
+            .ToList();
         
-        foreach (var culture in cultures)
+        foreach (var url in urls)
         {
-            string url = _publishedUrlProvider.GetUrl(entity.Id, UrlMode.Absolute, culture);
-            
-            if (string.IsNullOrEmpty(url) || url.Equals("#"))
-                continue;
-
             var uri = new Uri(url);
-
             _invisibleNodeCache.ClearRoute(uri.Host, uri.AbsolutePath);
         }
     }
