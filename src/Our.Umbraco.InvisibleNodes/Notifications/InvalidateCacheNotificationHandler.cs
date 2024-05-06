@@ -53,16 +53,17 @@ public class InvalidateCacheNotificationHandler :
             .Append(null)
             .Distinct();
 
-        var urls = cultures
+        var uris = cultures
             .Select(culture => _publishedUrlProvider.GetUrl(entity.Id, UrlMode.Absolute, culture))
             .Where(url => !string.IsNullOrEmpty(url) && !url.Equals("#"))
-            .Distinct()
-            .ToList();
+            .Select(url => new Uri(url))
+            .Distinct();
+
+        var otherUris = _publishedUrlProvider.GetOtherUrls(entity.Id)
+            .Where(info => info.IsUrl)
+            .Select(info => new Uri(info.Text));
         
-        foreach (var url in urls)
-        {
-            var uri = new Uri(url);
+        foreach (var uri in uris.Concat(otherUris)) 
             _invisibleNodeCache.ClearRoute(uri.Authority, uri.AbsolutePath);
-        }
     }
 }

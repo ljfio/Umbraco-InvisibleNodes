@@ -45,6 +45,7 @@ public class InvalidateCacheNotificationHandler_Handle_ContentMovingToRecycleBin
         // Assert
         provider.Verify(m => m.GetUrl(id, UrlMode.Absolute, "en-US", null), Times.Once);
         provider.Verify(m => m.GetUrl(id, UrlMode.Absolute, null, null), Times.Once);
+        provider.Verify(m => m.GetOtherUrls(id), Times.Once);
         provider.VerifyNoOtherCalls();
         
         cache.Verify(m => m.ClearRoute("example.org", "/home/"), Times.Once);
