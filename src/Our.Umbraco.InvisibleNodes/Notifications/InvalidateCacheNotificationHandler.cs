@@ -15,6 +15,7 @@ namespace Our.Umbraco.InvisibleNodes.Notifications;
 
 public class InvalidateCacheNotificationHandler :
     INotificationHandler<ContentSavingNotification>,
+    INotificationHandler<ContentUnpublishingNotification>,
     INotificationHandler<ContentMovingNotification>,
     INotificationHandler<ContentMovingToRecycleBinNotification>
 {
@@ -32,6 +33,12 @@ public class InvalidateCacheNotificationHandler :
     public void Handle(ContentSavingNotification notification)
     {
         foreach (var publishedEntity in notification.SavedEntities.EmptyNull())
+            RemoveEntityFromCache(publishedEntity);
+    }
+    
+    public void Handle(ContentUnpublishingNotification notification)
+    {
+        foreach (var publishedEntity in notification.UnpublishedEntities.EmptyNull())
             RemoveEntityFromCache(publishedEntity);
     }
 
