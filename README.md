@@ -4,7 +4,7 @@
 [![license](https://img.shields.io/github/license/ljfio/Umbraco-VirtualNodes)][license]
 [![nuget](https://img.shields.io/nuget/v/Our.Umbraco.InvisibleNodes)][nuget]
 
-The package for Umbraco 8 and 10+ that hides nodes in the content tree making them 'invisible' to front end users.
+The package for Umbraco 10+ that hides nodes in the content tree making them 'invisible' to front end users.
 
 Use this package to create logical groupings for nodes, where you want to exclude that grouping node from the generated URL.
 
@@ -31,18 +31,12 @@ After using and configuring Invisible Nodes package the URL would be: `/products
 
 ## Installation
 
-Currently both Umbraco 8 and 10+ are supported.
+Currently Umbarco 10+ is supported.
 
 ### Umbraco 10+
 
 ```pwsh
 dotnet add package Our.Umbraco.InvisibleNodes
-```
-
-### Umbraco 8
-
-```pwsh
-Install-Package Our.UmbracoCms.InvisibleNodes
 ```
 
 ## Usage
@@ -54,17 +48,12 @@ To make a node invisible, you can configure the app settings to make a content t
 ```json
 {
   "InvisibleNodes": {
+    "CachingEnabled": true,
     "ContentTypes": [
       "hiddenNode"
     ]
   }
 }
-```
-
-### Umbraco 8
-
-```xml
-<add key="InvisibleNodes" value="hiddenNode" />
 ```
 
 ## Contributing

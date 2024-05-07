@@ -23,6 +23,7 @@ To make a node invisible, you can configure the app settings to make a content t
 ```json
 {
   "InvisibleNodes": {
+    "CachingEnabled": true,
     "ContentTypes": [
       "hiddenNode"
     ]
