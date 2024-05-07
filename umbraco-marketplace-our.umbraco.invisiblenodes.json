@@ -11,15 +11,5 @@
     "Name": "Luke Fisher",
     "ImageUrl": "https://www.gravatar.com/avatar/8bf98d1d6ea81a5e467b030a5a0b4798.jpg?s=400",
     "SyncContributorsFromRepository": true
-  },
-  "VersionSpecificPackageIds": [
-    {
-      "UmbracoMajorVersion": 8,
-      "PackageId": "Our.UmbracoCms.InvisibleNodes"
-    },
-    {
-      "UmbracoMajorVersion": 10,
-      "PackageId": "Our.Umbraco.InvisibleNodes"
-    }
-  ]
+  }
 }

@@ -7,23 +7,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.InvisibleNodes"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.InvisibleNodes.Tests", "Our.Umbraco.InvisibleNodes.Tests\Our.Umbraco.InvisibleNodes.Tests.csproj", "{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.UmbracoCms.InvisibleNodes", "Our.UmbracoCms.InvisibleNodes\Our.UmbracoCms.InvisibleNodes.csproj", "{C41B7F7F-5BBC-45ED-82BC-903084871E3B}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Umbraco", "Umbraco", "{786844FD-1815-4389-9C7A-37EFE2624101}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UmbracoCms", "UmbracoCms", "{8B440744-1334-4351-A3AD-470293237046}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{786844FD-1815-4389-9C7A-37EFE2624101}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.InvisibleNodes.Core", "Our.Umbraco.InvisibleNodes.Core\Our.Umbraco.InvisibleNodes.Core.csproj", "{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.UmbracoCms.InvisibleNodes.Core", "Our.UmbracoCms.InvisibleNodes.Core\Our.UmbracoCms.InvisibleNodes.Core.csproj", "{1A547645-E1D4-41BA-A256-D900EB66F27C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository", "Repository", "{506049C3-6BE7-4D4A-8BAA-1F9A9B81EB16}"
 	ProjectSection(SolutionItems) = preProject
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
 		..\umbraco-marketplace-our.umbraco.invisiblenodes.json = ..\umbraco-marketplace-our.umbraco.invisiblenodes.json
-		..\umbraco-marketplace-our.umbracocms.invisiblenodes.json = ..\umbraco-marketplace-our.umbracocms.invisiblenodes.json
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4DF87416-F836-4629-A7DB-6AF66B3299C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,24 +37,14 @@ Global
 		{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C41B7F7F-5BBC-45ED-82BC-903084871E3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C41B7F7F-5BBC-45ED-82BC-903084871E3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C41B7F7F-5BBC-45ED-82BC-903084871E3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C41B7F7F-5BBC-45ED-82BC-903084871E3B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A547645-E1D4-41BA-A256-D900EB66F27C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A547645-E1D4-41BA-A256-D900EB66F27C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A547645-E1D4-41BA-A256-D900EB66F27C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A547645-E1D4-41BA-A256-D900EB66F27C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{75CB6D92-3214-406E-A9C5-97E79AA84B8C} = {786844FD-1815-4389-9C7A-37EFE2624101}
-		{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB} = {786844FD-1815-4389-9C7A-37EFE2624101}
-		{C41B7F7F-5BBC-45ED-82BC-903084871E3B} = {8B440744-1334-4351-A3AD-470293237046}
 		{BCF847D8-88E7-4CEC-9B13-2B98818F5AC0} = {786844FD-1815-4389-9C7A-37EFE2624101}
-		{1A547645-E1D4-41BA-A256-D900EB66F27C} = {8B440744-1334-4351-A3AD-470293237046}
+		{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB} = {4DF87416-F836-4629-A7DB-6AF66B3299C6}
 	EndGlobalSection
 EndGlobal
