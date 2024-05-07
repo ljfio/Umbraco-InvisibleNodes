@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
