@@ -10,15 +10,15 @@
       },
       "Umbraco.Cms.Core": {
         "type": "Direct",
-        "requested": "[10.3.2, )",
-        "resolved": "10.3.2",
-        "contentHash": "l9dqB6AutJO3vLtMP86EP0URWQ0TZc/wgi9mnrBYJ/B93U4kIr2tJrYo3Oyz7SYBh1cwxzQ0RzKGUtnhCbgLLA==",
+        "requested": "[10.8.5, )",
+        "resolved": "10.8.5",
+        "contentHash": "YjZGrk7YZDcAb9lEjSwf68HoUem0p2ObY6SAq/DUNJj6pJXdUGMtfVKxTN5UXvKvlBuPhqqgxt6g5DKzGuelog==",
         "dependencies": {
           "Microsoft.Extensions.Configuration.Abstractions": "6.0.0",
-          "Microsoft.Extensions.FileProviders.Embedded": "6.0.5",
+          "Microsoft.Extensions.FileProviders.Embedded": "6.0.24",
           "Microsoft.Extensions.FileProviders.Physical": "6.0.0",
           "Microsoft.Extensions.Hosting.Abstractions": "6.0.0",
-          "Microsoft.Extensions.Identity.Core": "6.0.5",
+          "Microsoft.Extensions.Identity.Core": "6.0.24",
           "Microsoft.Extensions.Logging": "6.0.0",
           "Microsoft.Extensions.Options": "6.0.0",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "6.0.0",
@@ -33,15 +33,15 @@
       },
       "Microsoft.AspNetCore.Cryptography.Internal": {
         "type": "Transitive",
-        "resolved": "6.0.5",
-        "contentHash": "JjIZQLQdiGz+BTXXRMukj452BfHtV46EdqTv4y/CfmMVTQWZvQMdvh9KHEtk9a9dRsXJUGCgNkhiODswAvDytg=="
+        "resolved": "6.0.24",
+        "contentHash": "LxsjYKGtcbS69tQetIlWBWHcYhqs7VQiL5G7p/+dNq8VDj12Fq8zZopDUkwUjzfsv6Qscy7kXSzehRl6wYwc4Q=="
       },
       "Microsoft.AspNetCore.Cryptography.KeyDerivation": {
         "type": "Transitive",
-        "resolved": "6.0.5",
-        "contentHash": "ATgPx3GVy3uovhW5cYILamT73sqwEDUO3a05PTTxAcFxMyiVixP1QvfvIH/ZYZnwLKtICcKEny2HqfTtlI9D6g==",
+        "resolved": "6.0.24",
+        "contentHash": "ow+79eXJsqyDtDtXdeG0CWg16L0qSntxEbwzAXhPOdCP7YddazLnTGgxnzYAXAvtoCrH28oNzgRTKqwt6042bQ==",
         "dependencies": {
-          "Microsoft.AspNetCore.Cryptography.Internal": "6.0.5"
+          "Microsoft.AspNetCore.Cryptography.Internal": "6.0.24"
         }
       },
       "Microsoft.Extensions.Configuration.Abstractions": {
@@ -84,8 +84,8 @@
       },
       "Microsoft.Extensions.FileProviders.Embedded": {
         "type": "Transitive",
-        "resolved": "6.0.5",
-        "contentHash": "z7M3GpcYfKw1FYUGcurTbv/v0ZZ95LSMOZOjOtYLUztzUIUZZ61H5NFjLXjeQ8G72zxrVrt+jubb4MZGvm0EQw==",
+        "resolved": "6.0.24",
+        "contentHash": "HvTvzEkqYwDykjaekrpntZkxetMQ5XinIRYoRKftCqttmABoSfsOpsxCh0eIw9w4H+K8xHN7nqvCWFPP8feT4w==",
         "dependencies": {
           "Microsoft.Extensions.FileProviders.Abstractions": "6.0.0"
         }
@@ -117,10 +117,10 @@
       },
       "Microsoft.Extensions.Identity.Core": {
         "type": "Transitive",
-        "resolved": "6.0.5",
-        "contentHash": "O2f8EBnJQlpJDEixqUgu7hL+OwtsnLHUZEkTD6eZKz6+S/DbJnlXaL4sqK8qHCrDgX4G7/87I2ayeHlaOSs9PQ==",
+        "resolved": "6.0.24",
+        "contentHash": "jR2JZ7mXcrUMFDkw10F24fYxRyGgsNBKXggQIbU9l6d29NjO+XPwFjogDfbFUpHRaZdCthi3WXXzVrHCLDS/JQ==",
         "dependencies": {
-          "Microsoft.AspNetCore.Cryptography.KeyDerivation": "6.0.5",
+          "Microsoft.AspNetCore.Cryptography.KeyDerivation": "6.0.24",
           "Microsoft.Extensions.Logging": "6.0.0",
           "Microsoft.Extensions.Options": "6.0.0"
         }
@@ -841,9 +841,9 @@
       },
       "Umbraco.Cms.Core": {
         "type": "Direct",
-        "requested": "[11.4.2, )",
-        "resolved": "11.4.2",
-        "contentHash": "4/y4jxlVnGnw0m8h2zSWyF98UUKaB9sURQ/fSe+iHu5GABiLF+3kesz00RV+ZqrBWhmU2cxUQiYMRWGw4jViIQ==",
+        "requested": "[11.5.0, )",
+        "resolved": "11.5.0",
+        "contentHash": "7b50VDVgYeCBhewpPXItYdKPiOWwGH9yiK581IxQV7u2xZLGZWkImt8tazMVl/it4e7eCt/qCRAvUDd75+Kv+g==",
         "dependencies": {
           "Microsoft.Extensions.Configuration.Abstractions": "7.0.0",
           "Microsoft.Extensions.FileProviders.Embedded": "7.0.2",
