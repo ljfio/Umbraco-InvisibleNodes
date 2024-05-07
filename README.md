@@ -2,7 +2,8 @@
 
 [![status](https://img.shields.io/github/actions/workflow/status/ljfio/Umbraco-InvisibleNodes/ci.yaml)][build]
 [![license](https://img.shields.io/github/license/ljfio/Umbraco-VirtualNodes)][license]
-[![nuget](https://img.shields.io/nuget/v/Our.Umbraco.InvisibleNodes)][nuget]
+[![nuget](https://img.shields.io/nuget/v/Our.Umbraco.InvisibleNodes?logo=nuget)][nuget]
+[![marketplace](https://img.shields.io/badge/marketplace-3544B1?logo=umbraco&logoColor=white&label=umbraco)][marketplace]
 
 The package for Umbraco 10+ that hides nodes in the content tree making them 'invisible' to front end users.
 
@@ -82,3 +83,4 @@ limitations under the License.
 [build]: https://github.com/ljfio/Umbraco-InvisibleNodes/actions/workflows/ci.yaml
 [license]: https://github.com/ljfio/Umbraco-InvisibleNodes/blob/main/LICENSE
 [nuget]: https://www.nuget.org/packages/Our.Umbraco.InvisibleNodes/
+[marketplace]: https://marketplace.umbraco.com/package/our.umbraco.invisiblenodes
