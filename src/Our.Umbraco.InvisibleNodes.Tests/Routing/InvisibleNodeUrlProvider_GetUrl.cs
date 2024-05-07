@@ -8,7 +8,7 @@ using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Extensions;
 
-namespace Our.Umbraco.InvisibleNodes.Tests;
+namespace Our.Umbraco.InvisibleNodes.Tests.Routing;
 
 public class InvisibleNodeUrlProvider_GetUrl
 {

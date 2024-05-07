@@ -10,7 +10,7 @@ using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Extensions;
 
-namespace Our.Umbraco.InvisibleNodes.Tests;
+namespace Our.Umbraco.InvisibleNodes.Tests.Routing;
 
 public class InvisibleNodeUrlProvider_GetOtherUrls
 {
