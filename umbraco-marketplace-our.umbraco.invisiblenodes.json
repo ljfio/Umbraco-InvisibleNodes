@@ -1,7 +1,7 @@
 {
   "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
-  "Title": "Invisible Nodes for Umbraco 10+",
-  "Description": "Make nodes 'invisible' in Umbraco 10+",
+  "Title": "Invisible Nodes for Umbraco",
+  "Description": "Make nodes 'invisible' in Umbraco",
   "Category": "Developer Tools",
   "AlternateCategory": "Editor Tools",
   "LicenseTypes": [
