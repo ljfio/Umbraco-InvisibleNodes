@@ -4,6 +4,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Our.Umbraco.InvisibleNodes.Core;
+using Our.Umbraco.InvisibleNodes.Core.Caching;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
 

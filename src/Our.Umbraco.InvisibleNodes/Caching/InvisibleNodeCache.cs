@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Text;
-using Our.Umbraco.InvisibleNodes.Core;
+using Our.Umbraco.InvisibleNodes.Core.Caching;
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Extensions;
 
-namespace Our.Umbraco.InvisibleNodes;
+namespace Our.Umbraco.InvisibleNodes.Caching;
 
 public class InvisibleNodeCache : IInvisibleNodeCache
 {

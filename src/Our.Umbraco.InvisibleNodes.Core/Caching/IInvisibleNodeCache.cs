@@ -1,7 +1,7 @@
 // Copyright 2023 Luke Fisher
 // SPDX-License-Identifier: Apache-2.0
 
-namespace Our.Umbraco.InvisibleNodes.Core;
+namespace Our.Umbraco.InvisibleNodes.Core.Caching;
 
 public interface IInvisibleNodeCache
 {

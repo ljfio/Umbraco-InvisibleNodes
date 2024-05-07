@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using Our.Umbraco.InvisibleNodes.Core;
+using Our.Umbraco.InvisibleNodes.Core.Caching;
 using Umbraco.Cms.Core.Events;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
