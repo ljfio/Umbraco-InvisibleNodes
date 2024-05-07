@@ -27,10 +27,10 @@ public class InvisibleNodeContentFinder : IContentFinder
     }
 
     /// <inheritdoc />
-    public async Task<bool> TryFindContent(IPublishedRequestBuilder request)
+    public Task<bool> TryFindContent(IPublishedRequestBuilder request)
     {
         if (!_umbracoContextAccessor.TryGetUmbracoContext(out var context) || context.Content is null)
-            return false;
+            return Task.FromResult(false);
 
         string host = request.Uri.Authority;
         string path = request.Uri.AbsolutePath;
@@ -44,7 +44,7 @@ public class InvisibleNodeContentFinder : IContentFinder
             if (cachedContent is not null)
             {
                 request.SetPublishedContent(cachedContent);
-                return true;
+                return Task.FromResult(true);
             }
             
             _invisibleNodeCache.ClearRoute(host, path);
@@ -57,7 +57,7 @@ public class InvisibleNodeContentFinder : IContentFinder
             : context.Content.GetAtRoot(culture).FirstOrDefault();
 
         if (root is null)
-            return false;
+            return Task.FromResult(false);
         
         var foundNode = _invisibleNodeLocator.Locate(root, path, culture);
 
@@ -65,9 +65,9 @@ public class InvisibleNodeContentFinder : IContentFinder
         {
             _invisibleNodeCache.StoreRoute(host, path, foundNode.Id);
             request.SetPublishedContent(foundNode);
-            return true;
+            return Task.FromResult(true);
         }
 
-        return false;
+        return Task.FromResult(false);
     }
 }
