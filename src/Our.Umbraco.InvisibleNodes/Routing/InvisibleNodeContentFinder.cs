@@ -8,7 +8,7 @@ using Our.Umbraco.InvisibleNodes.Core.Caching;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
 
-namespace Our.Umbraco.InvisibleNodes;
+namespace Our.Umbraco.InvisibleNodes.Routing;
 
 public class InvisibleNodeContentFinder : IContentFinder
 {

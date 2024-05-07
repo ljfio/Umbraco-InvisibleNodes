@@ -10,7 +10,7 @@ using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Extensions;
 
-namespace Our.Umbraco.InvisibleNodes;
+namespace Our.Umbraco.InvisibleNodes.Routing;
 
 public class InvisibleNodeUrlProvider : IUrlProvider
 {

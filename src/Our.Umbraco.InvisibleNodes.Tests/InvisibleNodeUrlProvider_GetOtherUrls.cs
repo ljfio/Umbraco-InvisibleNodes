@@ -4,6 +4,7 @@
 using FluentAssertions;
 using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
+using Our.Umbraco.InvisibleNodes.Routing;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Extensions;

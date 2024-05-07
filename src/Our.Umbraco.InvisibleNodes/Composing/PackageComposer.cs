@@ -7,6 +7,7 @@ using Our.Umbraco.InvisibleNodes.Caching;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Core.Caching;
 using Our.Umbraco.InvisibleNodes.Notifications;
+using Our.Umbraco.InvisibleNodes.Routing;
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
