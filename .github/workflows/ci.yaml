@@ -8,6 +8,7 @@ on:
 
 env:
   SOLUTION_PATH: src/Our.Umbraco.InvisibleNodes.sln
+  COVERAGE_PATH: ${{ github.workspace }}/.coverage
   NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
 jobs:
@@ -25,7 +26,7 @@ jobs:
     - name: Cache NuGet Packages
       uses: actions/cache@v3
       with:
-        path: ${{ github.workspace }}/.nuget/packages
+        path: ${{ env.NUGET_PACKAGES }}
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
@@ -34,8 +35,9 @@ jobs:
     - name: Build
       run: dotnet build --no-restore ${{ env.SOLUTION_PATH }}
     - name: Test
-      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage;Format=lcov" ${{ env.SOLUTION_PATH }}
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage;Format=lcov,cobertura,opencover" --results-directory ${{ env.COVERAGE_PATH }} ${{ env.SOLUTION_PATH }}
     - name: Coveralls
       uses: coverallsapp/github-action@v2
       with:
+        base-path: ${{ env.COVERAGE_PATH }}
         allow-empty: true
