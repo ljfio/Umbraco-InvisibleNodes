@@ -35,9 +35,12 @@ jobs:
     - name: Build
       run: dotnet build --no-restore ${{ env.SOLUTION_PATH }}
     - name: Test
-      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage;Format=lcov,cobertura,opencover" --results-directory ${{ env.COVERAGE_PATH }} ${{ env.SOLUTION_PATH }}
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage;Format=lcov" ${{ env.SOLUTION_PATH }}
+    - name: Coverage Results
+      id: coverage_results
+      run: gci -Recurse -File -Filter 'coverage.info' | foreach { echo "::set-output name=COVERAGE_FILES::$_ " }
     - name: Coveralls
       uses: coverallsapp/github-action@v2
       with:
-        base-path: ${{ env.COVERAGE_PATH }}
+        files: ${{ steps.coverage_results.outputs.COVERAGE_FILES }}
         allow-empty: true
