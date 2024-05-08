@@ -8,8 +8,8 @@ on:
 
 env:
   SOLUTION_PATH: src/Our.Umbraco.InvisibleNodes.sln
-  COVERAGE_PATH: ${{ github.workspace }}/.coverage
-  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+  COVERAGE_PATH: ${{ github.workspace }}/.coverage/
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages/
 
 jobs:
   build:
