@@ -34,4 +34,8 @@ jobs:
     - name: Build
       run: dotnet build --no-restore ${{ env.SOLUTION_PATH }}
     - name: Test
-      run: dotnet test --no-build --verbosity normal ${{ env.SOLUTION_PATH }}
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" ${{ env.SOLUTION_PATH }}
+    - name: Coveralls
+      uses: coverallsapp/github-action@v2
+      with:
+        format: cobertura
