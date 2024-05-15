@@ -103,6 +103,32 @@ public class InvisibleNodeLocator_Locate
         // Then
         result.Should().Be(nested);
     }
+    
+    [Fact]
+    public void Should_Return_Child_Same_Name()
+    {
+        // Given
+        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
+        var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
+
+        mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()))
+            .Returns(false);
+
+        var nested = UmbracoTestHelper.GenerateNode(3, "Node", "node");
+        var node = UmbracoTestHelper.GenerateNode(2, "Node", "node", children: nested.AsEnumerableOfOne());
+        var home = UmbracoTestHelper.GenerateNode(1, "Home", "home", children: node.AsEnumerableOfOne());
+        
+        string path = "/node/node/";
+        string? culture = null;
+
+        var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
+        
+        // When
+        var result = locator.Locate(home, path, culture);
+
+        // Then
+        result.Should().Be(nested);
+    }
 
     [Fact]
     public void Should_Return_Hidden_Child()

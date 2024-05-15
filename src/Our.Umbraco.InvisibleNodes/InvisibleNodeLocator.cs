@@ -44,20 +44,15 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
     private IPublishedContent? WalkContentTree(IPublishedContent node, string[] segments, string? culture)
     {
         string segment = segments.First();
-
-        if (segments.Length == 1 && string.Equals(node.UrlSegment(_variationContextAccessor, culture), segment))
-        {
-            return node;
-        }
-
-        string[] childSegments = segments.Skip(1).ToArray();
-
+        
         foreach (var child in node.Children.EmptyNull())
         {
             if (string.Equals(child.UrlSegment(_variationContextAccessor, culture), segment))
             {
                 if (segments.Length == 1)
                     return child;
+                
+                string[] childSegments = segments.Skip(1).ToArray();
 
                 var grandChild = WalkContentTree(child, childSegments, culture);
 
