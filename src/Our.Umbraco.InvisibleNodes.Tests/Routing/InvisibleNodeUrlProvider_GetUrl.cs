@@ -117,6 +117,42 @@ public class InvisibleNodeUrlProvider_GetUrl
         url.IsUrl.Should().Be(true);
         url.Culture.Should().BeNull();
     }
+    
+    [Fact]
+    public void Should_Return_Child_Same_Name()
+    {
+        // Arrange
+        var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
+        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
+        var siteDomainMapper = new SiteDomainMapper();
+
+        var rulesManager = new Mock<IInvisibleNodeRulesManager>();
+
+        rulesManager
+            .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
+            .Returns(false);
+
+        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
+        var nested = UmbracoTestHelper.GenerateNode(3, "Page", "page", page);
+
+        var uri = new Uri("https://example.org/");
+
+        var provider = new InvisibleNodeUrlProvider(
+            umbracoContextAccessor,
+            variationContextAccessor,
+            siteDomainMapper,
+            rulesManager.Object);
+
+        // Act
+        var url = provider.GetUrl(nested, UrlMode.Default, null, uri);
+
+        // Assert
+        url.Should().NotBeNull();
+        url.Text.Should().Be("/page/page/");
+        url.IsUrl.Should().Be(true);
+        url.Culture.Should().BeNull();
+    }
 
     [Fact]
     public void Should_Return_DefaultInvisible()
