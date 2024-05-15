@@ -1,6 +1,7 @@
 // Copyright 2023 Luke Fisher
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Our.Umbraco.InvisibleNodes.Core;
@@ -32,7 +33,7 @@ public class InvisibleNodeContentFinder : IContentFinder
         if (!_umbracoContextAccessor.TryGetUmbracoContext(out var context) || context.Content is null)
             return Task.FromResult(false);
 
-        string host = request.Uri.Authority;
+        string host = request.Uri.GetLeftPart(UriPartial.Authority);
         string path = request.Uri.AbsolutePath;
 
         int? cached = _invisibleNodeCache.GetRoute(host, path);
