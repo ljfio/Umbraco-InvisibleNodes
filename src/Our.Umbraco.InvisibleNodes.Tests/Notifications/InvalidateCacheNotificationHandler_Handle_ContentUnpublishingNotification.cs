@@ -48,7 +48,7 @@ public class InvalidateCacheNotificationHandler_Handle_ContentUnpublishingNotifi
         provider.Verify(m => m.GetOtherUrls(id), Times.Once);
         provider.VerifyNoOtherCalls();
         
-        cache.Verify(m => m.ClearRoute("example.org", "/home/"), Times.Once);
+        cache.Verify(m => m.ClearRoute("https://example.org", "/home/"), Times.Once);
         cache.VerifyNoOtherCalls();
     }
 }
