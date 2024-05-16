@@ -34,6 +34,8 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// <inheritdoc />
     public UrlInfo? GetUrl(IPublishedContent content, UrlMode mode, string? culture, Uri current)
     {
+        var currentAuthority = new Uri(current.GetLeftPart(UriPartial.Authority));
+
         string route = GenerateRoute(content, culture);
 
         if (mode == UrlMode.Auto || mode == UrlMode.Default || mode == UrlMode.Relative)
@@ -45,8 +47,13 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         var domainCache = umbracoContext.Domains;
 
         var domainAndUris = domainCache.GetAll(false)
-            .Select(domain => new DomainAndUri(domain, current))
+            .Select(domain => new DomainAndUri(domain, currentAuthority))
             .ToList();
+
+        if (!domainAndUris.Any())
+            return Uri.TryCreate(currentAuthority, route, out var currentCombined)
+                ? UrlInfo.Url(currentCombined.ToString(), culture)
+                : null;
 
         var mappedDomain = _siteDomainMapper.MapDomain(domainAndUris, current, culture, domainCache.DefaultCulture);
 
