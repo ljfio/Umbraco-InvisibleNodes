@@ -11,7 +11,7 @@ using Umbraco.Cms.Core.PublishedCache;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
 
-namespace Our.Umbraco.InvisibleNodes.Tests;
+namespace Our.Umbraco.InvisibleNodes.Tests.Unit;
 
 public static class UmbracoTestHelper
 {

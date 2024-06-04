@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.InvisibleNodes", "Our.Umbraco.InvisibleNodes\Our.Umbraco.InvisibleNodes.csproj", "{75CB6D92-3214-406E-A9C5-97E79AA84B8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.InvisibleNodes.Tests", "Our.Umbraco.InvisibleNodes.Tests\Our.Umbraco.InvisibleNodes.Tests.csproj", "{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.InvisibleNodes.Tests.Unit", "Our.Umbraco.InvisibleNodes.Tests.Unit\Our.Umbraco.InvisibleNodes.Tests.Unit.csproj", "{8B146C7C-ECA7-47C5-B075-5BF2C87A10FB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{786844FD-1815-4389-9C7A-37EFE2624101}"
 EndProject

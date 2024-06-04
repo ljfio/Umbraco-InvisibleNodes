@@ -8,7 +8,7 @@ using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Extensions;
 
-namespace Our.Umbraco.InvisibleNodes.Tests;
+namespace Our.Umbraco.InvisibleNodes.Tests.Unit;
 
 public class InvisibleNodeLocator_Locate
 {

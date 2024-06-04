@@ -11,9 +11,9 @@ using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Notifications;
 using Umbraco.Cms.Core.Routing;
 
-namespace Our.Umbraco.InvisibleNodes.Tests.Notifications;
+namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Notifications;
 
-public class InvalidateCacheNotificationHandler_Handle_ContentUnpublishingNotification
+public class InvalidateCacheNotificationHandler_Handle_ContentMovingNotification
 {
     [Fact]
     public void Should_Call_InvisibleNodeCache_ClearRoute()
@@ -33,9 +33,10 @@ public class InvalidateCacheNotificationHandler_Handle_ContentUnpublishingNotifi
         provider.Setup(m => m.GetUrl(id, UrlMode.Absolute, "en-US", null))
             .Returns("https://example.org/home/");
             
+        var moveEvent = new MoveEventInfo<IContent>(content.Object, "/home/", 2);
         var messages = new EventMessages();
         
-        var notification = new ContentUnpublishingNotification(content.Object, messages);
+        var notification = new ContentMovingNotification(moveEvent, messages);
         
         var handler = new InvalidateCacheNotificationHandler(cache.Object, provider.Object);
         

@@ -11,7 +11,7 @@ using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Notifications;
 using Umbraco.Cms.Core.Routing;
 
-namespace Our.Umbraco.InvisibleNodes.Tests.Notifications;
+namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Notifications;
 
 public class InvalidateCacheNotificationHandler_Handle_ContentMovingToRecycleBinNotification
 {
