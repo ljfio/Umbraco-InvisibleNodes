@@ -7,16 +7,14 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Our.Umbraco.InvisibleNodes.Tests.Integration.Core;
 using Umbraco.Cms.Core;
-using Umbraco.Cms.Core.Models;
-using Umbraco.Cms.Core.PublishedCache;
-using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Web.Common.PublishedModels;
 
-namespace Our.Umbraco.InvisibleNodes.Tests.Integration;
+namespace Our.Umbraco.InvisibleNodes.Tests.Integration.Tests;
 
-public class StandardTests : IClassFixture<TestWebApplicationFactory>, IDisposable
+[Collection("Web")]
+public class StandardTests : IDisposable
 {
     private readonly TestWebApplicationFactory _factory;
 
