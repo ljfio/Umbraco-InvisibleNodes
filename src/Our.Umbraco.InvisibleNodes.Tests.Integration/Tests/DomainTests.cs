@@ -27,13 +27,14 @@ public class DomainTests : IDisposable
     }
 
     [Fact]
-    public async Task Should_Return_Nested_Domain()
+    public void Should_Return_Nested()
     {
         var contextFactory = _factory.Services.GetRequiredService<IUmbracoContextFactory>();
         using var context = contextFactory.EnsureUmbracoContext();
 
         var contentService = _factory.Services.GetRequiredService<IContentService>();
         var domainService = _factory.Services.GetRequiredService<IDomainService>();
+        var localizationService = _factory.Services.GetRequiredService<ILocalizationService>();
         var urlProvider = _factory.Services.GetRequiredService<IPublishedUrlProvider>();
 
         // Content
@@ -52,22 +53,36 @@ public class DomainTests : IDisposable
 
         nestedPublishResult.Success.Should().BeTrue();
 
+        // Languages
+        var englishLanguage = localizationService.GetLanguageByIsoCode("en-US")!;
+        var danishLanguage = localizationService.GetLanguageByIsoCode("da-DK")!;
+
         // Domains
-        var englishDomain = new UmbracoDomain("https://example.org/en", "en")
+        var englishDomain = new UmbracoDomain("https://example.org/en")
         {
             RootContentId = homeNode.Id,
+            LanguageId = englishLanguage.Id,
         };
         var englishDomainResult = domainService.Save(englishDomain);
 
         englishDomainResult.Success.Should().BeTrue();
 
-        var danishDomain = new UmbracoDomain("https://example.org/da", "da")
+        var danishDomain = new UmbracoDomain("https://example.org/da")
         {
             RootContentId = homeNode.Id,
+            LanguageId = danishLanguage.Id,
         };
         var danishDomainResult = domainService.Save(danishDomain);
 
         danishDomainResult.Success.Should().BeTrue();
+
+        var assigned = domainService.GetAssignedDomains(homeNode.Id, true);
+
+        assigned.Should().HaveCount(2);
+
+        var publishedAssigned = context.UmbracoContext.Domains!.GetAssigned(homeNode.Id, true);
+
+        publishedAssigned.Should().HaveCount(2);
 
         // Check pages
         var currentUri = new Uri("https://example.org/");
@@ -75,8 +90,8 @@ public class DomainTests : IDisposable
         var publishedNode = context.UmbracoContext.Content!.GetById(nestedNode.Id);
         publishedNode.Should().NotBeNull();
 
-        var url = urlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "en", currentUri);
-        url.Should().Be("https://example.org/en/content/nested");
+        var url = urlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri);
+        url.Should().Be("https://example.org/da/content/nested");
     }
 
     public void Dispose()
