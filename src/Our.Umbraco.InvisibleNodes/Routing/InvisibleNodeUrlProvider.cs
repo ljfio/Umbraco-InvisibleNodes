@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
 using Our.Umbraco.InvisibleNodes.Core;
+using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
@@ -18,58 +20,43 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     private readonly IVariationContextAccessor _variationContextAccessor;
     private readonly ISiteDomainMapper _siteDomainMapper;
     private readonly IInvisibleNodeRulesManager _rulesManager;
+    private readonly IOptions<RequestHandlerSettings> _requestHandlerOptions;
 
-    public InvisibleNodeUrlProvider(
-        IUmbracoContextAccessor umbracoContextAccessor,
+    public InvisibleNodeUrlProvider(IUmbracoContextAccessor umbracoContextAccessor,
         IVariationContextAccessor variationContextAccessor,
         ISiteDomainMapper siteDomainMapper,
-        IInvisibleNodeRulesManager rulesManager)
+        IInvisibleNodeRulesManager rulesManager, 
+        IOptions<RequestHandlerSettings> requestHandlerOptions)
     {
         _siteDomainMapper = siteDomainMapper;
         _variationContextAccessor = variationContextAccessor;
         _umbracoContextAccessor = umbracoContextAccessor;
         _rulesManager = rulesManager;
+        _requestHandlerOptions = requestHandlerOptions;
     }
 
     /// <inheritdoc />
     public UrlInfo? GetUrl(IPublishedContent content, UrlMode mode, string? culture, Uri current)
     {
-        if (!_umbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext) || umbracoContext.Domains is null)
-            return null;
-
-        // Get the current authority and generated route
-        var currentAuthority = new Uri(current.GetLeftPart(UriPartial.Authority));
+        // Get the matching domain and generated route
         string route = GenerateRoute(content, culture);
 
-        // Locate the matching domain for the request
-        var domainCache = umbracoContext.Domains;
+        var matchingDomain = GetMatchingDomain(current, culture);
 
-        var domainAndUris = domainCache.GetAll(true)
-            .Select(domain => new DomainAndUri(domain, currentAuthority))
-            .ToList();
+        if (matchingDomain is null)
+        {
+            var currentAuthority = new Uri(current.GetLeftPart(UriPartial.Authority));
+            return ToUrlInfo(currentAuthority, route, culture, mode);
+        }
 
-        if (!domainAndUris.Any())
-            return Uri.TryCreate(currentAuthority, route, out var currentCombined)
-                ? UrlInfo.Url(currentCombined.ToString(), culture)
-                : null;
+        // Combine the matching domain URI with path
+        string combinedRoute = matchingDomain.Uri.AbsolutePath == "/" && route == "/"
+            ? "/"
+            : WebPath.Combine(matchingDomain.Uri.AbsolutePath, route);
 
-        var mappedDomain = _siteDomainMapper.MapDomain(domainAndUris, current, culture, domainCache.DefaultCulture);
+        var baseUri = new Uri(matchingDomain.Uri.GetLeftPart(UriPartial.Authority));
 
-        if (mappedDomain is null)
-            return UrlInfo.Url(route, culture);
-
-        // Combine the domain URI / path
-        string path = WebPath.Combine(mappedDomain.Uri.AbsolutePath, route)
-            .EnsureStartsWith('/')
-            .EnsureEndsWith('/');
-
-        if (mode == UrlMode.Auto || mode == UrlMode.Default || mode == UrlMode.Relative)
-            return UrlInfo.Url(path, culture);
-
-        if (!Uri.TryCreate(mappedDomain.Uri, path, out var uri))
-            return null;
-
-        return UrlInfo.Url(uri.AbsoluteUri, culture);
+        return ToUrlInfo(baseUri, combinedRoute, culture, mode);
     }
 
     /// <inheritdoc />
@@ -89,7 +76,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
 
         var domainCache = umbracoContext.Domains;
 
-        var domainAndUris = domainCache.GetAssigned(id)
+        var domainAndUris = domainCache.GetAssigned(id, true)
             .Select(domain => new DomainAndUri(domain, current))
             .ToList();
 
@@ -124,7 +111,51 @@ public class InvisibleNodeUrlProvider : IUrlProvider
             .ToList();
 
         return string.Join('/', segments)
-            .EnsureStartsWith('/')
-            .EnsureEndsWith('/');
+            .EnsureStartsWith("/");
+    }
+
+    /// <summary>
+    /// Tries to locate the matching doamin
+    /// </summary>
+    /// <param name="current"></param>
+    /// <param name="culture"></param>
+    /// <returns></returns>
+    private DomainAndUri? GetMatchingDomain(Uri current, string? culture)
+    {
+        if (!_umbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext) || umbracoContext.Domains is null)
+            return null;
+
+        // Locate the matching domain for the request
+        var domainCache = umbracoContext.Domains;
+
+        var domainAndUris = domainCache.GetAll(true)
+            .Select(domain => new DomainAndUri(domain, current))
+            .ToList();
+
+        if (!domainAndUris.Any())
+            return null;
+
+        return _siteDomainMapper.MapDomain(domainAndUris, current, culture, domainCache.DefaultCulture);
+    }
+
+    /// <summary>
+    /// Converts to a <see cref="UrlInfo"/>
+    /// </summary>
+    /// <param name="uri"></param>
+    /// <param name="route"></param>
+    /// <param name="culture"></param>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    private UrlInfo? ToUrlInfo(Uri uri, string route, string? culture, UrlMode mode)
+    {
+        string path = _requestHandlerOptions.Value.AddTrailingSlash ? route.EnsureEndsWith("/") : route;
+        
+        if (mode != UrlMode.Absolute)
+            return UrlInfo.Url(path, culture);
+            
+        if (Uri.TryCreate(uri, path, out var combined))
+            return UrlInfo.Url(combined.ToString(), culture);
+
+        return null;
     }
 }
