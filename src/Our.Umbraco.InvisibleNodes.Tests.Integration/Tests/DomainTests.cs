@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Our.Umbraco.InvisibleNodes.Tests.Integration.Core;
@@ -91,7 +90,7 @@ public class DomainTests : IDisposable
         publishedNode.Should().NotBeNull();
 
         var url = urlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri);
-        url.Should().Be("https://example.org/da/content/nested");
+        url.Should().Be("https://example.org/da/content/nested/");
     }
 
     public void Dispose()

@@ -1,8 +1,10 @@
 using System;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Routing;
+using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
@@ -12,8 +14,14 @@ namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Routing;
 
 public class InvisibleNodeUrlProvider_GetUrl
 {
+    private static readonly IOptions<RequestHandlerSettings> RequestHandlerOptions = Options.Create(
+        new RequestHandlerSettings
+        {
+            AddTrailingSlash = true,
+        });
+
     #region Default URL Mode
-    
+
     [Fact]
     public void Should_Return_DefaultRoot()
     {
@@ -35,7 +43,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            rulesManager.Object);
+            rulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var url = provider.GetUrl(root, UrlMode.Default, null, uri);
@@ -70,7 +79,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            rulesManager.Object);
+            rulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var url = provider.GetUrl(page, UrlMode.Default, null, uri);
@@ -106,7 +116,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            rulesManager.Object);
+            rulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var url = provider.GetUrl(nested, UrlMode.Default, null, uri);
@@ -117,7 +128,7 @@ public class InvisibleNodeUrlProvider_GetUrl
         url.IsUrl.Should().Be(true);
         url.Culture.Should().BeNull();
     }
-    
+
     [Fact]
     public void Should_Return_Child_Same_Name()
     {
@@ -142,7 +153,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            rulesManager.Object);
+            rulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var url = provider.GetUrl(nested, UrlMode.Default, null, uri);
@@ -182,7 +194,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            rulesManager.Object);
+            rulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var url = provider.GetUrl(invisible, UrlMode.Default, null, uri);
@@ -223,7 +236,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            rulesManager.Object);
+            rulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var url = provider.GetUrl(hidden, UrlMode.Default, null, uri);
@@ -262,7 +276,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            rulesManager.Object);
+            rulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var url = provider.GetUrl(root, UrlMode.Absolute, null, uri);
@@ -299,7 +314,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            rulesManager.Object);
+            rulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var url = provider.GetUrl(page, UrlMode.Absolute, null, uri);
@@ -337,7 +353,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            rulesManager.Object);
+            rulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var url = provider.GetUrl(nested, UrlMode.Absolute, null, uri);
@@ -379,7 +396,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            rulesManager.Object);
+            rulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var url = provider.GetUrl(invisible, UrlMode.Absolute, null, uri);
@@ -422,7 +440,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            rulesManager.Object);
+            rulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var url = provider.GetUrl(hidden, UrlMode.Absolute, null, uri);
@@ -433,6 +452,6 @@ public class InvisibleNodeUrlProvider_GetUrl
         url.IsUrl.Should().Be(true);
         url.Culture.Should().BeNull();
     }
-    
+
     #endregion
 }

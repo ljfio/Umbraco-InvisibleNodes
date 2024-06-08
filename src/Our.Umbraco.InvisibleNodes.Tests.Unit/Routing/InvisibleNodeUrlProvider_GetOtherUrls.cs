@@ -3,9 +3,11 @@
 
 using System;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Routing;
+using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Extensions;
@@ -14,6 +16,12 @@ namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Routing;
 
 public class InvisibleNodeUrlProvider_GetOtherUrls
 {
+    private static readonly IOptions<RequestHandlerSettings> RequestHandlerOptions = Options.Create(
+        new RequestHandlerSettings
+        {
+            AddTrailingSlash = true,
+        });
+
     [Fact]
     public void Should_Return_EmptyForMatchingRoot()
     {
@@ -41,7 +49,8 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            mockRulesManager.Object);
+            mockRulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var urls = provider.GetOtherUrls(root.Id, uri);
@@ -78,7 +87,8 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
-            mockRulesManager.Object);
+            mockRulesManager.Object,
+            RequestHandlerOptions);
 
         // Act
         var urls = provider.GetOtherUrls(root.Id, uri);
@@ -87,5 +97,4 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
         urls.Should().NotBeNullOrEmpty();
         urls.Should().ContainSingle(value => value.Text == "https://example.com/");
     }
-
 }
