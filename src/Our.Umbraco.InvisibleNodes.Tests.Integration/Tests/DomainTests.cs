@@ -163,9 +163,16 @@ public class DomainTests : IDisposable
 
     public void Dispose()
     {
+        // Delete all content
         var contentService = _factory.Services.GetRequiredService<IContentService>();
 
         foreach (var content in contentService.GetRootContent())
             contentService.Delete(content);
+
+        // Delete all domains
+        var domainService = _factory.Services.GetRequiredService<IDomainService>();
+
+        foreach (var domain in domainService.GetAll(true)) 
+            domainService.Delete(domain);
     }
 }
