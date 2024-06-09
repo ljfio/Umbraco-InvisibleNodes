@@ -12,6 +12,7 @@ using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Web.Common.PublishedModels;
+using Umbraco.Extensions;
 
 namespace Our.Umbraco.InvisibleNodes.Tests.Integration.Tests;
 
@@ -94,6 +95,70 @@ public class DomainTests : IDisposable
     }
 
     [Fact]
+    public void Should_Return_Variant()
+    {
+        var contextFactory = _factory.Services.GetRequiredService<IUmbracoContextFactory>();
+        using var context = contextFactory.EnsureUmbracoContext();
+
+        var contentService = _factory.Services.GetRequiredService<IContentService>();
+        var domainService = _factory.Services.GetRequiredService<IDomainService>();
+        var localizationService = _factory.Services.GetRequiredService<ILocalizationService>();
+        var urlProvider = _factory.Services.GetRequiredService<IPublishedUrlProvider>();
+
+        // Content
+        var homeNode = contentService.Create("Home", Constants.System.Root, HomePage.ModelTypeAlias);
+        var homePublishResult = contentService.SaveAndPublish(homeNode);
+
+        homePublishResult.Success.Should().BeTrue();
+
+        var contentNode = contentService.Create("Content", homeNode, ContentPage.ModelTypeAlias);
+        var contentPublishResult = contentService.SaveAndPublish(contentNode);
+
+        contentPublishResult.Success.Should().BeTrue();
+
+        // Languages
+        var englishLanguage = localizationService.GetLanguageByIsoCode("en-US")!;
+        var danishLanguage = localizationService.GetLanguageByIsoCode("da-DK")!;
+
+        // Domains
+        var englishDomain = new UmbracoDomain("https://example.org/")
+        {
+            RootContentId = homeNode.Id,
+            LanguageId = englishLanguage.Id,
+        };
+        var englishDomainResult = domainService.Save(englishDomain);
+
+        englishDomainResult.Success.Should().BeTrue();
+
+        var danishDomain = new UmbracoDomain("https://example.org/da")
+        {
+            RootContentId = homeNode.Id,
+            LanguageId = danishLanguage.Id,
+        };
+        var danishDomainResult = domainService.Save(danishDomain);
+
+        danishDomainResult.Success.Should().BeTrue();
+
+        var assigned = domainService.GetAssignedDomains(homeNode.Id, true);
+
+        assigned.Should().HaveCount(2);
+
+        var publishedAssigned = context.UmbracoContext.Domains!.GetAssigned(homeNode.Id, true);
+
+        publishedAssigned.Should().HaveCount(2);
+
+        // Check node URLs
+        var publishedNode = context.UmbracoContext.Content!.GetById(contentNode.Id);
+        publishedNode.Should().NotBeNull();
+
+        publishedNode!.Url(urlProvider, "en-US").Should().Be("/content/");
+        publishedNode!.Url(urlProvider, "en-US", UrlMode.Absolute).Should().Be("https://example.org/content/");
+
+        publishedNode!.Url(urlProvider, "da-DK").Should().Be("/da/content/");
+        publishedNode!.Url(urlProvider, "da-DK", UrlMode.Absolute).Should().Be("https://example.org/da/content/");
+    }
+
+    [Fact]
     public void Should_Return_Unique_HostNames()
     {
         var contextFactory = _factory.Services.GetRequiredService<IUmbracoContextFactory>();
@@ -172,7 +237,7 @@ public class DomainTests : IDisposable
         // Delete all domains
         var domainService = _factory.Services.GetRequiredService<IDomainService>();
 
-        foreach (var domain in domainService.GetAll(true)) 
+        foreach (var domain in domainService.GetAll(true))
             domainService.Delete(domain);
     }
 }

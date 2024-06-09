@@ -50,11 +50,11 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         }
 
         // Combine the matching domain URI with path
-        string combinedRoute = matchingDomain.Uri.AbsolutePath == "/" && route == "/"
-            ? "/"
-            : WebPath.Combine(matchingDomain.Uri.AbsolutePath, route);
-
         var baseUri = new Uri(matchingDomain.Uri.GetLeftPart(UriPartial.Authority));
+        string baseRoute = matchingDomain.Uri.AbsolutePath;
+        
+        string combinedRoute = CombinePaths(baseRoute, route)
+            .EnsureStartsWith('/');
 
         return ToUrlInfo(baseUri, combinedRoute, culture, mode);
     }
@@ -158,4 +158,14 @@ public class InvisibleNodeUrlProvider : IUrlProvider
 
         return null;
     }
+
+    /// <summary>
+    /// Combine two paths with the <paramref name="separator"/>
+    /// </summary>
+    /// <param name="first">first path</param>
+    /// <param name="second">second path</param>
+    /// <param name="separator">separator</param>
+    /// <returns></returns>
+    private string CombinePaths(string first, string second, char separator = '/') =>
+        string.Join(separator, first.Trim(separator), second.Trim(separator));
 }
