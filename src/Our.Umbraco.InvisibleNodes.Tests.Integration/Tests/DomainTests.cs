@@ -13,12 +13,8 @@ using Umbraco.Extensions;
 namespace Our.Umbraco.InvisibleNodes.Tests.Integration.Tests;
 
 [Collection("Web")]
-public class DomainTests : IntegrationTestBase
+public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBase(factory), IDisposable
 {
-    public DomainTests(TestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public void Should_Return_Nested()
     {
@@ -80,7 +76,7 @@ public class DomainTests : IntegrationTestBase
         var url = PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri);
         url.Should().Be("https://example.org/da/content/nested/");
     }
-    
+
     [Fact]
     public void Should_Return_Hidden()
     {
@@ -101,7 +97,7 @@ public class DomainTests : IntegrationTestBase
         var hiddenNodeResult = ContentService.SaveAndPublish(invisibleNode);
 
         hiddenNodeResult.Success.Should().BeTrue();
-        
+
         var hiddenNode = ContentService.Create("Hidden", invisibleNode, ContentPage.ModelTypeAlias);
         var nestedPublishResult = ContentService.SaveAndPublish(hiddenNode);
 
@@ -143,7 +139,7 @@ public class DomainTests : IntegrationTestBase
 
         var publishedNode = UmbracoContext.Content!.GetById(hiddenNode.Id);
         publishedNode.Should().NotBeNull();
-        
+
         var englishUrl = PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "en-US", currentUri);
         englishUrl.Should().Be("https://example.org/en/content/hidden/");
 
@@ -270,5 +266,16 @@ public class DomainTests : IntegrationTestBase
 
         var url = PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri);
         url.Should().Be("https://da.example.org/content/nested/");
+    }
+
+    public void Dispose()
+    {
+        // Cleanup content
+        foreach (var content in ContentService.GetRootContent())
+            ContentService.Delete(content);
+
+        // Cleanup domains
+        foreach (var content in DomainService.GetAll(true))
+            DomainService.Delete(content);
     }
 }

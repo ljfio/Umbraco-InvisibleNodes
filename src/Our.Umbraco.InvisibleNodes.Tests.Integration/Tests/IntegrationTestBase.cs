@@ -12,24 +12,17 @@ using Umbraco.Cms.Core.Web;
 
 namespace Our.Umbraco.InvisibleNodes.Tests.Integration.Tests;
 
-public abstract class IntegrationTestBase(TestWebApplicationFactory factory) : IDisposable
+public abstract class IntegrationTestBase(TestWebApplicationFactory factory)
 {
-    private IContentService? _contentService;
-    private IDomainService? _domainService;
-    private ILocalizationService? _localizationService;
-
     protected IServiceProvider Services => factory.Services;
 
     protected HttpClient HttpClient => factory.CreateClient();
 
-    protected IContentService ContentService =>
-        _contentService ??= Services.GetRequiredService<IContentService>();
+    protected IContentService ContentService => Services.GetRequiredService<IContentService>();
 
-    protected IDomainService DomainService =>
-        _domainService ??= Services.GetRequiredService<IDomainService>();
+    protected IDomainService DomainService => Services.GetRequiredService<IDomainService>();
 
-    protected ILocalizationService LocalizationService =>
-        _localizationService ??= Services.GetRequiredService<ILocalizationService>();
+    protected ILocalizationService LocalizationService => Services.GetRequiredService<ILocalizationService>();
 
     protected IPublishedUrlProvider PublishedUrlProvider => Services.GetRequiredService<IPublishedUrlProvider>();
 
@@ -38,17 +31,4 @@ public abstract class IntegrationTestBase(TestWebApplicationFactory factory) : I
         .EnsureUmbracoContext();
 
     protected IUmbracoContext UmbracoContext => UmbracoContextReference.UmbracoContext;
-
-    public void Dispose()
-    {
-        // Cleanup content if used
-        if (_contentService is not null)
-            foreach (var content in _contentService.GetRootContent())
-                _contentService.Delete(content);
-
-        // Cleanup domains if used
-        if (_domainService is not null)
-            foreach (var content in _domainService.GetAll(true))
-                _domainService.Delete(content);
-    }
 }

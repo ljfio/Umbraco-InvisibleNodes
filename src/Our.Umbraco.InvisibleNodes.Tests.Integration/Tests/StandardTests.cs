@@ -1,6 +1,7 @@
 // Copyright 2023 Luke Fisher
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Our.Umbraco.InvisibleNodes.Tests.Integration.Core;
@@ -10,7 +11,7 @@ using Umbraco.Cms.Web.Common.PublishedModels;
 namespace Our.Umbraco.InvisibleNodes.Tests.Integration.Tests;
 
 [Collection("Web")]
-public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestBase(factory)
+public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestBase(factory), IDisposable
 {
     [Fact]
     public async Task Should_Return_Root()
@@ -123,5 +124,12 @@ public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestB
         var htmlContent = await httpResponse.Content.ReadAsStringAsync();
 
         htmlContent.Should().Contain("Content Page: Nested");
+    }
+
+    public void Dispose()
+    {
+        // Cleanup content
+        foreach (var content in ContentService.GetRootContent())
+            ContentService.Delete(content);
     }
 }
