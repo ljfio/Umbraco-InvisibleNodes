@@ -13,7 +13,7 @@ using Umbraco.Extensions;
 namespace Our.Umbraco.InvisibleNodes.Tests.Integration.Tests;
 
 [Collection("Web")]
-public class DomainTests : IntegrationTestBase, IDisposable
+public class DomainTests : IntegrationTestBase
 {
     public DomainTests(TestWebApplicationFactory factory) : base(factory)
     {
@@ -79,6 +79,76 @@ public class DomainTests : IntegrationTestBase, IDisposable
 
         var url = PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri);
         url.Should().Be("https://example.org/da/content/nested/");
+    }
+    
+    [Fact]
+    public void Should_Return_Hidden()
+    {
+        using var context = UmbracoContext;
+
+        // Content
+        var homeNode = ContentService.Create("Home", Constants.System.Root, HomePage.ModelTypeAlias);
+        var homePublishResult = ContentService.SaveAndPublish(homeNode);
+
+        homePublishResult.Success.Should().BeTrue();
+
+        var contentNode = ContentService.Create("Content", homeNode, ContentPage.ModelTypeAlias);
+        var contentPublishResult = ContentService.SaveAndPublish(contentNode);
+
+        contentPublishResult.Success.Should().BeTrue();
+
+        var invisibleNode = ContentService.Create("Invisible", contentNode, HiddenNode.ModelTypeAlias);
+        var hiddenNodeResult = ContentService.SaveAndPublish(invisibleNode);
+
+        hiddenNodeResult.Success.Should().BeTrue();
+        
+        var hiddenNode = ContentService.Create("Hidden", invisibleNode, ContentPage.ModelTypeAlias);
+        var nestedPublishResult = ContentService.SaveAndPublish(hiddenNode);
+
+        nestedPublishResult.Success.Should().BeTrue();
+
+        // Languages
+        var englishLanguage = LocalizationService.GetLanguageByIsoCode("en-US")!;
+        var danishLanguage = LocalizationService.GetLanguageByIsoCode("da-DK")!;
+
+        // Domains
+        var englishDomain = new UmbracoDomain("https://example.org/en")
+        {
+            RootContentId = homeNode.Id,
+            LanguageId = englishLanguage.Id,
+        };
+        var englishDomainResult = DomainService.Save(englishDomain);
+
+        englishDomainResult.Success.Should().BeTrue();
+
+        var danishDomain = new UmbracoDomain("https://example.org/da")
+        {
+            RootContentId = homeNode.Id,
+            LanguageId = danishLanguage.Id,
+        };
+        var danishDomainResult = DomainService.Save(danishDomain);
+
+        danishDomainResult.Success.Should().BeTrue();
+
+        var assigned = DomainService.GetAssignedDomains(homeNode.Id, true);
+
+        assigned.Should().HaveCount(2);
+
+        var publishedAssigned = UmbracoContext.Domains!.GetAssigned(homeNode.Id, true);
+
+        publishedAssigned.Should().HaveCount(2);
+
+        // Check pages
+        var currentUri = new Uri("https://example.org/");
+
+        var publishedNode = UmbracoContext.Content!.GetById(hiddenNode.Id);
+        publishedNode.Should().NotBeNull();
+        
+        var englishUrl = PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "en-US", currentUri);
+        englishUrl.Should().Be("https://example.org/en/content/hidden/");
+
+        var danishUrl = PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri);
+        danishUrl.Should().Be("https://example.org/da/content/hidden/");
     }
 
     [Fact]
