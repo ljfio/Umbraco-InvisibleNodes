@@ -15,22 +15,22 @@ namespace Our.Umbraco.InvisibleNodes.Tests.Unit;
 
 public static class UmbracoTestHelper
 {
-    public static IEnumerable<Domain> GenerateDomains(params string[] urls)
+    public static IEnumerable<Domain> GenerateDomains(int contentId, params string[] urls)
     {
         int current = 1;
 
         foreach (var url in urls)
         {
-            yield return GenerateDomain(url, current++);
+            yield return GenerateDomain(url, current++, contentId);
         }
     }
 
-    public static Domain GenerateDomain(string url, int id)
+    public static Domain GenerateDomain(string url, int id, int contentId)
     {
 #if NET7_0_OR_GREATER
-        return new Domain(id, url, id, null, false, id);
+        return new Domain(id, url, contentId, null, false, id);
 #else
-        return new Domain(id, url, id, null, false);
+        return new Domain(id, url, contentId, null, false);
 #endif
     }
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -26,7 +27,7 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
     public void Should_Return_EmptyForMatchingRoot()
     {
         // Arrange
-        var domains = UmbracoTestHelper.GenerateDomains("example.org");
+        var domains = UmbracoTestHelper.GenerateDomains(1, "example.org");
 
         var root = UmbracoTestHelper.GenerateNode(1, "Home", "");
 
@@ -64,7 +65,7 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
     public void Should_Return_1UrlForMatchingRoot()
     {
         // Arrange
-        var domains = UmbracoTestHelper.GenerateDomains("example.org", "example.com");
+        var domains = UmbracoTestHelper.GenerateDomains(1, "example.org", "example.com");
 
         var root = UmbracoTestHelper.GenerateNode(1, "Home", "");
 
@@ -91,10 +92,12 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
             RequestHandlerOptions);
 
         // Act
-        var urls = provider.GetOtherUrls(root.Id, uri);
+        var urls = provider.GetOtherUrls(root.Id, uri).ToArray();
 
         // Assert
-        urls.Should().NotBeNullOrEmpty();
-        urls.Should().ContainSingle(value => value.Text == "https://example.com/");
+        urls.Should()
+            .NotBeNullOrEmpty()
+            .And
+            .ContainSingle(value => value.Text == "https://example.com/");
     }
 }

@@ -72,7 +72,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         if (content is null)
             return Enumerable.Empty<UrlInfo>();
 
-        var ancestors = content.Ancestors()
+        var ancestors = content.AncestorsOrSelf()
             .Select(a => a.Id)
             .ToArray();
 

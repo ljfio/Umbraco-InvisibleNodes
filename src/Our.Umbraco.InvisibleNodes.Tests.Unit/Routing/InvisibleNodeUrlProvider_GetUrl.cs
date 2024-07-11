@@ -257,7 +257,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_AbsoluteRoot()
     {
         // Arrange
-        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1);
+        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1, 1);
         var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -293,7 +293,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_AbsoluteNested1Level()
     {
         // Arrange
-        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1);
+        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1, 1);
         var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -331,7 +331,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_AbsoluteNested2Levels()
     {
         // Arrange
-        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1);
+        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1, 1);
         var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -370,7 +370,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_AbsoluteInvisible()
     {
         // Arrange
-        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1);
+        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1, 1);
         var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -413,7 +413,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_AbsoluteNestedHidden()
     {
         // Arrange
-        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1);
+        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1, 1);
         var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
