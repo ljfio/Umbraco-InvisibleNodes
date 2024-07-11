@@ -25,7 +25,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     public InvisibleNodeUrlProvider(IUmbracoContextAccessor umbracoContextAccessor,
         IVariationContextAccessor variationContextAccessor,
         ISiteDomainMapper siteDomainMapper,
-        IInvisibleNodeRulesManager rulesManager, 
+        IInvisibleNodeRulesManager rulesManager,
         IOptions<RequestHandlerSettings> requestHandlerOptions)
     {
         _siteDomainMapper = siteDomainMapper;
@@ -52,7 +52,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         // Combine the matching domain URI with path
         var baseUri = new Uri(matchingDomain.Uri.GetLeftPart(UriPartial.Authority));
         string baseRoute = matchingDomain.Uri.AbsolutePath;
-        
+
         string combinedRoute = CombinePaths(baseRoute, route)
             .EnsureStartsWith('/');
 
@@ -72,11 +72,14 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         if (content is null)
             return Enumerable.Empty<UrlInfo>();
 
-        string route = GenerateRoute(content);
+        var ancestors = content.Ancestors()
+            .Select(a => a.Id)
+            .ToArray();
 
         var domainCache = umbracoContext.Domains;
 
-        var domainAndUris = domainCache.GetAssigned(id, true)
+        var domainAndUris = domainCache.GetAll(true)
+            .Where(domain => ancestors.Contains(domain.ContentId))
             .Select(domain => new DomainAndUri(domain, current))
             .ToList();
 
@@ -87,10 +90,18 @@ public class InvisibleNodeUrlProvider : IUrlProvider
 
         foreach (var mappedDomain in mappedDomains)
         {
-            if (!Uri.TryCreate(mappedDomain.Uri, route, out var uri))
-                continue;
+            string route = GenerateRoute(content, mappedDomain.Culture);
 
-            urls.Add(UrlInfo.Url(uri.ToString()));
+            var baseUri = new Uri(mappedDomain.Uri.GetLeftPart(UriPartial.Authority));
+            string baseRoute = mappedDomain.Uri.AbsolutePath;
+
+            string combinedRoute = CombinePaths(baseRoute, route)
+                .EnsureStartsWith('/');
+
+            var url = ToUrlInfo(baseUri, combinedRoute, mappedDomain.Culture, UrlMode.Absolute);
+
+            if (url is not null)
+                urls.Add(url);
         }
 
         return urls;
@@ -149,10 +160,10 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     private UrlInfo? ToUrlInfo(Uri uri, string route, string? culture, UrlMode mode)
     {
         string path = _requestHandlerOptions.Value.AddTrailingSlash ? route.EnsureEndsWith("/") : route;
-        
+
         if (mode != UrlMode.Absolute)
             return UrlInfo.Url(path, culture);
-            
+
         if (Uri.TryCreate(uri, path, out var combined))
             return UrlInfo.Url(combined.ToString(), culture);
 
