@@ -26,7 +26,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_DefaultRoot()
     {
         // Arrange
-        var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
+        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
@@ -60,7 +60,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_DefaultNested1Level()
     {
         // Arrange
-        var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
+        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
@@ -96,7 +96,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_DefaultNested2Levels()
     {
         // Arrange
-        var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
+        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
@@ -133,7 +133,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_Child_Same_Name()
     {
         // Arrange
-        var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
+        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
@@ -170,7 +170,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_DefaultInvisible()
     {
         // Arrange
-        var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
+        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
@@ -211,7 +211,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_DefaultNestedHidden()
     {
         // Arrange
-        var umbracoContextAccessor = Mock.Of<IUmbracoContextAccessor>();
+        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
