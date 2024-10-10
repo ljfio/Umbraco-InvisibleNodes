@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.PublishedCache;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Extensions;
@@ -38,10 +39,16 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// <inheritdoc />
     public UrlInfo? GetUrl(IPublishedContent content, UrlMode mode, string? culture, Uri current)
     {
+        if (!_umbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext) || umbracoContext.Domains is null)
+            return null;
+
+        // Locate the matching domain for the request
+        var domainCache = umbracoContext.Domains;
+        
         // Get the matching domain and generated route
         string route = GenerateRoute(content, culture);
 
-        var matchingDomain = GetMatchingDomain(current, culture);
+        var matchingDomain = GetMatchingDomain(domainCache, content, current, culture);
 
         if (matchingDomain is null)
         {
@@ -72,19 +79,9 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         if (content is null)
             return Enumerable.Empty<UrlInfo>();
 
-        var ancestors = content.AncestorsOrSelf()
-            .Select(a => a.Id)
-            .ToArray();
-
         var domainCache = umbracoContext.Domains;
 
-        var domainAndUris = domainCache.GetAll(true)
-            .Where(domain => ancestors.Contains(domain.ContentId))
-            .Select(domain => new DomainAndUri(domain, current))
-            .ToList();
-
-        var mappedDomains = _siteDomainMapper
-            .MapDomains(domainAndUris, current, true, null, domainCache.DefaultCulture);
+        var mappedDomains = GetMatchingDomains(domainCache, content, current);
 
         var urls = new List<UrlInfo>();
 
@@ -108,7 +105,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     }
 
     /// <summary>
-    /// Generates out the correct route based on the 
+    /// Generates out the correct route based on the <see cref="InvisibleNodeRulesManager"/>
     /// </summary>
     /// <param name="content"></param>
     /// <param name="culture"></param>
@@ -126,27 +123,54 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     }
 
     /// <summary>
-    /// Tries to locate the matching doamin
+    /// Tries to locate the matching domain for the content
     /// </summary>
+    /// <param name="content"></param>
     /// <param name="current"></param>
     /// <param name="culture"></param>
+    /// <param name="domainCache"></param>
     /// <returns></returns>
-    private DomainAndUri? GetMatchingDomain(Uri current, string? culture)
+    private DomainAndUri? GetMatchingDomain(
+        IDomainCache domainCache,
+        IPublishedContent content,
+        Uri current, 
+        string? culture)
     {
-        if (!_umbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext) || umbracoContext.Domains is null)
+        var ancestorWithDomains = content.AncestorsOrSelf()
+            .Select(s => domainCache.GetAssigned(s.Id, includeWildcards: false))
+            .FirstOrDefault(r => r.Any());
+
+        if (ancestorWithDomains is null)
             return null;
 
-        // Locate the matching domain for the request
-        var domainCache = umbracoContext.Domains;
-
-        var domainAndUris = domainCache.GetAll(true)
+        var domainAndUris = ancestorWithDomains
             .Select(domain => new DomainAndUri(domain, current))
-            .ToList();
+            .ToArray();
 
         if (!domainAndUris.Any())
             return null;
 
         return _siteDomainMapper.MapDomain(domainAndUris, current, culture, domainCache.DefaultCulture);
+    }
+
+    /// <summary>
+    /// Tries to locate the matching domains for the content
+    /// </summary>
+    /// <param name="domainCache"></param>
+    /// <param name="content"></param>
+    /// <param name="current"></param>
+    /// <returns></returns>
+    private IEnumerable<DomainAndUri> GetMatchingDomains(
+        IDomainCache domainCache, 
+        IPublishedContent content,
+        Uri current)
+    {
+        var domainAndUris = content.AncestorsOrSelf()
+            .SelectMany(s => domainCache.GetAssigned(s.Id, includeWildcards: false))
+            .Select(domain => new DomainAndUri(domain, current))
+            .ToArray();
+
+        return _siteDomainMapper.MapDomains(domainAndUris, current, true, null, domainCache.DefaultCulture);
     }
 
     /// <summary>
