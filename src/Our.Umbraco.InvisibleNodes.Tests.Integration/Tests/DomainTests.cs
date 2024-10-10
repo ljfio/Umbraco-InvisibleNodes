@@ -268,14 +268,78 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         url.Should().Be("https://da.example.org/content/nested/");
     }
 
+    [Fact]
+    public void Should_Return_Unique_Home_Domain()
+    {
+        using var context = UmbracoContext;
+
+        // Content
+        var firstNode = ContentService.Create("Home 1", Constants.System.Root, HomePage.ModelTypeAlias);
+        var firstPublishResult = ContentService.SaveAndPublish(firstNode);
+        firstPublishResult.Success.Should().BeTrue();
+        
+        var secondNode = ContentService.Create("Home 2", Constants.System.Root, HomePage.ModelTypeAlias);
+        var secondPublishResult = ContentService.SaveAndPublish(secondNode);
+        secondPublishResult.Success.Should().BeTrue();
+        
+        // Languages
+        var englishLanguage = LocalizationService.GetLanguageByIsoCode("en-US")!;
+        var danishLanguage = LocalizationService.GetLanguageByIsoCode("da-DK")!;
+
+        // Domains
+        var englishDomain = new UmbracoDomain("https://en.example.org/")
+        {
+            RootContentId = firstNode.Id,
+            LanguageId = englishLanguage.Id,
+        };
+        var englishDomainResult = DomainService.Save(englishDomain);
+        englishDomainResult.Success.Should().BeTrue();
+
+        var danishDomain = new UmbracoDomain("https://da.example.org/")
+        {
+            RootContentId = secondNode.Id,
+            LanguageId = danishLanguage.Id,
+        };
+        var danishDomainResult = DomainService.Save(danishDomain);
+        danishDomainResult.Success.Should().BeTrue();
+        
+        var firstDomains = DomainService.GetAssignedDomains(firstNode.Id, true);
+        firstDomains.Should().HaveCount(1);
+
+        var firstPublishedDomains = UmbracoContext.Domains!.GetAssigned(firstNode.Id, true);
+        firstPublishedDomains.Should().HaveCount(1);
+        
+        var secondDomains = DomainService.GetAssignedDomains(secondNode.Id, true);
+        secondDomains.Should().HaveCount(1);
+
+        var secondPublishedDomains = UmbracoContext.Domains!.GetAssigned(secondNode.Id, true);
+        secondPublishedDomains.Should().HaveCount(1);
+
+        // Check URLs
+        var currentUri = new Uri("https://en.example.org");
+
+        var firstPublishedNode = UmbracoContext.Content!.GetById(firstNode.Id);
+        firstPublishedNode.Should().NotBeNull();
+
+        var firstUrl = PublishedUrlProvider.GetUrl(firstPublishedNode!, mode: UrlMode.Absolute, current: currentUri);
+
+        firstUrl.Should().Be("https://en.example.org/");
+        
+        var secondPublishedNode = UmbracoContext.Content!.GetById(secondNode.Id);
+        secondPublishedNode.Should().NotBeNull();
+        
+        var secondUrl = PublishedUrlProvider.GetUrl(secondPublishedNode!, mode: UrlMode.Absolute, current: currentUri);
+        secondUrl.Should().Be("https://da.example.org/");
+    }
+
     public void Dispose()
     {
-        // Cleanup content
-        foreach (var content in ContentService.GetRootContent())
-            ContentService.Delete(content);
-
         // Cleanup domains
         foreach (var content in DomainService.GetAll(true))
             DomainService.Delete(content);
+        
+        // Cleanup content
+        foreach (var content in ContentService.GetRootContent())
+            ContentService.Delete(content);
     }
 }
