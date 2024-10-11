@@ -63,7 +63,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
 
             var baseUri = matchingDomain is not null
                 ? matchingDomain.Uri
-                : current;
+                : new Uri(current.GetLeftPart(UriPartial.Authority));
 
             string route = GenerateRoute(content, root, culture, matchingDomain?.Culture);
 
