@@ -74,7 +74,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
             if (combinedUri is null)
                 return null;
 
-            return ToUrlInfo(combinedUri, mode, culture, defaultCulture, current);
+            return ToUrlInfo(combinedUri, mode, culture, current);
         }
 
         return null;
@@ -112,7 +112,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
             if (uri is null)
                 continue;
 
-            var url = ToUrlInfo(uri, UrlMode.Absolute, culture, defaultCulture, mappedDomain.Uri);
+            var url = ToUrlInfo(uri, UrlMode.Absolute, culture, mappedDomain.Uri);
 
             urls.Add(url);
         }
