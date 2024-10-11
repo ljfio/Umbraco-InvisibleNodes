@@ -73,8 +73,9 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         var publishedNode = UmbracoContext.Content!.GetById(nestedNode.Id);
         publishedNode.Should().NotBeNull();
 
-        var url = PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri);
-        url.Should().Be("https://example.org/da/content/nested/");
+        PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri)
+            .Should()
+            .Be("https://example.org/da/content/nested/");
     }
 
     [Fact]
@@ -140,11 +141,13 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         var publishedNode = UmbracoContext.Content!.GetById(hiddenNode.Id);
         publishedNode.Should().NotBeNull();
 
-        var englishUrl = PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "en-US", currentUri);
-        englishUrl.Should().Be("https://example.org/en/content/hidden/");
+        PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "en-US", currentUri)
+            .Should()
+            .Be("https://example.org/en/content/hidden/");
 
-        var danishUrl = PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri);
-        danishUrl.Should().Be("https://example.org/da/content/hidden/");
+        PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri)
+            .Should()
+            .Be("https://example.org/da/content/hidden/");
     }
 
     [Fact]
@@ -198,11 +201,27 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         var publishedNode = UmbracoContext.Content!.GetById(contentNode.Id);
         publishedNode.Should().NotBeNull();
 
-        publishedNode!.Url(PublishedUrlProvider, "en-US").Should().Be("/content/");
-        publishedNode!.Url(PublishedUrlProvider, "en-US", UrlMode.Absolute).Should().Be("https://example.org/content/");
+        var current = new Uri("http://example.org/test");
 
-        publishedNode!.Url(PublishedUrlProvider, "da-DK").Should().Be("/da/content/");
-        publishedNode!.Url(PublishedUrlProvider, "da-DK", UrlMode.Absolute).Should()
+        publishedNode!.Url(PublishedUrlProvider, culture: "en-US")
+            .Should()
+            .Be("https://example.org/content/");
+        publishedNode!.Url(PublishedUrlProvider, culture: "en-US", mode: UrlMode.Absolute)
+            .Should()
+            .Be("https://example.org/content/");
+
+        PublishedUrlProvider.GetUrl(publishedNode!, culture: "en-US", current: current)
+            .Should()
+            .Be("/content/");
+        PublishedUrlProvider.GetUrl(publishedNode!, culture: "en-US", mode: UrlMode.Absolute)
+            .Should()
+            .Be("https://example.org/content/");
+
+        PublishedUrlProvider.GetUrl(publishedNode!, culture: "da-DK", current: current)
+            .Should()
+            .Be("/da/content/");
+        PublishedUrlProvider.GetUrl(publishedNode!, culture: "da-DK", mode: UrlMode.Absolute)
+            .Should()
             .Be("https://example.org/da/content/");
     }
 
@@ -264,12 +283,13 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         var publishedNode = UmbracoContext.Content!.GetById(nestedNode.Id);
         publishedNode.Should().NotBeNull();
 
-        var url = PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri);
-        url.Should().Be("https://da.example.org/content/nested/");
+        PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri)
+            .Should()
+            .Be("https://da.example.org/content/nested/");
     }
 
     [Fact]
-    public void Should_Return_Unique_Home_Domain()
+    public void Should_Return_Unique_Home()
     {
         using var context = UmbracoContext;
 
@@ -277,11 +297,11 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         var firstNode = ContentService.Create("Home 1", Constants.System.Root, HomePage.ModelTypeAlias);
         var firstPublishResult = ContentService.SaveAndPublish(firstNode);
         firstPublishResult.Success.Should().BeTrue();
-        
+
         var secondNode = ContentService.Create("Home 2", Constants.System.Root, HomePage.ModelTypeAlias);
         var secondPublishResult = ContentService.SaveAndPublish(secondNode);
         secondPublishResult.Success.Should().BeTrue();
-        
+
         // Languages
         var englishLanguage = LocalizationService.GetLanguageByIsoCode("en-US")!;
         var danishLanguage = LocalizationService.GetLanguageByIsoCode("da-DK")!;
@@ -302,13 +322,13 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         };
         var danishDomainResult = DomainService.Save(danishDomain);
         danishDomainResult.Success.Should().BeTrue();
-        
+
         var firstDomains = DomainService.GetAssignedDomains(firstNode.Id, true);
         firstDomains.Should().HaveCount(1);
 
         var firstPublishedDomains = UmbracoContext.Domains!.GetAssigned(firstNode.Id, true);
         firstPublishedDomains.Should().HaveCount(1);
-        
+
         var secondDomains = DomainService.GetAssignedDomains(secondNode.Id, true);
         secondDomains.Should().HaveCount(1);
 
@@ -316,20 +336,40 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         secondPublishedDomains.Should().HaveCount(1);
 
         // Check URLs
-        var currentUri = new Uri("https://en.example.org");
+        var englishUri = new Uri("https://en.example.org");
+        var danishUri = new Uri("https://da.example.org");
 
         var firstPublishedNode = UmbracoContext.Content!.GetById(firstNode.Id);
         firstPublishedNode.Should().NotBeNull();
 
-        var firstUrl = PublishedUrlProvider.GetUrl(firstPublishedNode!, mode: UrlMode.Absolute, current: currentUri);
+        PublishedUrlProvider.GetUrl(firstPublishedNode!)
+            .Should()
+            .Be("https://en.example.org/");
+        PublishedUrlProvider.GetUrl(firstPublishedNode!, mode: UrlMode.Absolute, current: englishUri)
+            .Should()
+            .Be("https://en.example.org/");
+        PublishedUrlProvider.GetUrl(firstPublishedNode!, current: englishUri)
+            .Should()
+            .Be("/");
+        PublishedUrlProvider.GetUrl(firstPublishedNode!, current: danishUri)
+            .Should()
+            .Be("https://en.example.org/");
 
-        firstUrl.Should().Be("https://en.example.org/");
-        
         var secondPublishedNode = UmbracoContext.Content!.GetById(secondNode.Id);
         secondPublishedNode.Should().NotBeNull();
-        
-        var secondUrl = PublishedUrlProvider.GetUrl(secondPublishedNode!, mode: UrlMode.Absolute, current: currentUri);
-        secondUrl.Should().Be("https://da.example.org/");
+
+        PublishedUrlProvider.GetUrl(secondPublishedNode!)
+            .Should()
+            .Be("https://da.example.org/");
+        PublishedUrlProvider.GetUrl(secondPublishedNode!, mode: UrlMode.Absolute, current: englishUri)
+            .Should()
+            .Be("https://da.example.org/");
+        PublishedUrlProvider.GetUrl(secondPublishedNode!, current: englishUri)
+            .Should()
+            .Be("https://da.example.org/");
+        PublishedUrlProvider.GetUrl(secondPublishedNode!, current: danishUri)
+            .Should()
+            .Be("/");
     }
 
     public void Dispose()
@@ -337,7 +377,7 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         // Cleanup domains
         foreach (var content in DomainService.GetAll(true))
             DomainService.Delete(content);
-        
+
         // Cleanup content
         foreach (var content in ContentService.GetRootContent())
             ContentService.Delete(content);

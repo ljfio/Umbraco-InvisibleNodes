@@ -23,7 +23,8 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     private readonly IInvisibleNodeRulesManager _rulesManager;
     private readonly IOptions<RequestHandlerSettings> _requestHandlerOptions;
 
-    public InvisibleNodeUrlProvider(IUmbracoContextAccessor umbracoContextAccessor,
+    public InvisibleNodeUrlProvider(
+        IUmbracoContextAccessor umbracoContextAccessor,
         IVariationContextAccessor variationContextAccessor,
         ISiteDomainMapper siteDomainMapper,
         IInvisibleNodeRulesManager rulesManager,
@@ -39,31 +40,42 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// <inheritdoc />
     public UrlInfo? GetUrl(IPublishedContent content, UrlMode mode, string? culture, Uri current)
     {
-        if (!_umbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext) || umbracoContext.Domains is null)
+        if (!_umbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext) ||
+            umbracoContext.Domains is null ||
+            umbracoContext.Content is null)
             return null;
 
         // Locate the matching domain for the request
         var domainCache = umbracoContext.Domains;
-        
-        // Get the matching domain and generated route
-        string route = GenerateRoute(content, culture);
+        string defaultCulture = domainCache.DefaultCulture;
 
+        // Get the matching domain and generated route
         var matchingDomain = GetMatchingDomain(domainCache, content, current, culture);
 
-        if (matchingDomain is null)
+        if (matchingDomain is not null ||
+            string.IsNullOrEmpty(culture) ||
+            Equals(culture, defaultCulture))
         {
-            var currentAuthority = new Uri(current.GetLeftPart(UriPartial.Authority));
-            return ToUrlInfo(currentAuthority, route, culture, mode);
+            // Locate the root for the domain
+            var root = matchingDomain is not null
+                ? umbracoContext.Content.GetById(matchingDomain.ContentId)
+                : null;
+
+            var baseUri = matchingDomain is not null
+                ? matchingDomain.Uri
+                : current;
+
+            string route = GenerateRoute(content, root, culture, matchingDomain?.Culture);
+
+            var combinedUri = CombineUri(baseUri, route);
+
+            if (combinedUri is null)
+                return null;
+
+            return ToUrlInfo(combinedUri, mode, culture, current);
         }
 
-        // Combine the matching domain URI with path
-        var baseUri = new Uri(matchingDomain.Uri.GetLeftPart(UriPartial.Authority));
-        string baseRoute = matchingDomain.Uri.AbsolutePath;
-
-        string combinedRoute = CombinePaths(baseRoute, route)
-            .EnsureStartsWith('/');
-
-        return ToUrlInfo(baseUri, combinedRoute, culture, mode);
+        return null;
     }
 
     /// <inheritdoc />
@@ -87,18 +99,18 @@ public class InvisibleNodeUrlProvider : IUrlProvider
 
         foreach (var mappedDomain in mappedDomains)
         {
-            string route = GenerateRoute(content, mappedDomain.Culture);
+            var root = umbracoContext.Content.GetById(mappedDomain.ContentId);
 
-            var baseUri = new Uri(mappedDomain.Uri.GetLeftPart(UriPartial.Authority));
-            string baseRoute = mappedDomain.Uri.AbsolutePath;
+            string route = GenerateRoute(content, root, mappedDomain.Culture, domainCache.DefaultCulture);
 
-            string combinedRoute = CombinePaths(baseRoute, route)
-                .EnsureStartsWith('/');
+            var uri = CombineUri(mappedDomain.Uri, route);
 
-            var url = ToUrlInfo(baseUri, combinedRoute, mappedDomain.Culture, UrlMode.Absolute);
+            if (uri is null)
+                continue;
 
-            if (url is not null)
-                urls.Add(url);
+            var url = ToUrlInfo(uri, UrlMode.Absolute, mappedDomain.Culture, mappedDomain.Uri);
+
+            urls.Add(url);
         }
 
         return urls;
@@ -108,18 +120,44 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// Generates out the correct route based on the <see cref="InvisibleNodeRulesManager"/>
     /// </summary>
     /// <param name="content"></param>
+    /// <param name="root"></param>
     /// <param name="culture"></param>
+    /// <param name="expectedCulture"></param>
     /// <returns></returns>
-    private string GenerateRoute(IPublishedContent content, string? culture = null)
+    private string GenerateRoute(
+        IPublishedContent content,
+        IPublishedContent? root,
+        string? culture,
+        string? expectedCulture)
     {
         var segments = content.AncestorsOrSelf()
-            .Where(ancestor => !ancestor.IsInvisibleNode(_rulesManager) && ancestor.Level > 1)
+            .Where(ancestor => IsVisible(ancestor, root, culture, expectedCulture))
             .Select(ancestor => ancestor.UrlSegment(_variationContextAccessor, culture))
             .Reverse()
             .ToList();
 
         return string.Join('/', segments)
             .EnsureStartsWith("/");
+    }
+
+    /// <summary>
+    /// Checks if the node is visible in the URL
+    /// </summary>
+    /// <param name="node"></param>
+    /// <param name="root"></param>
+    /// <param name="culture"></param>
+    /// <param name="expectedCulture"></param>
+    /// <returns></returns>
+    private bool IsVisible(
+        IPublishedContent node, 
+        IPublishedContent? root,
+        string? culture,
+        string? expectedCulture)
+    {
+        int level = Equals(culture, expectedCulture) ? 1 : 0;
+
+        return !node.IsInvisibleNode(_rulesManager) &&
+               (root == null ? node.Level > level : node.Level > root.Level);
     }
 
     /// <summary>
@@ -133,24 +171,19 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     private DomainAndUri? GetMatchingDomain(
         IDomainCache domainCache,
         IPublishedContent content,
-        Uri current, 
+        Uri current,
         string? culture)
     {
-        var ancestorWithDomains = content.AncestorsOrSelf()
-            .Select(s => domainCache.GetAssigned(s.Id, includeWildcards: false))
-            .FirstOrDefault(r => r.Any());
+        var domains = content.AncestorsOrSelf()
+            .Select(node => domainCache.GetAssigned(node.Id, includeWildcards: false))
+            .FirstOrDefault(domains => domains.Any());
 
-        if (ancestorWithDomains is null)
-            return null;
-
-        var domainAndUris = ancestorWithDomains
-            .Select(domain => new DomainAndUri(domain, current))
-            .ToArray();
-
-        if (!domainAndUris.Any())
-            return null;
-
-        return _siteDomainMapper.MapDomain(domainAndUris, current, culture, domainCache.DefaultCulture);
+        return DomainUtilities.SelectDomain(
+            domains,
+            current,
+            culture,
+            domainCache.DefaultCulture,
+            _siteDomainMapper.MapDomain);
     }
 
     /// <summary>
@@ -161,12 +194,12 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// <param name="current"></param>
     /// <returns></returns>
     private IEnumerable<DomainAndUri> GetMatchingDomains(
-        IDomainCache domainCache, 
+        IDomainCache domainCache,
         IPublishedContent content,
         Uri current)
     {
         var domainAndUris = content.AncestorsOrSelf()
-            .SelectMany(s => domainCache.GetAssigned(s.Id, includeWildcards: false))
+            .SelectMany(node => domainCache.GetAssigned(node.Id, includeWildcards: false))
             .Select(domain => new DomainAndUri(domain, current))
             .ToArray();
 
@@ -177,19 +210,47 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// Converts to a <see cref="UrlInfo"/>
     /// </summary>
     /// <param name="uri"></param>
-    /// <param name="route"></param>
-    /// <param name="culture"></param>
     /// <param name="mode"></param>
+    /// <param name="culture"></param>
+    /// <param name="current"></param>
     /// <returns></returns>
-    private UrlInfo? ToUrlInfo(Uri uri, string route, string? culture, UrlMode mode)
+    private UrlInfo ToUrlInfo(Uri uri, UrlMode mode, string? culture, Uri current)
     {
-        string path = _requestHandlerOptions.Value.AddTrailingSlash ? route.EnsureEndsWith("/") : route;
+        var newMode = mode == UrlMode.Absolute || !Equals(uri.Authority, current.Authority)
+            ? UrlMode.Absolute
+            : UrlMode.Relative;
+        
+        if (newMode != UrlMode.Absolute)
+            return UrlInfo.Url(uri.AbsolutePath, culture);
 
-        if (mode != UrlMode.Absolute)
-            return UrlInfo.Url(path, culture);
+        return UrlInfo.Url(uri.ToString(), culture);
+    }
 
-        if (Uri.TryCreate(uri, path, out var combined))
-            return UrlInfo.Url(combined.ToString(), culture);
+    /// <summary>
+    /// Combines the <paramref name="uri"/> and <paramref name="relativePath"/>
+    /// </summary>
+    /// <param name="uri"></param>
+    /// <param name="relativePath"></param>
+    /// <returns></returns>
+    private Uri? CombineUri(Uri uri, string relativePath)
+    {
+        // Combine the absolute path and relative path
+        string combinedPath = CombinePaths(uri.AbsolutePath, relativePath)
+            .EnsureStartsWith('/');
+
+        // Ensure ends with trailing slash if configured
+        string path = _requestHandlerOptions.Value.AddTrailingSlash
+            ? combinedPath.EnsureEndsWith("/")
+            : combinedPath;
+
+        // Get the authority for the new Uri
+        var authority = new Uri(uri.GetLeftPart(UriPartial.Authority));
+
+        if (Uri.TryCreate(authority, path, out var absolute))
+            return absolute;
+        
+        if (Uri.TryCreate(path, UriKind.Relative, out var relative))
+            return relative;
 
         return null;
     }
