@@ -65,14 +65,16 @@ public class InvisibleNodeUrlProvider : IUrlProvider
                 ? matchingDomain.Uri
                 : new Uri(current.GetLeftPart(UriPartial.Authority));
 
-            string route = GenerateRoute(content, root, culture, matchingDomain?.Culture);
+            bool includeNode = matchingDomain is null && content.SortOrder > 0;
+
+            string route = GenerateRoute(content, root, culture, includeNode);
 
             var combinedUri = CombineUri(baseUri, route);
 
             if (combinedUri is null)
                 return null;
 
-            return ToUrlInfo(combinedUri, mode, culture, current);
+            return ToUrlInfo(combinedUri, mode, culture, defaultCulture, current);
         }
 
         return null;
@@ -92,6 +94,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
             return Enumerable.Empty<UrlInfo>();
 
         var domainCache = umbracoContext.Domains;
+        string defaultCulture = domainCache.DefaultCulture;
 
         var mappedDomains = GetMatchingDomains(domainCache, content, current);
 
@@ -100,15 +103,16 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         foreach (var mappedDomain in mappedDomains)
         {
             var root = umbracoContext.Content.GetById(mappedDomain.ContentId);
+            string? culture = mappedDomain.Culture;
 
-            string route = GenerateRoute(content, root, mappedDomain.Culture, domainCache.DefaultCulture);
+            string route = GenerateRoute(content, root, culture, false);
 
             var uri = CombineUri(mappedDomain.Uri, route);
 
             if (uri is null)
                 continue;
 
-            var url = ToUrlInfo(uri, UrlMode.Absolute, mappedDomain.Culture, mappedDomain.Uri);
+            var url = ToUrlInfo(uri, UrlMode.Absolute, culture, defaultCulture, mappedDomain.Uri);
 
             urls.Add(url);
         }
@@ -122,16 +126,16 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// <param name="content"></param>
     /// <param name="root"></param>
     /// <param name="culture"></param>
-    /// <param name="expectedCulture"></param>
+    /// <param name="includeNode"></param>
     /// <returns></returns>
     private string GenerateRoute(
         IPublishedContent content,
         IPublishedContent? root,
         string? culture,
-        string? expectedCulture)
+        bool includeNode)
     {
         var segments = content.AncestorsOrSelf()
-            .Where(ancestor => IsVisible(ancestor, root, culture, expectedCulture))
+            .Where(ancestor => IsVisible(ancestor, root, includeNode))
             .Select(ancestor => ancestor.UrlSegment(_variationContextAccessor, culture))
             .Reverse()
             .ToList();
@@ -145,19 +149,17 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// </summary>
     /// <param name="node"></param>
     /// <param name="root"></param>
-    /// <param name="culture"></param>
-    /// <param name="expectedCulture"></param>
+    /// <param name="includeNode"></param>
     /// <returns></returns>
     private bool IsVisible(
-        IPublishedContent node, 
+        IPublishedContent node,
         IPublishedContent? root,
-        string? culture,
-        string? expectedCulture)
+        bool includeNode)
     {
-        int level = Equals(culture, expectedCulture) ? 1 : 0;
+        int minimumLevel = includeNode ? 0 : 1;
 
         return !node.IsInvisibleNode(_rulesManager) &&
-               (root == null ? node.Level > level : node.Level > root.Level);
+               (root is not null ? node.Level > root.Level : node.Level > minimumLevel);
     }
 
     /// <summary>
@@ -216,10 +218,11 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// <returns></returns>
     private UrlInfo ToUrlInfo(Uri uri, UrlMode mode, string? culture, Uri current)
     {
+        // Generate with an absolute path if the authorities do not match
         var newMode = mode == UrlMode.Absolute || !Equals(uri.Authority, current.Authority)
             ? UrlMode.Absolute
             : UrlMode.Relative;
-        
+
         if (newMode != UrlMode.Absolute)
             return UrlInfo.Url(uri.AbsolutePath, culture);
 
@@ -248,7 +251,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
 
         if (Uri.TryCreate(authority, path, out var absolute))
             return absolute;
-        
+
         if (Uri.TryCreate(path, UriKind.Relative, out var relative))
             return relative;
 

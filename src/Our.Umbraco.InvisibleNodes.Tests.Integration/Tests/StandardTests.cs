@@ -126,6 +126,61 @@ public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestB
         htmlContent.Should().Contain("Content Page: Nested");
     }
 
+    [Fact]
+    public void Should_Return_Nested_Url()
+    {
+        using var context = UmbracoContext;
+        
+        // Content
+        var homeNode = ContentService.Create("Home", Constants.System.Root, HomePage.ModelTypeAlias);
+        var homePublishResult = ContentService.SaveAndPublish(homeNode);
+
+        homePublishResult.Success.Should().BeTrue();
+
+        var contentNode = ContentService.Create("Nested", homeNode, ContentPage.ModelTypeAlias);
+        var contentPublishResult = ContentService.SaveAndPublish(contentNode);
+
+        contentPublishResult.Success.Should().BeTrue();
+
+        var nestedNode = ContentService.Create("Nested", contentNode, ContentPage.ModelTypeAlias);
+        var nestedPublishResult = ContentService.SaveAndPublish(nestedNode);
+
+        nestedPublishResult.Success.Should().BeTrue();
+
+        var publishedContent = context.Content!.GetById(nestedNode.Id);
+
+        PublishedUrlProvider.GetUrl(publishedContent!)
+            .Should()
+            .Be("/nested/nested/");
+    }
+    
+    [Fact]
+    public void Should_Return_Second_Node()
+    {
+        using var context = UmbracoContext;
+        
+        // Content
+        var firstNode = ContentService.Create("First", Constants.System.Root, HomePage.ModelTypeAlias);
+        var firstPublishResult = ContentService.SaveAndPublish(firstNode);
+
+        firstPublishResult.Success.Should().BeTrue();
+        
+        var secondNode = ContentService.Create("Second", Constants.System.Root, HomePage.ModelTypeAlias);
+        var secondPublishResult = ContentService.SaveAndPublish(secondNode);
+
+        secondPublishResult.Success.Should().BeTrue();
+
+        var firstPublishedContent = context.Content!.GetById(firstNode.Id);
+        var secondPublishedContent = context.Content!.GetById(secondNode.Id);
+
+        PublishedUrlProvider.GetUrl(firstPublishedContent!)
+            .Should()
+            .Be("/");
+        PublishedUrlProvider.GetUrl(secondPublishedContent!)
+            .Should()
+            .Be("/second/");
+    }
+
     public void Dispose()
     {
         // Cleanup content
