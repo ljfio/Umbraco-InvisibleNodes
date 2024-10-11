@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Our.Umbraco.InvisibleNodes.Tests.Integration.Core;
 using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Web.Common.PublishedModels;
 
 namespace Our.Umbraco.InvisibleNodes.Tests.Integration.Tests;
@@ -149,9 +150,17 @@ public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestB
 
         var publishedContent = context.Content!.GetById(nestedNode.Id);
 
+        var current = new Uri("http://example.org");
+
         PublishedUrlProvider.GetUrl(publishedContent!)
             .Should()
             .Be("/nested/nested/");
+        PublishedUrlProvider.GetUrl(publishedContent!, mode: UrlMode.Absolute)
+            .Should()
+            .Be("http://localhost/nested/nested/");
+        PublishedUrlProvider.GetUrl(publishedContent!, mode: UrlMode.Absolute, current: current)
+            .Should()
+            .Be("http://example.org/nested/nested/");
     }
     
     [Fact]
@@ -173,12 +182,26 @@ public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestB
         var firstPublishedContent = context.Content!.GetById(firstNode.Id);
         var secondPublishedContent = context.Content!.GetById(secondNode.Id);
 
+        var current = new Uri("http://example.org");
+
         PublishedUrlProvider.GetUrl(firstPublishedContent!)
             .Should()
             .Be("/");
+        PublishedUrlProvider.GetUrl(firstPublishedContent!, mode: UrlMode.Absolute)
+            .Should()
+            .Be("http://localhost/");
+        PublishedUrlProvider.GetUrl(firstPublishedContent!, mode: UrlMode.Absolute, current: current)
+            .Should()
+            .Be("http://example.org/");
         PublishedUrlProvider.GetUrl(secondPublishedContent!)
             .Should()
             .Be("/second/");
+        PublishedUrlProvider.GetUrl(secondPublishedContent!, mode: UrlMode.Absolute)
+            .Should()
+            .Be("http://localhost/second/");
+        PublishedUrlProvider.GetUrl(secondPublishedContent!, mode: UrlMode.Absolute, current: current)
+            .Should()
+            .Be("http://example.org/second/");
     }
 
     public void Dispose()
