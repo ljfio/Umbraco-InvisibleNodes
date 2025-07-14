@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace Our.Umbraco.InvisibleNodes.Tests.Integration.Core;
 
-[Collection("Web")]
 public class TestWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly string _connectionString = "Data Source=InMemory;Mode=Memory;Cache=Shared;Pooling=True";
@@ -25,7 +24,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureAppConfiguration(config =>
         {
-            var inlineConfig = new Dictionary<string, string?>()
+            var inlineConfig = new Dictionary<string, string?>
             {
                 { "ConnectionStrings:umbracoDbDSN", _connectionString },
             };

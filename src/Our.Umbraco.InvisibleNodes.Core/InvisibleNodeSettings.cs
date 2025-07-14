@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Our.Umbraco.InvisibleNodes.Core;
 
+[ExcludeFromCodeCoverage]
 public class InvisibleNodeSettings
 {
     public const string InvisibleNodes = "InvisibleNodes";
