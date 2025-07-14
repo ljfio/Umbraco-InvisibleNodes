@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
 
-#if NET7_0_OR_GREATER
+#if NET8_0_OR_GREATER
 using Umbraco.Cms.Core.DependencyInjection;
 #else
 using Umbraco.Cms.Web.Common.DependencyInjection;

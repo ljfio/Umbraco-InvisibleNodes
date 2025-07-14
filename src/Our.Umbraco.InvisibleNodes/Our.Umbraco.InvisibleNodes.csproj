@@ -28,20 +28,25 @@
   </ItemGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="10.8.5" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="10.8.5" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[10.0.0,11.0.0)" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="[10.0.0,11.0.0)" />
   </ItemGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="11.5.0" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="11.5.0" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[11.0.0,13.0.0)" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="[11.0.0,13.0.0)" />
   </ItemGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="13.3.0" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="13.3.0" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[13.0.0,15.0.0)" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="[13.0.0,15.0.0)" />
   </ItemGroup>
   
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[15.0.0,)" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="[15.0.0,)" />
+  </ItemGroup>
+
   <ItemGroup>
     <Content Include="App_Plugins\Our.Umbraco.InvisibleNodes\**" ExcludeFromSingleFile="true" CopyToPublishDirectory="Always" />
     <None Include="buildTransitive\**" Pack="true" PackagePath="buildTransitive" />

@@ -27,7 +27,7 @@ public static class UmbracoTestHelper
 
     public static Domain GenerateDomain(string url, int id, int contentId)
     {
-#if NET7_0_OR_GREATER
+#if NET8_0_OR_GREATER
         return new Domain(id, url, contentId, null, false, id);
 #else
         return new Domain(id, url, contentId, null, false);
