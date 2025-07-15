@@ -30,9 +30,9 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         IInvisibleNodeRulesManager rulesManager,
         IOptions<RequestHandlerSettings> requestHandlerOptions)
     {
-        _siteDomainMapper = siteDomainMapper;
-        _variationContextAccessor = variationContextAccessor;
         _umbracoContextAccessor = umbracoContextAccessor;
+        _variationContextAccessor = variationContextAccessor;
+        _siteDomainMapper = siteDomainMapper;
         _rulesManager = rulesManager;
         _requestHandlerOptions = requestHandlerOptions;
     }

@@ -102,8 +102,14 @@ public static class UmbracoTestHelper
         mockType.Setup(m => m.Variations)
             .Returns(string.IsNullOrEmpty(culture) ? ContentVariation.Nothing : ContentVariation.Culture);
 
+        mockType.Setup(m => m.ItemType)
+            .Returns(PublishedItemType.Content);
+        
         mock.Setup(m => m.ContentType)
             .Returns(mockType.Object);
+        
+        mock.Setup(m => m.ItemType)
+            .Returns(PublishedItemType.Content);
 
         string key = culture ?? string.Empty;
 

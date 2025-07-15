@@ -5,11 +5,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Umbraco.Cms" Version="[13.0.0,15.0.0)" />
-        <PackageReference Include="uSync" Version="[13.0.0,15.0.0)" />
+        <PackageReference Include="Umbraco.Cms" Version="[13.0.0,14.0.0)" />
+        <PackageReference Include="uSync" Version="[13.0.0,14.0.0)" />
     </ItemGroup>
-
-
+    
     <ItemGroup>
         <ProjectReference Include="..\Our.Umbraco.InvisibleNodes\Our.Umbraco.InvisibleNodes.csproj" />
     </ItemGroup>
