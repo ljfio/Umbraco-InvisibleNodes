@@ -477,3 +477,5 @@ appsettings-schema.*.json
 
 # Media files
 /wwwroot/media/
+
+umbraco-package-schema.json
