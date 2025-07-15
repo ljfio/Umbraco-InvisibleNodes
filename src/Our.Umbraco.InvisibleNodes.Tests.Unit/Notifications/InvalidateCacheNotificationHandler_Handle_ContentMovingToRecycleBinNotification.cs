@@ -32,8 +32,9 @@ public class InvalidateCacheNotificationHandler_Handle_ContentMovingToRecycleBin
         var provider = new Mock<IPublishedUrlProvider>();
         provider.Setup(m => m.GetUrl(id, UrlMode.Absolute, "en-US", null))
             .Returns("https://example.org/home/");
-            
-        var moveEvent = new MoveEventInfo<IContent>(content.Object, "/home/", 2);
+
+        //var moveEvent = new MoveEventInfo<IContent>(content.Object, "/home/", 2);
+        var moveEvent = new MoveToRecycleBinEventInfo<IContent>(content.Object, "/home/");
         var messages = new EventMessages();
         
         var notification = new ContentMovingToRecycleBinNotification(moveEvent, messages);
