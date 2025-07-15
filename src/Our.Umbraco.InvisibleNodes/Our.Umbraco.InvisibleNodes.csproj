@@ -9,7 +9,7 @@
     <Product>Our.Umbraco.InvisibleNodes</Product>
     <PackageId>Our.Umbraco.InvisibleNodes</PackageId>
     <Title>Our.Umbraco.InvisibleNodes</Title>
-    <Description>Invisible Nodes for Umbraco 10+</Description>
+    <Description>Invisible Nodes for Umbraco 13</Description>
     <PackageTags>umbraco plugin package umbraco-marketplace</PackageTags>
     <Authors>Luke Fisher</Authors>
     <Copyright>Copyright 2023-2025 Luke Fisher</Copyright>
@@ -26,7 +26,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Umbraco.Cms.Web.Website" Version="[13.0.0,14.0.0)" />
     <PackageReference Include="Umbraco.Cms.Web.Common" Version="[13.0.0,14.0.0)" />
