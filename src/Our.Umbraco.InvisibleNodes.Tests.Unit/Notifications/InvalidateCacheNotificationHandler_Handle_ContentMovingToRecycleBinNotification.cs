@@ -33,7 +33,11 @@ public class InvalidateCacheNotificationHandler_Handle_ContentMovingToRecycleBin
         provider.Setup(m => m.GetUrl(id, UrlMode.Absolute, "en-US", null))
             .Returns("https://example.org/home/");
             
+        #if NET9_0_OR_GREATER
+        var moveEvent = new MoveToRecycleBinEventInfo<IContent>(content.Object, "/home/");
+        #else
         var moveEvent = new MoveEventInfo<IContent>(content.Object, "/home/", 2);
+        #endif
         var messages = new EventMessages();
         
         var notification = new ContentMovingToRecycleBinNotification(moveEvent, messages);

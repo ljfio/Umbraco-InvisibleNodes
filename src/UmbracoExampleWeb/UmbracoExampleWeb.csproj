@@ -4,15 +4,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+    <ItemGroup>
         <PackageReference Include="Umbraco.Cms" Version="[13.0.0,15.0.0)" />
         <PackageReference Include="uSync" Version="[13.0.0,15.0.0)" />
     </ItemGroup>
 
-    <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-        <PackageReference Include="Umbraco.Cms" Version="[15.0.0,17.0.0)" />
-        <PackageReference Include="uSync" Version="[15.0.0,17.0.0)" />
-    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Our.Umbraco.InvisibleNodes\Our.Umbraco.InvisibleNodes.csproj" />
