@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Our.Umbraco.InvisibleNodes.Tests.Integration.Core;
 using Umbraco.Cms.Core;
-using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Models.ContentEditing;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Web.Common.PublishedModels;
 using Umbraco.Extensions;
@@ -16,7 +17,7 @@ namespace Our.Umbraco.InvisibleNodes.Tests.Integration.Tests;
 public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBase(factory), IDisposable
 {
     [Fact]
-    public void Should_Return_Nested()
+    public async Task Should_Return_Nested()
     {
         using var context = UmbracoContext;
 
@@ -36,41 +37,35 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
 
         nestedPublishResult.Success.Should().BeTrue();
 
-        // Languages
-        var englishLanguage = LocalizationService.GetLanguageByIsoCode("en-US")!;
-        var danishLanguage = LocalizationService.GetLanguageByIsoCode("da-DK")!;
-
         // Domains
-        var englishDomain = new UmbracoDomain("https://example.org/en")
+        var englishDomain = new DomainModel
         {
-            RootContentId = homeNode.Id,
-            LanguageId = englishLanguage.Id,
+            IsoCode = "en-US",
+            DomainName = "https://example.org/en",
         };
-        var englishDomainResult = DomainService.Save(englishDomain);
-
-        englishDomainResult.Success.Should().BeTrue();
-
-        var danishDomain = new UmbracoDomain("https://example.org/da")
+        
+        var danishDomain = new DomainModel
         {
-            RootContentId = homeNode.Id,
-            LanguageId = danishLanguage.Id,
+            IsoCode = "da-DK",
+            DomainName = "https://example.org/da"
         };
-        var danishDomainResult = DomainService.Save(danishDomain);
 
-        danishDomainResult.Success.Should().BeTrue();
+        var updateDomainsResult = await DomainService.UpdateDomainsAsync(homeNode.Key, new DomainsUpdateModel
+        {
+            Domains = [englishDomain, danishDomain],
+        });
+        updateDomainsResult.Success.Should().BeTrue();
 
-        var assigned = DomainService.GetAssignedDomains(homeNode.Id, true);
-
+        var assigned = await DomainService.GetAssignedDomainsAsync(homeNode.Key, true);
         assigned.Should().HaveCount(2);
 
-        var publishedAssigned = UmbracoContext.Domains!.GetAssigned(homeNode.Id, true);
-
+        var publishedAssigned = UmbracoContext.Domains.GetAssigned(homeNode.Id, true);
         publishedAssigned.Should().HaveCount(2);
 
         // Check pages
         var currentUri = new Uri("https://example.org/");
 
-        var publishedNode = UmbracoContext.Content!.GetById(nestedNode.Id);
+        var publishedNode = UmbracoContext.Content.GetById(nestedNode.Id);
         publishedNode.Should().NotBeNull();
 
         PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri)
@@ -79,7 +74,7 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
     }
 
     [Fact]
-    public void Should_Return_Hidden()
+    public async Task Should_Return_Hidden()
     {
         using var context = UmbracoContext;
 
@@ -103,42 +98,37 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         var nestedPublishResult = ContentService.Publish(hiddenNode, []);
 
         nestedPublishResult.Success.Should().BeTrue();
-
-        // Languages
-        var englishLanguage = LocalizationService.GetLanguageByIsoCode("en-US")!;
-        var danishLanguage = LocalizationService.GetLanguageByIsoCode("da-DK")!;
-
+        
         // Domains
-        var englishDomain = new UmbracoDomain("https://example.org/en")
+        var englishDomain = new DomainModel
         {
-            RootContentId = homeNode.Id,
-            LanguageId = englishLanguage.Id,
+            IsoCode = "en-US",
+            DomainName = "https://example.org/en",
         };
-        var englishDomainResult = DomainService.Save(englishDomain);
 
-        englishDomainResult.Success.Should().BeTrue();
-
-        var danishDomain = new UmbracoDomain("https://example.org/da")
+        var danishDomain = new DomainModel
         {
-            RootContentId = homeNode.Id,
-            LanguageId = danishLanguage.Id,
+            IsoCode = "da-DK",
+            DomainName = "https://example.org/da",
         };
-        var danishDomainResult = DomainService.Save(danishDomain);
+        
+        var updateDomainsResult = await DomainService.UpdateDomainsAsync(homeNode.Key , new  DomainsUpdateModel
+        {
+            Domains = [englishDomain, danishDomain],
+        });
+        updateDomainsResult.Success.Should().BeTrue();
 
-        danishDomainResult.Success.Should().BeTrue();
-
-        var assigned = DomainService.GetAssignedDomains(homeNode.Id, true);
-
+        var assigned = await DomainService.GetAssignedDomainsAsync(homeNode.Key, true);
         assigned.Should().HaveCount(2);
 
-        var publishedAssigned = UmbracoContext.Domains!.GetAssigned(homeNode.Id, true);
+        var publishedAssigned = UmbracoContext.Domains.GetAssigned(homeNode.Id, true);
 
         publishedAssigned.Should().HaveCount(2);
 
         // Check pages
         var currentUri = new Uri("https://example.org/");
 
-        var publishedNode = UmbracoContext.Content!.GetById(hiddenNode.Id);
+        var publishedNode = UmbracoContext.Content.GetById(hiddenNode.Id);
         publishedNode.Should().NotBeNull();
 
         PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "en-US", currentUri)
@@ -151,7 +141,7 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
     }
 
     [Fact]
-    public void Should_Return_Variant()
+    public async Task Should_Return_Variant()
     {
         using var context = UmbracoContext;
 
@@ -165,32 +155,27 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         var contentPublishResult = ContentService.Publish(contentNode, []);
 
         contentPublishResult.Success.Should().BeTrue();
-
-        // Languages
-        var englishLanguage = LocalizationService.GetLanguageByIsoCode("en-US")!;
-        var danishLanguage = LocalizationService.GetLanguageByIsoCode("da-DK")!;
-
+        
         // Domains
-        var englishDomain = new UmbracoDomain("https://example.org/")
+        var englishDomain = new DomainModel
         {
-            RootContentId = homeNode.Id,
-            LanguageId = englishLanguage.Id,
+            IsoCode = "en-US",
+            DomainName = "https://example.org/",
         };
-        var englishDomainResult = DomainService.Save(englishDomain);
 
-        englishDomainResult.Success.Should().BeTrue();
-
-        var danishDomain = new UmbracoDomain("https://example.org/da")
+        var danishDomain = new DomainModel
         {
-            RootContentId = homeNode.Id,
-            LanguageId = danishLanguage.Id,
+            IsoCode = "da-DK",
+            DomainName = "https://example.org/da",
         };
-        var danishDomainResult = DomainService.Save(danishDomain);
 
-        danishDomainResult.Success.Should().BeTrue();
+        var updateDomainsResult = await DomainService.UpdateDomainsAsync(homeNode.Key, new DomainsUpdateModel
+        {
+            Domains = [englishDomain, danishDomain],
+        });
+        updateDomainsResult.Success.Should().BeTrue();
 
-        var assigned = DomainService.GetAssignedDomains(homeNode.Id, true);
-
+        var assigned = await DomainService.GetAssignedDomainsAsync(homeNode.Key, true);
         assigned.Should().HaveCount(2);
 
         var publishedAssigned = UmbracoContext.Domains!.GetAssigned(homeNode.Id, true);
@@ -198,7 +183,7 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         publishedAssigned.Should().HaveCount(2);
 
         // Check node URLs
-        var publishedNode = UmbracoContext.Content!.GetById(contentNode.Id);
+        var publishedNode = UmbracoContext.Content.GetById(contentNode.Id);
         publishedNode.Should().NotBeNull();
 
         var current = new Uri("http://example.org/test");
@@ -226,7 +211,7 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
     }
 
     [Fact]
-    public void Should_Return_Unique_HostNames()
+    public async Task Should_Return_Unique_HostNames()
     {
         using var context = UmbracoContext;
 
@@ -246,41 +231,36 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
 
         nestedPublishResult.Success.Should().BeTrue();
 
-        // Languages
-        var englishLanguage = LocalizationService.GetLanguageByIsoCode("en-US")!;
-        var danishLanguage = LocalizationService.GetLanguageByIsoCode("da-DK")!;
 
         // Domains
-        var englishDomain = new UmbracoDomain("https://en.example.org/")
+        var englishDomain = new DomainModel
         {
-            RootContentId = homeNode.Id,
-            LanguageId = englishLanguage.Id,
+            IsoCode = "en-US",
+            DomainName = "https://en.example.org/",
         };
-        var englishDomainResult = DomainService.Save(englishDomain);
-
-        englishDomainResult.Success.Should().BeTrue();
-
-        var danishDomain = new UmbracoDomain("https://da.example.org/")
+        
+        var danishDomain = new DomainModel
         {
-            RootContentId = homeNode.Id,
-            LanguageId = danishLanguage.Id,
+            IsoCode = "da-DK",
+            DomainName = "https://da.example.org/",
         };
-        var danishDomainResult = DomainService.Save(danishDomain);
-
+        
+        var danishDomainResult = await DomainService.UpdateDomainsAsync(homeNode.Key, new DomainsUpdateModel
+        {
+            Domains = [englishDomain, danishDomain],
+        });
         danishDomainResult.Success.Should().BeTrue();
 
-        var assigned = DomainService.GetAssignedDomains(homeNode.Id, true);
-
+        var assigned = await DomainService.GetAssignedDomainsAsync(homeNode.Key, true);
         assigned.Should().HaveCount(2);
 
-        var publishedAssigned = UmbracoContext.Domains!.GetAssigned(homeNode.Id, true);
-
+        var publishedAssigned = UmbracoContext.Domains.GetAssigned(homeNode.Id, true);
         publishedAssigned.Should().HaveCount(2);
 
         // Check pages
         var currentUri = new Uri("https://en.example.org/");
 
-        var publishedNode = UmbracoContext.Content!.GetById(nestedNode.Id);
+        var publishedNode = UmbracoContext.Content.GetById(nestedNode.Id);
         publishedNode.Should().NotBeNull();
 
         PublishedUrlProvider.GetUrl(publishedNode!, UrlMode.Absolute, "da-DK", currentUri)
@@ -289,7 +269,7 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
     }
 
     [Fact]
-    public void Should_Return_Unique_Home()
+    public async Task Should_Return_Unique_Home()
     {
         using var context = UmbracoContext;
 
@@ -301,45 +281,49 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         var secondNode = ContentService.CreateAndSave("Home 2", Constants.System.Root, HomePage.ModelTypeAlias);
         var secondPublishResult = ContentService.Publish(secondNode, []);
         secondPublishResult.Success.Should().BeTrue();
-
-        // Languages
-        var englishLanguage = LocalizationService.GetLanguageByIsoCode("en-US")!;
-        var danishLanguage = LocalizationService.GetLanguageByIsoCode("da-DK")!;
-
+        
         // Domains
-        var englishDomain = new UmbracoDomain("https://en.example.org/")
+        var englishDomain = new DomainModel
         {
-            RootContentId = firstNode.Id,
-            LanguageId = englishLanguage.Id,
+            IsoCode = "en-US",
+            DomainName = "https://en.example.org/",
         };
-        var englishDomainResult = DomainService.Save(englishDomain);
+        
+        var englishDomainResult = await DomainService.UpdateDomainsAsync(firstNode.Key, new DomainsUpdateModel
+        {
+            Domains = [englishDomain],
+        });
+        
         englishDomainResult.Success.Should().BeTrue();
 
-        var danishDomain = new UmbracoDomain("https://da.example.org/")
+        var danishDomain = new DomainModel
         {
-            RootContentId = secondNode.Id,
-            LanguageId = danishLanguage.Id,
+            IsoCode = "da-DK",
+            DomainName = "https://da.example.org/",
         };
-        var danishDomainResult = DomainService.Save(danishDomain);
+        var danishDomainResult = await DomainService.UpdateDomainsAsync(secondNode.Key, new DomainsUpdateModel
+        {
+            Domains = [danishDomain],
+        });
         danishDomainResult.Success.Should().BeTrue();
 
-        var firstDomains = DomainService.GetAssignedDomains(firstNode.Id, true);
+        var firstDomains = await DomainService.GetAssignedDomainsAsync(firstNode.Key, true);
         firstDomains.Should().HaveCount(1);
 
-        var firstPublishedDomains = UmbracoContext.Domains!.GetAssigned(firstNode.Id, true);
+        var firstPublishedDomains = UmbracoContext.Domains.GetAssigned(firstNode.Id, true);
         firstPublishedDomains.Should().HaveCount(1);
 
-        var secondDomains = DomainService.GetAssignedDomains(secondNode.Id, true);
+        var secondDomains = await DomainService.GetAssignedDomainsAsync(secondNode.Key, true);
         secondDomains.Should().HaveCount(1);
 
-        var secondPublishedDomains = UmbracoContext.Domains!.GetAssigned(secondNode.Id, true);
+        var secondPublishedDomains = UmbracoContext.Domains.GetAssigned(secondNode.Id, true);
         secondPublishedDomains.Should().HaveCount(1);
 
         // Check URLs
         var englishUri = new Uri("https://en.example.org");
         var danishUri = new Uri("https://da.example.org");
 
-        var firstPublishedNode = UmbracoContext.Content!.GetById(firstNode.Id);
+        var firstPublishedNode = UmbracoContext.Content.GetById(firstNode.Id);
         firstPublishedNode.Should().NotBeNull();
 
         PublishedUrlProvider.GetUrl(firstPublishedNode!)
@@ -355,7 +339,7 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
             .Should()
             .Be("https://en.example.org/");
 
-        var secondPublishedNode = UmbracoContext.Content!.GetById(secondNode.Id);
+        var secondPublishedNode = UmbracoContext.Content.GetById(secondNode.Id);
         secondPublishedNode.Should().NotBeNull();
 
         PublishedUrlProvider.GetUrl(secondPublishedNode!)

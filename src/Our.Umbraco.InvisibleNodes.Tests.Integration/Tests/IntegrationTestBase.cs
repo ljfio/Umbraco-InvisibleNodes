@@ -21,9 +21,7 @@ public abstract class IntegrationTestBase(TestWebApplicationFactory factory)
     protected IContentService ContentService => Services.GetRequiredService<IContentService>();
 
     protected IDomainService DomainService => Services.GetRequiredService<IDomainService>();
-
-    protected ILocalizationService LocalizationService => Services.GetRequiredService<ILocalizationService>();
-
+    
     protected IPublishedUrlProvider PublishedUrlProvider => Services.GetRequiredService<IPublishedUrlProvider>();
 
     private UmbracoContextReference UmbracoContextReference => Services
