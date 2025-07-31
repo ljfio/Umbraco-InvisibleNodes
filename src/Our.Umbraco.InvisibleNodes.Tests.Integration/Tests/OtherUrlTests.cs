@@ -20,8 +20,8 @@ public class OtherUrlTests(TestWebApplicationFactory factory) : IntegrationTestB
         using var context = UmbracoContext;
 
         // Create Home node to assign domains
-        var homeNode = ContentService.Create("Home", Constants.System.Root, HomePage.ModelTypeAlias);
-        var homePublishResult = ContentService.SaveAndPublish(homeNode);
+        var homeNode = ContentService.CreateAndSave("Home", Constants.System.Root, HomePage.ModelTypeAlias);
+        var homePublishResult = ContentService.Publish(homeNode, []);
 
         homePublishResult.Success.Should().BeTrue();
 
@@ -57,18 +57,18 @@ public class OtherUrlTests(TestWebApplicationFactory factory) : IntegrationTestB
         publishedAssigned.Should().HaveCount(2);
 
         // Create the other content
-        var contentNode = ContentService.Create("Content", homeNode, ContentPage.ModelTypeAlias);
-        var contentPublishResult = ContentService.SaveAndPublish(contentNode);
+        var contentNode = ContentService.CreateAndSave("Content", homeNode, ContentPage.ModelTypeAlias);
+        var contentPublishResult = ContentService.Publish(contentNode, []);
 
         contentPublishResult.Success.Should().BeTrue();
 
-        var hiddenNode = ContentService.Create("Hidden", contentNode, HiddenNode.ModelTypeAlias);
-        var hiddenPublishResult = ContentService.SaveAndPublish(hiddenNode);
+        var hiddenNode = ContentService.CreateAndSave("Hidden", contentNode, HiddenNode.ModelTypeAlias);
+        var hiddenPublishResult = ContentService.Publish(hiddenNode, []);
 
         hiddenPublishResult.Success.Should().BeTrue();
 
-        var nestedNode = ContentService.Create("Nested", hiddenNode, ContentPage.ModelTypeAlias);
-        var nestedPublishResult = ContentService.SaveAndPublish(nestedNode);
+        var nestedNode = ContentService.CreateAndSave("Nested", hiddenNode, ContentPage.ModelTypeAlias);
+        var nestedPublishResult = ContentService.Publish(nestedNode, []);
 
         nestedPublishResult.Success.Should().BeTrue();
 

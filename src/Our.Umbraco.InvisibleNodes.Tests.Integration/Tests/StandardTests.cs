@@ -20,8 +20,8 @@ public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestB
         using var context = UmbracoContext;
         
         // Content
-        var homeNode = ContentService.Create("Home", Constants.System.Root, HomePage.ModelTypeAlias);
-        var homePublishResult = ContentService.SaveAndPublish(homeNode);
+        var homeNode = ContentService.CreateAndSave("Home", Constants.System.Root, HomePage.ModelTypeAlias);
+        var homePublishResult = ContentService.Publish(homeNode, []);
 
         homePublishResult.Success.Should().BeTrue();
 
@@ -42,13 +42,13 @@ public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestB
         using var context = UmbracoContext;
         
         // Content
-        var homeNode = ContentService.Create("Home", Constants.System.Root, HomePage.ModelTypeAlias);
-        var homePublishResult = ContentService.SaveAndPublish(homeNode);
+        var homeNode = ContentService.CreateAndSave("Home", Constants.System.Root, HomePage.ModelTypeAlias);
+        var homePublishResult = ContentService.Publish(homeNode, []);
 
         homePublishResult.Success.Should().BeTrue();
 
-        var contentNode = ContentService.Create("Content 1", homeNode, ContentPage.ModelTypeAlias);
-        var contentPublishResult = ContentService.SaveAndPublish(contentNode);
+        var contentNode = ContentService.CreateAndSave("Content 1", homeNode, ContentPage.ModelTypeAlias);
+        var contentPublishResult = ContentService.Publish(contentNode, []);
 
         contentPublishResult.Success.Should().BeTrue();
 
@@ -69,18 +69,18 @@ public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestB
         using var context = UmbracoContext;
 
         // Content
-        var homeNode = ContentService.Create("Home", Constants.System.Root, HomePage.ModelTypeAlias);
-        var homePublishResult = ContentService.SaveAndPublish(homeNode);
+        var homeNode = ContentService.CreateAndSave("Home", Constants.System.Root, HomePage.ModelTypeAlias);
+        var homePublishResult = ContentService.Publish(homeNode, []);
 
         homePublishResult.Success.Should().BeTrue();
 
-        var contentNode = ContentService.Create("Content 2", homeNode, ContentPage.ModelTypeAlias);
-        var contentPublishResult = ContentService.SaveAndPublish(contentNode);
+        var contentNode = ContentService.CreateAndSave("Content 2", homeNode, ContentPage.ModelTypeAlias);
+        var contentPublishResult = ContentService.Publish(contentNode, []);
 
         contentPublishResult.Success.Should().BeTrue();
 
-        var nestedNode = ContentService.Create("Nested", contentNode, ContentPage.ModelTypeAlias);
-        var nestedPublishResult = ContentService.SaveAndPublish(nestedNode);
+        var nestedNode = ContentService.CreateAndSave("Nested", contentNode, ContentPage.ModelTypeAlias);
+        var nestedPublishResult = ContentService.Publish(nestedNode, []);
 
         nestedPublishResult.Success.Should().BeTrue();
 
@@ -101,18 +101,18 @@ public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestB
         using var context = UmbracoContext;
         
         // Content
-        var homeNode = ContentService.Create("Home", Constants.System.Root, HomePage.ModelTypeAlias);
-        var homePublishResult = ContentService.SaveAndPublish(homeNode);
+        var homeNode = ContentService.CreateAndSave("Home", Constants.System.Root, HomePage.ModelTypeAlias);
+        var homePublishResult = ContentService.Publish(homeNode, []);
 
         homePublishResult.Success.Should().BeTrue();
 
-        var contentNode = ContentService.Create("Nested", homeNode, ContentPage.ModelTypeAlias);
-        var contentPublishResult = ContentService.SaveAndPublish(contentNode);
+        var contentNode = ContentService.CreateAndSave("Nested", homeNode, ContentPage.ModelTypeAlias);
+        var contentPublishResult = ContentService.Publish(contentNode, []);
 
         contentPublishResult.Success.Should().BeTrue();
 
-        var nestedNode = ContentService.Create("Nested", contentNode, ContentPage.ModelTypeAlias);
-        var nestedPublishResult = ContentService.SaveAndPublish(nestedNode);
+        var nestedNode = ContentService.CreateAndSave("Nested", contentNode, ContentPage.ModelTypeAlias);
+        var nestedPublishResult = ContentService.Publish(nestedNode, []);
 
         nestedPublishResult.Success.Should().BeTrue();
 
@@ -133,22 +133,22 @@ public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestB
         using var context = UmbracoContext;
         
         // Content
-        var homeNode = ContentService.Create("Home", Constants.System.Root, HomePage.ModelTypeAlias);
-        var homePublishResult = ContentService.SaveAndPublish(homeNode);
+        var homeNode = ContentService.CreateAndSave("Home", Constants.System.Root, HomePage.ModelTypeAlias);
+        var homePublishResult = ContentService.Publish(homeNode, []);
 
         homePublishResult.Success.Should().BeTrue();
 
-        var contentNode = ContentService.Create("Nested", homeNode, ContentPage.ModelTypeAlias);
-        var contentPublishResult = ContentService.SaveAndPublish(contentNode);
+        var contentNode = ContentService.CreateAndSave("Nested", homeNode, ContentPage.ModelTypeAlias);
+        var contentPublishResult = ContentService.Publish(contentNode, []);
 
         contentPublishResult.Success.Should().BeTrue();
 
-        var nestedNode = ContentService.Create("Nested", contentNode, ContentPage.ModelTypeAlias);
-        var nestedPublishResult = ContentService.SaveAndPublish(nestedNode);
+        var nestedNode = ContentService.CreateAndSave("Nested", contentNode, ContentPage.ModelTypeAlias);
+        var nestedPublishResult = ContentService.Publish(nestedNode, []);
 
         nestedPublishResult.Success.Should().BeTrue();
 
-        var publishedContent = context.Content!.GetById(nestedNode.Id);
+        var publishedContent = context.Content.GetById(nestedNode.Id);
 
         var current = new Uri("http://example.org");
 
@@ -169,18 +169,18 @@ public class StandardTests(TestWebApplicationFactory factory) : IntegrationTestB
         using var context = UmbracoContext;
         
         // Content
-        var firstNode = ContentService.Create("First", Constants.System.Root, HomePage.ModelTypeAlias);
-        var firstPublishResult = ContentService.SaveAndPublish(firstNode);
+        var firstNode = ContentService.CreateAndSave("First", Constants.System.Root, HomePage.ModelTypeAlias);
+        var firstPublishResult = ContentService.Publish(firstNode, []);
 
         firstPublishResult.Success.Should().BeTrue();
         
-        var secondNode = ContentService.Create("Second", Constants.System.Root, HomePage.ModelTypeAlias);
-        var secondPublishResult = ContentService.SaveAndPublish(secondNode);
+        var secondNode = ContentService.CreateAndSave("Second", Constants.System.Root, HomePage.ModelTypeAlias);
+        var secondPublishResult = ContentService.Publish(secondNode, []);
 
         secondPublishResult.Success.Should().BeTrue();
 
-        var firstPublishedContent = context.Content!.GetById(firstNode.Id);
-        var secondPublishedContent = context.Content!.GetById(secondNode.Id);
+        var firstPublishedContent = context.Content.GetById(firstNode.Id);
+        var secondPublishedContent = context.Content.GetById(secondNode.Id);
 
         var current = new Uri("http://example.org");
 
