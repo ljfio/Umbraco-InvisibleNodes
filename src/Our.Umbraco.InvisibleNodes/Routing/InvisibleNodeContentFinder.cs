@@ -30,7 +30,7 @@ public class InvisibleNodeContentFinder : IContentFinder
     /// <inheritdoc />
     public Task<bool> TryFindContent(IPublishedRequestBuilder request)
     {
-        if (!_umbracoContextAccessor.TryGetUmbracoContext(out var context) || context.Content is null)
+        if (!_umbracoContextAccessor.TryGetUmbracoContext(out var context))
             return Task.FromResult(false);
 
         string host = request.Uri.GetLeftPart(UriPartial.Authority);
