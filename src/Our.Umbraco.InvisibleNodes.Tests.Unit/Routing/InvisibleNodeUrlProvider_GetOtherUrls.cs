@@ -8,32 +8,44 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Routing;
+using Our.Umbraco.InvisibleNodes.Tests.Unit.Fakes;
 using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
-using Umbraco.Extensions;
 
 namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Routing;
 
 public class InvisibleNodeUrlProvider_GetOtherUrls
 {
+    private readonly FakePublishedContentCache _contentCache;
+    private readonly FakeDomainCache _domainCache;
+    private readonly FakeUmbracoContext _umbracoContext;
+
     private static readonly IOptions<RequestHandlerSettings> RequestHandlerOptions = Options.Create(
         new RequestHandlerSettings
         {
             AddTrailingSlash = true,
         });
 
+    public InvisibleNodeUrlProvider_GetOtherUrls()
+    {
+        _contentCache = new FakePublishedContentCache();
+        _domainCache = new FakeDomainCache("en-GB");
+
+        var mediaCache = new FakePublishedMediaCache();
+
+        _umbracoContext = new FakeUmbracoContext(_contentCache, mediaCache, _domainCache);
+    }
+
     [Fact]
     public void Should_Return_EmptyForMatchingRoot()
     {
         // Arrange
-        var domains = UmbracoTestHelper.GenerateDomains(1, "example.org");
+        var root = _contentCache.Generate("Home", "home");
+        var domain = _domainCache.Add(root.Id, "example.org");
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "");
-
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(
-            domains: domains,
-            content: root.AsEnumerableOfOne());
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
@@ -50,6 +62,7 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             mockRulesManager.Object,
             RequestHandlerOptions);
 
@@ -65,13 +78,11 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
     public void Should_Return_1UrlForMatchingRoot()
     {
         // Arrange
-        var domains = UmbracoTestHelper.GenerateDomains(1, "example.org", "example.com");
+        var root = _contentCache.Generate("Home", "home");
+        var domains = _domainCache.AddRange(root.Id, "example.org", "example.com");
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "");
-
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(
-            domains: domains,
-            content: root.AsEnumerableOfOne());
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
@@ -88,6 +99,7 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             mockRulesManager.Object,
             RequestHandlerOptions);
 

@@ -4,21 +4,34 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Routing;
+using Our.Umbraco.InvisibleNodes.Tests.Unit.Fakes;
 using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
-using Umbraco.Cms.Core.Web;
-using Umbraco.Extensions;
 
 namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Routing;
 
 public class InvisibleNodeUrlProvider_GetUrl
 {
+    private readonly FakePublishedContentCache _contentCache;
+    private readonly FakeDomainCache _domainCache;
+    private readonly FakeUmbracoContext _umbracoContext;
+
     private static readonly IOptions<RequestHandlerSettings> RequestHandlerOptions = Options.Create(
         new RequestHandlerSettings
         {
             AddTrailingSlash = true,
         });
+
+    public InvisibleNodeUrlProvider_GetUrl()
+    {
+        _contentCache = new FakePublishedContentCache();
+        _domainCache = new FakeDomainCache("en-GB");
+
+        var mediaCache = new FakePublishedMediaCache();
+
+        _umbracoContext = new FakeUmbracoContext(_contentCache, mediaCache, _domainCache);
+    }
 
     #region Default URL Mode
 
@@ -26,7 +39,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_DefaultRoot()
     {
         // Arrange
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
@@ -36,13 +49,16 @@ public class InvisibleNodeUrlProvider_GetUrl
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var root = _contentCache.Generate("Home", "home");
         var uri = new Uri("https://example.org/");
+
+        var navigationService = new FakeDocumentNavigationService();
 
         var provider = new InvisibleNodeUrlProvider(
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             rulesManager.Object,
             RequestHandlerOptions);
 
@@ -60,7 +76,9 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_DefaultNested1Level()
     {
         // Arrange
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
+
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
@@ -70,8 +88,9 @@ public class InvisibleNodeUrlProvider_GetUrl
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
-        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
+        var root = _contentCache.Generate("Home", "home");
+        var page = _contentCache.Generate("Page", "page", root);
+
 
         var uri = new Uri("https://example.org/");
 
@@ -79,6 +98,7 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             rulesManager.Object,
             RequestHandlerOptions);
 
@@ -96,7 +116,9 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_DefaultNested2Levels()
     {
         // Arrange
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
+
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
@@ -106,9 +128,9 @@ public class InvisibleNodeUrlProvider_GetUrl
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
-        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
-        var nested = UmbracoTestHelper.GenerateNode(3, "Nested", "nested", page);
+        var root = _contentCache.Generate("Home", "home");
+        var page = _contentCache.Generate("Page", "page", root);
+        var nested = _contentCache.Generate("Nested", "nested", page);
 
         var uri = new Uri("https://example.org/");
 
@@ -116,6 +138,7 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             rulesManager.Object,
             RequestHandlerOptions);
 
@@ -133,7 +156,9 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_Child_Same_Name()
     {
         // Arrange
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
+
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
@@ -143,9 +168,9 @@ public class InvisibleNodeUrlProvider_GetUrl
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
-        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
-        var nested = UmbracoTestHelper.GenerateNode(3, "Page", "page", page);
+        var root = _contentCache.Generate("Home", "home");
+        var page = _contentCache.Generate("Page", "page", root);
+        var nested = _contentCache.Generate("Page", "page", page);
 
         var uri = new Uri("https://example.org/");
 
@@ -153,6 +178,7 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             rulesManager.Object,
             RequestHandlerOptions);
 
@@ -170,13 +196,15 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_DefaultInvisible()
     {
         // Arrange
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
+
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
-        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
-        var invisible = UmbracoTestHelper.GenerateNode(3, "Invisible", "invisible", page);
+        var root = _contentCache.Generate("Home", "home");
+        var page = _contentCache.Generate("Page", "page", root);
+        var invisible = _contentCache.Generate("Invisible", "invisible", page);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -194,6 +222,7 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             rulesManager.Object,
             RequestHandlerOptions);
 
@@ -211,14 +240,16 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_DefaultNestedHidden()
     {
         // Arrange
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor();
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
+
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
-        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
-        var invisible = UmbracoTestHelper.GenerateNode(3, "Invisible", "invisible", page);
-        var hidden = UmbracoTestHelper.GenerateNode(4, "Hidden", "hidden", invisible);
+        var root = _contentCache.Generate("Home", "home");
+        var page = _contentCache.Generate("Page", "page", root);
+        var invisible = _contentCache.Generate("Invisible", "invisible", page);
+        var hidden = _contentCache.Generate("Hidden", "hidden", invisible);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -236,6 +267,7 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             rulesManager.Object,
             RequestHandlerOptions);
 
@@ -257,8 +289,10 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_AbsoluteRoot()
     {
         // Arrange
-        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1, 1);
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
+        var domain = _domainCache.Add(1, "example.org");
+
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
@@ -269,13 +303,14 @@ public class InvisibleNodeUrlProvider_GetUrl
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var root = _contentCache.Generate("Home", "home");
         var uri = new Uri("https://example.org/");
 
         var provider = new InvisibleNodeUrlProvider(
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             rulesManager.Object,
             RequestHandlerOptions);
 
@@ -293,8 +328,10 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_AbsoluteNested1Level()
     {
         // Arrange
-        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1, 1);
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
+        var domain = _domainCache.Add(1, "example.org");
+
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
@@ -305,8 +342,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
-        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
+        var root = _contentCache.Generate("Home", "home");
+        var page = _contentCache.Generate("Page", "page", root);
 
         var uri = new Uri("https://example.org/");
 
@@ -314,6 +351,7 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             rulesManager.Object,
             RequestHandlerOptions);
 
@@ -331,8 +369,10 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_AbsoluteNested2Levels()
     {
         // Arrange
-        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1, 1);
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
+        var domain = _domainCache.Add(1, "example.org");
+
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
@@ -343,9 +383,9 @@ public class InvisibleNodeUrlProvider_GetUrl
             .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
-        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
-        var nested = UmbracoTestHelper.GenerateNode(3, "Nested", "nested", page);
+        var root = _contentCache.Generate("Home", "home");
+        var page = _contentCache.Generate("Page", "page", root);
+        var nested = _contentCache.Generate("Nested", "nested", page);
 
         var uri = new Uri("https://example.org/");
 
@@ -353,6 +393,7 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             rulesManager.Object,
             RequestHandlerOptions);
 
@@ -370,15 +411,17 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_AbsoluteInvisible()
     {
         // Arrange
-        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1, 1);
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
+        var domain = _domainCache.Add(1, "example.org");
+
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
-        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
-        var invisible = UmbracoTestHelper.GenerateNode(3, "Invisible", "invisible", page);
+        var root = _contentCache.Generate("Home", "home");
+        var page = _contentCache.Generate("Page", "page", root);
+        var invisible = _contentCache.Generate("Invisible", "invisible", page);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -396,6 +439,7 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             rulesManager.Object,
             RequestHandlerOptions);
 
@@ -413,16 +457,18 @@ public class InvisibleNodeUrlProvider_GetUrl
     public void Should_Return_AbsoluteNestedHidden()
     {
         // Arrange
-        var domain = UmbracoTestHelper.GenerateDomain("example.org", 1, 1);
-        var umbracoContextAccessor = UmbracoTestHelper.GenerateUmbracoContextAccessor(domain.AsEnumerableOfOne());
+        var domain = _domainCache.Add(1, "example.org");
+
+        var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
 
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
-        var root = UmbracoTestHelper.GenerateNode(1, "Home", "home");
-        var page = UmbracoTestHelper.GenerateNode(2, "Page", "page", root);
-        var invisible = UmbracoTestHelper.GenerateNode(3, "Invisible", "invisible", page);
-        var hidden = UmbracoTestHelper.GenerateNode(4, "Hidden", "hidden", invisible);
+        var root = _contentCache.Generate("Home", "home");
+        var page = _contentCache.Generate("Page", "page", root);
+        var invisible = _contentCache.Generate("Invisible", "invisible", page);
+        var hidden = _contentCache.Generate("Hidden", "hidden", invisible);
 
         var rulesManager = new Mock<IInvisibleNodeRulesManager>();
 
@@ -440,6 +486,7 @@ public class InvisibleNodeUrlProvider_GetUrl
             umbracoContextAccessor,
             variationContextAccessor,
             siteDomainMapper,
+            navigationService,
             rulesManager.Object,
             RequestHandlerOptions);
 

@@ -5,6 +5,7 @@ using System;
 using FluentAssertions;
 using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
+using Our.Umbraco.InvisibleNodes.Tests.Unit.Fakes;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Extensions;
 
@@ -12,6 +13,13 @@ namespace Our.Umbraco.InvisibleNodes.Tests.Unit;
 
 public class InvisibleNodeLocator_Locate
 {
+    private readonly FakePublishedContentCache _contentCache;
+    
+    public InvisibleNodeLocator_Locate()
+    {
+        _contentCache = new FakePublishedContentCache();
+    }
+
     [Fact]
     public void Should_Return_Null()
     {
@@ -19,7 +27,7 @@ public class InvisibleNodeLocator_Locate
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
 
-        var node = UmbracoTestHelper.GenerateNode(1, "Home", "home");
+        var node = _contentCache.Generate("Home", "home");
         
         string path = string.Empty;
         string? culture = null;
@@ -63,8 +71,8 @@ public class InvisibleNodeLocator_Locate
         mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var node = UmbracoTestHelper.GenerateNode(2, "Node", "node");
-        var home = UmbracoTestHelper.GenerateNode(1, "Home", "home", children: node.AsEnumerableOfOne());
+        var node = _contentCache.Generate("Node", "node");
+        var home = _contentCache.Generate("Home", "home", children: node.AsEnumerableOfOne());
         
         string path = "/node/";
         string? culture = null;
@@ -88,9 +96,9 @@ public class InvisibleNodeLocator_Locate
         mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var nested = UmbracoTestHelper.GenerateNode(3, "Nested", "nested");
-        var node = UmbracoTestHelper.GenerateNode(2, "Node", "node", children: nested.AsEnumerableOfOne());
-        var home = UmbracoTestHelper.GenerateNode(1, "Home", "home", children: node.AsEnumerableOfOne());
+        var nested = _contentCache.Generate("Nested", "nested");
+        var node = _contentCache.Generate("Node", "node", children: nested.AsEnumerableOfOne());
+        var home = _contentCache.Generate("Home", "home", children: node.AsEnumerableOfOne());
         
         string path = "/node/nested/";
         string? culture = null;
@@ -114,9 +122,9 @@ public class InvisibleNodeLocator_Locate
         mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var nested = UmbracoTestHelper.GenerateNode(3, "Node", "node");
-        var node = UmbracoTestHelper.GenerateNode(2, "Node", "node", children: nested.AsEnumerableOfOne());
-        var home = UmbracoTestHelper.GenerateNode(1, "Home", "home", children: node.AsEnumerableOfOne());
+        var nested = _contentCache.Generate("Node", "node");
+        var node = _contentCache.Generate("Node", "node", children: nested.AsEnumerableOfOne());
+        var home = _contentCache.Generate("Home", "home", children: node.AsEnumerableOfOne());
         
         string path = "/node/node/";
         string? culture = null;
@@ -136,9 +144,9 @@ public class InvisibleNodeLocator_Locate
         // Given
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         
-        var node = UmbracoTestHelper.GenerateNode(2, "Node", "node");
-        var hidden = UmbracoTestHelper.GenerateNode(2, "Hidden", "hidden", children: node.AsEnumerableOfOne());
-        var home = UmbracoTestHelper.GenerateNode(1, "Home", "home", children: hidden.AsEnumerableOfOne());
+        var node = _contentCache.Generate("Node", "node");
+        var hidden = _contentCache.Generate("Hidden", "hidden", children: node.AsEnumerableOfOne());
+        var home = _contentCache.Generate("Home", "home", children: hidden.AsEnumerableOfOne());
         
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
 
