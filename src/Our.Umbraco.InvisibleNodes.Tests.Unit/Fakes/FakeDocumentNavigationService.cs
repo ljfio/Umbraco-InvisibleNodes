@@ -19,6 +19,13 @@ public class FakeDocumentNavigationService : IDocumentNavigationQueryService, ID
     private readonly ConcurrentBag<Guid> _rootKeys = new();
     private readonly ConcurrentBag<Guid> _recycleBinRootKeys = new();
 
+    private readonly FakePublishedCache _cache;
+
+    public FakeDocumentNavigationService(FakePublishedCache cache)
+    {
+        _cache = cache;
+    }
+
     public bool TryGetParentKey(Guid childKey, out Guid? parentKey)
     {
         if (_structure.TryGetValue(childKey, out var node))
@@ -39,7 +46,22 @@ public class FakeDocumentNavigationService : IDocumentNavigationQueryService, ID
 
     public bool TryGetRootKeysOfType(string contentTypeAlias, out IEnumerable<Guid> rootKeys)
     {
-        throw new NotImplementedException();
+        var contentType = _cache.GetContentType(contentTypeAlias);
+
+        var matchingKeys = new List<Guid>();
+
+        if (contentType is null)
+        {
+            rootKeys = matchingKeys;
+            return false;
+        }
+
+        foreach (var rootKey in _rootKeys)
+            if (_structure.TryGetValue(rootKey, out var node) && node.ContentTypeKey == contentType.Key)
+                matchingKeys.Add(rootKey);
+
+        rootKeys = matchingKeys;
+        return matchingKeys.Count > 0;
     }
 
     public bool TryGetChildrenKeys(Guid parentKey, out IEnumerable<Guid> childrenKeys)
@@ -72,7 +94,17 @@ public class FakeDocumentNavigationService : IDocumentNavigationQueryService, ID
 
     public bool TryGetAncestorsKeys(Guid childKey, out IEnumerable<Guid> ancestorsKeys)
     {
-        throw new NotImplementedException();
+        var keys = new List<Guid>();
+        Guid key = childKey;
+
+        while (_structure.TryGetValue(key, out var node) && node.Parent.HasValue)
+        {
+            key = node.Parent.Value;
+            keys.Add(key);
+        }
+
+        ancestorsKeys = keys;
+        return keys.Count > 0;
     }
 
     public bool TryGetAncestorsKeysOfType(Guid parentKey, string contentTypeAlias, out IEnumerable<Guid> ancestorsKeys)
@@ -133,6 +165,8 @@ public class FakeDocumentNavigationService : IDocumentNavigationQueryService, ID
     public bool Add(Guid key, Guid contentTypeKey, Guid? parentKey = null, int? sortOrder = null)
     {
         var node = new NavigationNode(key, contentTypeKey, sortOrder ?? 0);
+        
+        _structure.TryAdd(key, node);
 
         if (parentKey.HasValue && _structure.TryGetValue(parentKey.Value, out var parent))
         {
@@ -141,7 +175,6 @@ public class FakeDocumentNavigationService : IDocumentNavigationQueryService, ID
         }
 
         _rootKeys.Add(key);
-        _structure.TryAdd(key, node);
         return true;
     }
 

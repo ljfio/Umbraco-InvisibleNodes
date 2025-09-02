@@ -14,7 +14,7 @@ namespace Our.Umbraco.InvisibleNodes.Tests.Unit;
 public class InvisibleNodeLocator_Locate
 {
     private readonly FakePublishedContentCache _contentCache;
-    
+
     public InvisibleNodeLocator_Locate()
     {
         _contentCache = new FakePublishedContentCache();
@@ -28,12 +28,12 @@ public class InvisibleNodeLocator_Locate
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
 
         var node = _contentCache.Generate("Home", "home");
-        
+
         string path = string.Empty;
         string? culture = null;
 
         var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
-        
+
         // When
         var result = locator.Locate(node, path, culture);
 
@@ -47,7 +47,7 @@ public class InvisibleNodeLocator_Locate
         // Given
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
-        
+
         IPublishedContent? node = null;
         string path = "/example/";
         string? culture = null;
@@ -71,14 +71,14 @@ public class InvisibleNodeLocator_Locate
         mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var node = _contentCache.Generate("Node", "node");
-        var home = _contentCache.Generate("Home", "home", children: node.AsEnumerableOfOne());
-        
+        var home = _contentCache.Generate("Home", "home");
+        var node = _contentCache.Generate("Node", "node", parent: home);
+
         string path = "/node/";
         string? culture = null;
 
         var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
-        
+
         // When
         var result = locator.Locate(home, path, culture);
 
@@ -96,22 +96,22 @@ public class InvisibleNodeLocator_Locate
         mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var nested = _contentCache.Generate("Nested", "nested");
-        var node = _contentCache.Generate("Node", "node", children: nested.AsEnumerableOfOne());
-        var home = _contentCache.Generate("Home", "home", children: node.AsEnumerableOfOne());
-        
+        var home = _contentCache.Generate("Home", "home");
+        var node = _contentCache.Generate("Node", "node", parent: home);
+        var nested = _contentCache.Generate("Nested", "nested", parent: node);
+
         string path = "/node/nested/";
         string? culture = null;
 
         var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
-        
+
         // When
         var result = locator.Locate(home, path, culture);
 
         // Then
         result.Should().Be(nested);
     }
-    
+
     [Fact]
     public void Should_Return_Child_Same_Name()
     {
@@ -122,15 +122,15 @@ public class InvisibleNodeLocator_Locate
         mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()))
             .Returns(false);
 
-        var nested = _contentCache.Generate("Node", "node");
-        var node = _contentCache.Generate("Node", "node", children: nested.AsEnumerableOfOne());
-        var home = _contentCache.Generate("Home", "home", children: node.AsEnumerableOfOne());
-        
+        var home = _contentCache.Generate("Home", "home");
+        var node = _contentCache.Generate("Node", "node", parent: home);
+        var nested = _contentCache.Generate("Node", "node", parent: node);
+
         string path = "/node/node/";
         string? culture = null;
 
         var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
-        
+
         // When
         var result = locator.Locate(home, path, culture);
 
@@ -143,11 +143,11 @@ public class InvisibleNodeLocator_Locate
     {
         // Given
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
-        
-        var node = _contentCache.Generate("Node", "node");
-        var hidden = _contentCache.Generate("Hidden", "hidden", children: node.AsEnumerableOfOne());
-        var home = _contentCache.Generate("Home", "home", children: hidden.AsEnumerableOfOne());
-        
+
+        var home = _contentCache.Generate("Home", "home");
+        var hidden = _contentCache.Generate("Hidden", "hidden", parent: home);
+        var node = _contentCache.Generate("Node", "node", parent: hidden);
+
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
 
         mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsIn(hidden)))
@@ -155,12 +155,12 @@ public class InvisibleNodeLocator_Locate
 
         mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsNotIn(hidden)))
             .Returns(false);
-        
+
         string path = "/node/";
         string? culture = null;
 
         var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
-        
+
         // When
         var result = locator.Locate(home, path, culture);
 

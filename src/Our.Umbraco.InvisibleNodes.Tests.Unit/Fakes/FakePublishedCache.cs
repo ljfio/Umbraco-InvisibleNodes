@@ -10,7 +10,9 @@ namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Fakes;
 
 public class FakePublishedCache : IPublishedCache
 {
-    private readonly FakeDocumentNavigationService _navigationService = new();
+    private readonly FakeDocumentNavigationService _navigationService;
+
+    public FakePublishedCache() => _navigationService = new(this);
 
     public IDocumentNavigationQueryService DocumentNavigationQueryService => _navigationService;
 
@@ -93,13 +95,15 @@ public class FakePublishedCache : IPublishedCache
     public IEnumerable<IPublishedContent> GetByContentType(IPublishedContentType contentType) =>
         Cache.Where(c => c.ContentType == contentType);
 
-    public void Add(IPublishedContent content, bool isPreview = false)
+    public void Add(IPublishedContent content, Guid? parentKey = null, bool isPreview = false)
     {
         if (isPreview)
             PreviewCache.Add(content);
         else
             Cache.Add(content);
+
+        _navigationService.Add(content.Key, content.ContentType.Key, parentKey);
     }
 
-    public void Add(IPublishedContentType contentType) => TypeCache.Add(contentType);
+    public void AddType(IPublishedContentType contentType) => TypeCache.Add(contentType);
 }

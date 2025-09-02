@@ -40,6 +40,8 @@ public class InvisibleNodeUrlProvider_GetUrl
     {
         // Arrange
         var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
+        var navigationService = _contentCache.DocumentNavigationQueryService;
+
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
@@ -51,8 +53,6 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         var root = _contentCache.Generate("Home", "home");
         var uri = new Uri("https://example.org/");
-
-        var navigationService = new FakeDocumentNavigationService();
 
         var provider = new InvisibleNodeUrlProvider(
             umbracoContextAccessor,
