@@ -2,9 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.PublishedCache;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Services.Navigation;
 using Umbraco.Extensions;
 
 namespace Our.Umbraco.InvisibleNodes;
@@ -12,49 +16,68 @@ namespace Our.Umbraco.InvisibleNodes;
 public class InvisibleNodeLocator : IInvisibleNodeLocator
 {
     private readonly IVariationContextAccessor _variationContextAccessor;
+    private readonly IDocumentNavigationQueryService _navigationQueryService;
     private readonly IInvisibleNodeRulesManager _rulesManager;
 
     public InvisibleNodeLocator(
         IVariationContextAccessor variationContextAccessor,
+        IDocumentNavigationQueryService navigationQueryService,
         IInvisibleNodeRulesManager rulesManager)
     {
         _variationContextAccessor = variationContextAccessor;
+        _navigationQueryService = navigationQueryService;
         _rulesManager = rulesManager;
     }
-    
+
     /// <inheritdoc />
-    public IPublishedContent? Locate(IPublishedContent? node, string? path, string? culture)
+    public IPublishedContent? Locate(
+        IPublishedContentCache cache,
+        IPublishedContent node,
+        string path,
+        string? culture)
     {
         if (node is null)
             throw new ArgumentNullException(nameof(node));
 
         string? trimmedPath = path?.Trim('/');
-        
+
         if (string.IsNullOrEmpty(trimmedPath))
             return null;
 
         string[] segments = trimmedPath.Split('/');
-        
+
         if (segments.Length == 0)
             return null;
 
-        return WalkContentTree(node, segments, culture);
+        return WalkContentTree(cache, node, segments, culture);
     }
 
-    private IPublishedContent? WalkContentTree(IPublishedContent node, string[] segments, string? culture)
+    private IPublishedContent? WalkContentTree(
+        IPublishedContentCache cache,
+        IPublishedContent node,
+        string[] segments,
+        string? culture)
     {
         string segment = segments.First();
-        
-        foreach (var child in node.Children.EmptyNull())
+
+        if (!_navigationQueryService.TryGetChildrenKeys(node.Key, out var keys))
+            return null;
+
+        var children = keys
+            .Select(cache.GetById)
+            .WhereNotNull()
+            .ToList();
+
+        foreach (var child in children)
         {
             if (string.Equals(child.UrlSegment(_variationContextAccessor, culture), segment))
             {
                 if (segments.Length == 1)
                     return child;
-                
+
                 string[] childSegments = segments.Skip(1).ToArray();
 
-                var grandChild = WalkContentTree(child, childSegments, culture);
+                var grandChild = WalkContentTree(cache, child, childSegments, culture);
 
                 if (grandChild is not null)
                     return grandChild;
@@ -62,7 +85,7 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
 
             if (child.IsInvisibleNode(_rulesManager))
             {
-                var hiddenChild = WalkContentTree(child, segments, culture);
+                var hiddenChild = WalkContentTree(cache, child, segments, culture);
 
                 if (hiddenChild is not null)
                     return hiddenChild;

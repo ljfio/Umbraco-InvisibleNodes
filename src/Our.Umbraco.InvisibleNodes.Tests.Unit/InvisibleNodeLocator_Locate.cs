@@ -32,10 +32,13 @@ public class InvisibleNodeLocator_Locate
         string path = string.Empty;
         string? culture = null;
 
-        var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
+        var locator = new InvisibleNodeLocator(
+            variationContextAccessor,
+            _contentCache.DocumentNavigationQueryService, 
+            mockRulesManager.Object);
 
         // When
-        var result = locator.Locate(node, path, culture);
+        var result = locator.Locate(_contentCache, node, path, culture);
 
         // Then
         result.Should().BeNull();
@@ -52,10 +55,13 @@ public class InvisibleNodeLocator_Locate
         string path = "/example/";
         string? culture = null;
 
-        var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
+        var locator = new InvisibleNodeLocator(
+            variationContextAccessor,
+            _contentCache.DocumentNavigationQueryService,
+            mockRulesManager.Object);
 
         // When
-        var act = () => locator.Locate(node, path, culture);
+        var act = () => locator.Locate(_contentCache, node, path, culture);
 
         // Then
         act.Should().Throw<ArgumentNullException>();
@@ -77,10 +83,13 @@ public class InvisibleNodeLocator_Locate
         string path = "/node/";
         string? culture = null;
 
-        var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
+        var locator = new InvisibleNodeLocator(
+            variationContextAccessor,
+            _contentCache.DocumentNavigationQueryService,
+            mockRulesManager.Object);
 
         // When
-        var result = locator.Locate(home, path, culture);
+        var result = locator.Locate(_contentCache, home, path, culture);
 
         // Then
         result.Should().Be(node);
@@ -103,10 +112,13 @@ public class InvisibleNodeLocator_Locate
         string path = "/node/nested/";
         string? culture = null;
 
-        var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
+        var locator = new InvisibleNodeLocator(
+            variationContextAccessor,
+            _contentCache.DocumentNavigationQueryService, 
+            mockRulesManager.Object);
 
         // When
-        var result = locator.Locate(home, path, culture);
+        var result = locator.Locate(_contentCache, home, path, culture);
 
         // Then
         result.Should().Be(nested);
@@ -129,10 +141,13 @@ public class InvisibleNodeLocator_Locate
         string path = "/node/node/";
         string? culture = null;
 
-        var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
+        var locator = new InvisibleNodeLocator(
+            variationContextAccessor,
+            _contentCache.DocumentNavigationQueryService,
+            mockRulesManager.Object);
 
         // When
-        var result = locator.Locate(home, path, culture);
+        var result = locator.Locate(_contentCache, home, path, culture);
 
         // Then
         result.Should().Be(nested);
@@ -159,10 +174,13 @@ public class InvisibleNodeLocator_Locate
         string path = "/node/";
         string? culture = null;
 
-        var locator = new InvisibleNodeLocator(variationContextAccessor, mockRulesManager.Object);
+        var locator = new InvisibleNodeLocator(
+            variationContextAccessor,
+            _contentCache.DocumentNavigationQueryService, 
+            mockRulesManager.Object);
 
         // When
-        var result = locator.Locate(home, path, culture);
+        var result = locator.Locate(_contentCache, home, path, culture);
 
         // Then
         result.Should().Be(node);

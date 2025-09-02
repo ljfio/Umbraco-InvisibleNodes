@@ -60,7 +60,7 @@ public class InvisibleNodeContentFinder : IContentFinder
         if (root is null)
             return Task.FromResult(false);
         
-        var foundNode = _invisibleNodeLocator.Locate(root, path, culture);
+        var foundNode = _invisibleNodeLocator.Locate(context.Content, root, path, culture);
 
         if (foundNode is not null)
         {
