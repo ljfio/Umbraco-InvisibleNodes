@@ -10,6 +10,7 @@ using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PublishedCache;
 using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Services.Navigation;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Extensions;
@@ -19,24 +20,24 @@ namespace Our.Umbraco.InvisibleNodes.Routing;
 public class InvisibleNodeUrlProvider : IUrlProvider
 {
     private readonly IUmbracoContextAccessor _umbracoContextAccessor;
-    private readonly IVariationContextAccessor _variationContextAccessor;
     private readonly ISiteDomainMapper _siteDomainMapper;
     private readonly IDocumentNavigationQueryService _documentNavigationQueryService;
+    private readonly IDocumentUrlService _documentUrlService;
     private readonly IInvisibleNodeRulesManager _rulesManager;
     private readonly IOptions<RequestHandlerSettings> _requestHandlerOptions;
 
     public InvisibleNodeUrlProvider(
         IUmbracoContextAccessor umbracoContextAccessor,
-        IVariationContextAccessor variationContextAccessor,
         ISiteDomainMapper siteDomainMapper,
         IDocumentNavigationQueryService documentNavigationQueryService,
+        IDocumentUrlService documentUrlService,
         IInvisibleNodeRulesManager rulesManager,
         IOptions<RequestHandlerSettings> requestHandlerOptions)
     {
         _umbracoContextAccessor = umbracoContextAccessor;
-        _variationContextAccessor = variationContextAccessor;
         _siteDomainMapper = siteDomainMapper;
         _documentNavigationQueryService = documentNavigationQueryService;
+        _documentUrlService = documentUrlService;
         _rulesManager = rulesManager;
         _requestHandlerOptions = requestHandlerOptions;
     }
@@ -70,7 +71,8 @@ public class InvisibleNodeUrlProvider : IUrlProvider
 
             bool includeNode = matchingDomain is null && content.SortOrder > 0;
 
-            string route = GenerateRoute(contentCache, content, root, culture, includeNode);
+            string requestedCulture = culture ?? defaultCulture;
+            string route = GenerateRoute(contentCache, content, root, requestedCulture, includeNode);
 
             var combinedUri = CombineUri(baseUri, route);
 
@@ -106,7 +108,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         foreach (var mappedDomain in mappedDomains)
         {
             var root = umbracoContext.Content.GetById(mappedDomain.ContentId);
-            string? culture = mappedDomain.Culture;
+            string culture = mappedDomain.Culture ?? defaultCulture;
 
             string route = GenerateRoute(contentCache, content, root, culture, false);
 
@@ -136,12 +138,12 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         IPublishedContentCache contentCache,
         IPublishedContent content,
         IPublishedContent? root,
-        string? culture,
+        string culture,
         bool includeNode)
     {
         var segments = content.AncestorsOrSelf(contentCache, _documentNavigationQueryService)
             .Where(ancestor => IsVisible(ancestor, root, includeNode))
-            .Select(ancestor => ancestor.UrlSegment(_variationContextAccessor, culture))
+            .Select(ancestor => _documentUrlService.GetUrlSegment(ancestor.Key, culture, ancestor.IsDraft(culture)))
             .Reverse()
             .ToList();
 

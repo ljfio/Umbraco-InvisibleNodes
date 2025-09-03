@@ -18,14 +18,17 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
     private readonly IVariationContextAccessor _variationContextAccessor;
     private readonly IDocumentNavigationQueryService _navigationQueryService;
     private readonly IInvisibleNodeRulesManager _rulesManager;
+    private readonly IDocumentUrlService _documentUrlService;
 
     public InvisibleNodeLocator(
         IVariationContextAccessor variationContextAccessor,
         IDocumentNavigationQueryService navigationQueryService,
+        IDocumentUrlService documentUrlService,
         IInvisibleNodeRulesManager rulesManager)
     {
         _variationContextAccessor = variationContextAccessor;
         _navigationQueryService = navigationQueryService;
+        _documentUrlService = documentUrlService;
         _rulesManager = rulesManager;
     }
 
@@ -70,7 +73,9 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
 
         foreach (var child in children)
         {
-            if (string.Equals(child.UrlSegment(_variationContextAccessor, culture), segment))
+            var childSegment = _documentUrlService.GetUrlSegment(child.Key, culture, child.IsDraft(culture));
+            
+            if (string.Equals(childSegment, segment))
             {
                 if (segments.Length == 1)
                     return child;
