@@ -31,7 +31,7 @@ public class InvisibleNodeLocator_Locate
         var node = _contentCache.Generate("Home", "home");
 
         string path = string.Empty;
-        string? culture = null;
+        string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,
@@ -55,7 +55,7 @@ public class InvisibleNodeLocator_Locate
 
         IPublishedContent? node = null;
         string path = "/example/";
-        string? culture = null;
+        string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,
@@ -84,7 +84,7 @@ public class InvisibleNodeLocator_Locate
         var node = _contentCache.Generate("Node", "node", parent: home);
 
         string path = "/node/";
-        string? culture = null;
+        string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,
@@ -114,7 +114,7 @@ public class InvisibleNodeLocator_Locate
         var nested = _contentCache.Generate("Nested", "nested", parent: node);
 
         string path = "/node/nested/";
-        string? culture = null;
+        string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,
@@ -144,7 +144,7 @@ public class InvisibleNodeLocator_Locate
         var nested = _contentCache.Generate("Node", "node", parent: node);
 
         string path = "/node/node/";
-        string? culture = null;
+        string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,
@@ -178,7 +178,7 @@ public class InvisibleNodeLocator_Locate
             .Returns(false);
 
         string path = "/node/";
-        string? culture = null;
+        string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,

@@ -51,7 +51,7 @@ public class InvisibleNodeContentFinder : IContentFinder
             _invisibleNodeCache.ClearRoute(host, path);
         }
         
-        string? culture = request.Culture;
+        string culture = request.Culture ?? context.Domains.DefaultCulture;
 
         var root = request.Domain is not null
             ? context.Content.GetById(request.Domain.ContentId)

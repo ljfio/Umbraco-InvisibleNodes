@@ -37,7 +37,7 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
         IPublishedContentCache cache,
         IPublishedContent node,
         string path,
-        string? culture)
+        string culture)
     {
         if (node is null)
             throw new ArgumentNullException(nameof(node));
@@ -59,7 +59,7 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
         IPublishedContentCache cache,
         IPublishedContent node,
         string[] segments,
-        string? culture)
+        string culture)
     {
         string segment = segments.First();
 

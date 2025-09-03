@@ -16,5 +16,5 @@ public interface IInvisibleNodeLocator
     /// <param name="path"></param>
     /// <param name="culture"></param>
     /// <returns></returns>
-    IPublishedContent? Locate(IPublishedContentCache cache, IPublishedContent node, string path, string? culture);
+    IPublishedContent? Locate(IPublishedContentCache cache, IPublishedContent node, string path, string culture);
 }
