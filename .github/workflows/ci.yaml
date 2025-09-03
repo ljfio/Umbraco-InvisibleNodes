@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ["v15/dev"]
+    branches: ["v16/dev"]
   pull_request:
-    branches: ["v15/dev"]
+    branches: ["v16/dev"]
 
 env:
   SOLUTION_PATH: src/Our.Umbraco.InvisibleNodes.sln
