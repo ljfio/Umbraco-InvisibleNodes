@@ -4,6 +4,7 @@ using System.Linq;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PublishedCache;
+using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Services.Navigation;
 
 namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Fakes;
@@ -11,10 +12,17 @@ namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Fakes;
 public class FakePublishedCache : IPublishedCache
 {
     private readonly FakeDocumentNavigationService _navigationService;
+    private readonly FakeDocumentUrlService _urlService;
 
-    public FakePublishedCache() => _navigationService = new(this);
+    public FakePublishedCache()
+    {
+        _navigationService = new(this);
+        _urlService = new(this);
+    }
 
     public IDocumentNavigationQueryService DocumentNavigationQueryService => _navigationService;
+
+    public IDocumentUrlService DocumentUrlService => _urlService;
 
     protected IList<IPublishedContent> Cache { get; } = new List<IPublishedContent>();
 

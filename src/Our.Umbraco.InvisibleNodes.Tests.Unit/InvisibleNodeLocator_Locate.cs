@@ -7,6 +7,7 @@ using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Tests.Unit.Fakes;
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
 
 namespace Our.Umbraco.InvisibleNodes.Tests.Unit;
@@ -34,7 +35,8 @@ public class InvisibleNodeLocator_Locate
 
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,
-            _contentCache.DocumentNavigationQueryService, 
+            _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
             mockRulesManager.Object);
 
         // When
@@ -58,6 +60,7 @@ public class InvisibleNodeLocator_Locate
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,
             _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
             mockRulesManager.Object);
 
         // When
@@ -86,6 +89,7 @@ public class InvisibleNodeLocator_Locate
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,
             _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
             mockRulesManager.Object);
 
         // When
@@ -114,7 +118,8 @@ public class InvisibleNodeLocator_Locate
 
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,
-            _contentCache.DocumentNavigationQueryService, 
+            _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
             mockRulesManager.Object);
 
         // When
@@ -144,6 +149,7 @@ public class InvisibleNodeLocator_Locate
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,
             _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
             mockRulesManager.Object);
 
         // When
@@ -176,7 +182,8 @@ public class InvisibleNodeLocator_Locate
 
         var locator = new InvisibleNodeLocator(
             variationContextAccessor,
-            _contentCache.DocumentNavigationQueryService, 
+            _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
             mockRulesManager.Object);
 
         // When

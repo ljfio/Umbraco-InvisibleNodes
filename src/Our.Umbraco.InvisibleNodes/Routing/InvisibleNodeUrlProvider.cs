@@ -23,6 +23,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     private readonly ISiteDomainMapper _siteDomainMapper;
     private readonly IDocumentNavigationQueryService _documentNavigationQueryService;
     private readonly IDocumentUrlService _documentUrlService;
+    private readonly IPublishedStatusFilteringService _filteringService;
     private readonly IInvisibleNodeRulesManager _rulesManager;
     private readonly IOptions<RequestHandlerSettings> _requestHandlerOptions;
 
@@ -31,6 +32,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         ISiteDomainMapper siteDomainMapper,
         IDocumentNavigationQueryService documentNavigationQueryService,
         IDocumentUrlService documentUrlService,
+        IPublishedContentStatusFilteringService filteringService,
         IInvisibleNodeRulesManager rulesManager,
         IOptions<RequestHandlerSettings> requestHandlerOptions)
     {
@@ -38,6 +40,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         _siteDomainMapper = siteDomainMapper;
         _documentNavigationQueryService = documentNavigationQueryService;
         _documentUrlService = documentUrlService;
+        _filteringService = filteringService;
         _rulesManager = rulesManager;
         _requestHandlerOptions = requestHandlerOptions;
     }
@@ -49,12 +52,11 @@ public class InvisibleNodeUrlProvider : IUrlProvider
             return null;
 
         // Locate the matching domain for the request
-        var contentCache = umbracoContext.Content;
         var domainCache = umbracoContext.Domains;
         string defaultCulture = domainCache.DefaultCulture;
 
         // Get the matching domain and generated route
-        var matchingDomain = GetMatchingDomain(contentCache, domainCache, content, current, culture);
+        var matchingDomain = GetMatchingDomain(domainCache, content, current, culture);
 
         if (matchingDomain is not null ||
             string.IsNullOrEmpty(culture) ||
@@ -72,7 +74,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
             bool includeNode = matchingDomain is null && content.SortOrder > 0;
 
             string requestedCulture = culture ?? defaultCulture;
-            string route = GenerateRoute(contentCache, content, root, requestedCulture, includeNode);
+            string route = GenerateRoute(content, root, requestedCulture, includeNode);
 
             var combinedUri = CombineUri(baseUri, route);
 
@@ -96,12 +98,11 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         if (content is null)
             return Enumerable.Empty<UrlInfo>();
 
-        var contentCache = umbracoContext.Content;
         var domainCache = umbracoContext.Domains;
         
         string defaultCulture = domainCache.DefaultCulture;
 
-        var mappedDomains = GetMatchingDomains(contentCache, domainCache, content, current);
+        var mappedDomains = GetMatchingDomains(domainCache, content, current);
 
         var urls = new List<UrlInfo>();
 
@@ -110,7 +111,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
             var root = umbracoContext.Content.GetById(mappedDomain.ContentId);
             string culture = mappedDomain.Culture ?? defaultCulture;
 
-            string route = GenerateRoute(contentCache, content, root, culture, false);
+            string route = GenerateRoute(content, root, culture, false);
 
             var uri = CombineUri(mappedDomain.Uri, route);
 
@@ -128,20 +129,18 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// <summary>
     /// Generates out the correct route based on the <see cref="InvisibleNodeRulesManager"/>
     /// </summary>
-    /// <param name="contentCache"></param>
     /// <param name="content"></param>
     /// <param name="root"></param>
     /// <param name="culture"></param>
     /// <param name="includeNode"></param>
     /// <returns></returns>
     private string GenerateRoute(
-        IPublishedContentCache contentCache,
         IPublishedContent content,
         IPublishedContent? root,
         string culture,
         bool includeNode)
     {
-        var segments = content.AncestorsOrSelf(contentCache, _documentNavigationQueryService)
+        var segments = content.AncestorsOrSelf(_documentNavigationQueryService, _filteringService)
             .Where(ancestor => IsVisible(ancestor, root, includeNode))
             .Select(ancestor => _documentUrlService.GetUrlSegment(ancestor.Key, culture, ancestor.IsDraft(culture)))
             .Reverse()
@@ -175,17 +174,15 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// <param name="content"></param>
     /// <param name="current"></param>
     /// <param name="culture"></param>
-    /// <param name="contentCache"></param>
     /// <param name="domainCache"></param>
     /// <returns></returns>
     private DomainAndUri? GetMatchingDomain(
-        IPublishedContentCache contentCache,
         IDomainCache domainCache,
         IPublishedContent content,
         Uri current,
         string? culture)
     {
-        var domains = content.AncestorsOrSelf(contentCache, _documentNavigationQueryService)
+        var domains = content.AncestorsOrSelf(_documentNavigationQueryService, _filteringService)
             .Select(node => domainCache.GetAssigned(node.Id, includeWildcards: false))
             .FirstOrDefault(domains => domains.Any());
 
@@ -200,18 +197,16 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// <summary>
     /// Tries to locate the matching domains for the content
     /// </summary>
-    /// <param name="contentCache"></param>
     /// <param name="domainCache"></param>
     /// <param name="content"></param>
     /// <param name="current"></param>
     /// <returns></returns>
     private IEnumerable<DomainAndUri> GetMatchingDomains(
-        IPublishedContentCache contentCache,
         IDomainCache domainCache,
         IPublishedContent content,
         Uri current)
     {
-        var domainAndUris = content.AncestorsOrSelf(contentCache, _documentNavigationQueryService)
+        var domainAndUris = content.AncestorsOrSelf(_documentNavigationQueryService, _filteringService)
             .SelectMany(node => domainCache.GetAssigned(node.Id, includeWildcards: false))
             .Select(domain => new DomainAndUri(domain, current))
             .ToArray();

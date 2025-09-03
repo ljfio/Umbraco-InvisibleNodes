@@ -19,6 +19,7 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
 {
     private readonly FakePublishedContentCache _contentCache;
     private readonly FakeDomainCache _domainCache;
+    private readonly FakePublishedStatusFilteringService _filteringService;
     private readonly FakeUmbracoContext _umbracoContext;
 
     private static readonly IOptions<RequestHandlerSettings> RequestHandlerOptions = Options.Create(
@@ -30,9 +31,10 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
     public InvisibleNodeUrlProvider_GetOtherUrls()
     {
         _contentCache = new FakePublishedContentCache();
-        _domainCache = new FakeDomainCache("en-GB");
-
         var mediaCache = new FakePublishedMediaCache();
+        _domainCache = new FakeDomainCache(string.Empty);
+
+        _filteringService = new FakePublishedStatusFilteringService(_contentCache);
 
         _umbracoContext = new FakeUmbracoContext(_contentCache, mediaCache, _domainCache);
     }
@@ -45,9 +47,6 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
         var domain = _domainCache.Add(root.Id, "example.org");
 
         var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
-        var navigationService = _contentCache.DocumentNavigationQueryService;
-
-        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
@@ -60,9 +59,10 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
 
         var provider = new InvisibleNodeUrlProvider(
             umbracoContextAccessor,
-            variationContextAccessor,
             siteDomainMapper,
-            navigationService,
+            _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
+            _filteringService,
             mockRulesManager.Object,
             RequestHandlerOptions);
 
@@ -82,9 +82,6 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
         var domains = _domainCache.AddRange(root.Id, "example.org", "example.com");
 
         var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
-        var navigationService = _contentCache.DocumentNavigationQueryService;
-
-        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var siteDomainMapper = new SiteDomainMapper();
 
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
@@ -97,9 +94,10 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
 
         var provider = new InvisibleNodeUrlProvider(
             umbracoContextAccessor,
-            variationContextAccessor,
             siteDomainMapper,
-            navigationService,
+            _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
+            _filteringService,
             mockRulesManager.Object,
             RequestHandlerOptions);
 
