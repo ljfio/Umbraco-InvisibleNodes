@@ -36,6 +36,9 @@ Currently Umbraco 13+ is supported.
 
 ### Umbraco 13+
 
+Install the version linked to the major version of Umbraco,
+for example if you are using Umbraco 13.x install the latest 13.x.
+
 ```pwsh
 dotnet add package Our.Umbraco.InvisibleNodes
 ```
