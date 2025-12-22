@@ -68,7 +68,7 @@ public class InvisibleNodeContentFinder : IContentFinder
             return false;
         
         // Find the matching node
-        var foundNode = _invisibleNodeLocator.Locate(context.Content, root, path, culture);
+        var foundNode = await _invisibleNodeLocator.Locate(context.Content, root, path, culture);
 
         if (foundNode is null)
             return false;

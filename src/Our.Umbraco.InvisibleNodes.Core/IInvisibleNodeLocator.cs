@@ -1,6 +1,7 @@
 // Copyright 2023 Luke Fisher
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Threading.Tasks;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PublishedCache;
 
@@ -16,5 +17,5 @@ public interface IInvisibleNodeLocator
     /// <param name="path"></param>
     /// <param name="culture"></param>
     /// <returns></returns>
-    IPublishedContent? Locate(IPublishedContentCache cache, IPublishedContent node, string path, string culture);
+    Task<IPublishedContent?> Locate(IPublishedContentCache cache, IPublishedContent node, string path, string culture);
 }

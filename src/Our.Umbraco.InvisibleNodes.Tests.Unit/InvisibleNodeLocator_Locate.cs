@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
@@ -22,7 +23,7 @@ public class InvisibleNodeLocator_Locate
     }
 
     [Fact]
-    public void Should_Return_Null()
+    public async Task Should_Return_Null()
     {
         // Given
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -40,14 +41,14 @@ public class InvisibleNodeLocator_Locate
             mockRulesManager.Object);
 
         // When
-        var result = locator.Locate(_contentCache, node, path, culture);
+        var result = await locator.Locate(_contentCache, node, path, culture);
 
         // Then
         result.Should().BeNull();
     }
 
     [Fact]
-    public void Should_Throw_NullArgumentException()
+    public async Task Should_Throw_NullArgumentException()
     {
         // Given
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -64,14 +65,14 @@ public class InvisibleNodeLocator_Locate
             mockRulesManager.Object);
 
         // When
-        var act = () => locator.Locate(_contentCache, node, path, culture);
+        var act = async () => await locator.Locate(_contentCache, node!, path, culture);
 
         // Then
-        act.Should().Throw<ArgumentNullException>();
+        await act.Should().ThrowAsync<ArgumentNullException>();
     }
 
     [Fact]
-    public void Should_Return_First_Child()
+    public async Task Should_Return_First_Child()
     {
         // Given
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -93,14 +94,14 @@ public class InvisibleNodeLocator_Locate
             mockRulesManager.Object);
 
         // When
-        var result = locator.Locate(_contentCache, home, path, culture);
+        var result = await locator.Locate(_contentCache, home, path, culture);
 
         // Then
         result.Should().Be(node);
     }
 
     [Fact]
-    public void Should_Return_Nested_Child()
+    public async Task Should_Return_Nested_Child()
     {
         // Given
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -123,14 +124,14 @@ public class InvisibleNodeLocator_Locate
             mockRulesManager.Object);
 
         // When
-        var result = locator.Locate(_contentCache, home, path, culture);
+        var result = await locator.Locate(_contentCache, home, path, culture);
 
         // Then
         result.Should().Be(nested);
     }
 
     [Fact]
-    public void Should_Return_Child_Same_Name()
+    public async Task Should_Return_Child_Same_Name()
     {
         // Given
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -153,14 +154,14 @@ public class InvisibleNodeLocator_Locate
             mockRulesManager.Object);
 
         // When
-        var result = locator.Locate(_contentCache, home, path, culture);
+        var result = await locator.Locate(_contentCache, home, path, culture);
 
         // Then
         result.Should().Be(nested);
     }
 
     [Fact]
-    public void Should_Return_Hidden_Child()
+    public async Task Should_Return_Hidden_Child()
     {
         // Given
         var variationContextAccessor = new ThreadCultureVariationContextAccessor();
@@ -187,7 +188,7 @@ public class InvisibleNodeLocator_Locate
             mockRulesManager.Object);
 
         // When
-        var result = locator.Locate(_contentCache, home, path, culture);
+        var result = await locator.Locate(_contentCache, home, path, culture);
 
         // Then
         result.Should().Be(node);

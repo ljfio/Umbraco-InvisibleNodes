@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PublishedCache;
@@ -33,7 +34,7 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
     }
 
     /// <inheritdoc />
-    public IPublishedContent? Locate(
+    public async Task<IPublishedContent?> Locate(
         IPublishedContentCache cache,
         IPublishedContent node,
         string path,
@@ -42,7 +43,7 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
         if (node is null)
             throw new ArgumentNullException(nameof(node));
 
-        string? trimmedPath = path?.Trim('/');
+        string trimmedPath = path.Trim('/');
 
         if (string.IsNullOrEmpty(trimmedPath))
             return null;
@@ -52,10 +53,10 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
         if (segments.Length == 0)
             return null;
 
-        return WalkContentTree(cache, node, segments, culture);
+        return await WalkContentTree(cache, node, segments, culture);
     }
 
-    private IPublishedContent? WalkContentTree(
+    private async Task<IPublishedContent?> WalkContentTree(
         IPublishedContentCache cache,
         IPublishedContent node,
         string[] segments,
@@ -66,12 +67,9 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
         if (!_navigationQueryService.TryGetChildrenKeys(node.Key, out var keys))
             return null;
 
-        var children = keys
-            .Select(cache.GetById)
-            .WhereNotNull()
-            .ToList();
-
-        foreach (var child in children)
+        var children = await Task.WhenAll(keys.Select(k => cache.GetByIdAsync(k)));
+        
+        foreach (var child in children.WhereNotNull())
         {
             var childSegment = _documentUrlService.GetUrlSegment(child.Key, culture, child.IsDraft(culture));
             
@@ -82,7 +80,7 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
 
                 string[] childSegments = segments.Skip(1).ToArray();
 
-                var grandChild = WalkContentTree(cache, child, childSegments, culture);
+                var grandChild = await WalkContentTree(cache, child, childSegments, culture);
 
                 if (grandChild is not null)
                     return grandChild;
@@ -90,7 +88,7 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
 
             if (child.IsInvisibleNode(_rulesManager))
             {
-                var hiddenChild = WalkContentTree(cache, child, segments, culture);
+                var hiddenChild = await WalkContentTree(cache, child, segments, culture);
 
                 if (hiddenChild is not null)
                     return hiddenChild;
