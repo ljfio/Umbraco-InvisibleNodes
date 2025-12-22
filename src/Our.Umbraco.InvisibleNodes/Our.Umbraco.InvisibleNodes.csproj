@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ContentTargetFolders>.</ContentTargetFolders>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -9,7 +9,7 @@
     <Product>Our.Umbraco.InvisibleNodes</Product>
     <PackageId>Our.Umbraco.InvisibleNodes</PackageId>
     <Title>Our.Umbraco.InvisibleNodes</Title>
-    <Description>Invisible Nodes for Umbraco 16</Description>
+    <Description>Invisible Nodes for Umbraco 17</Description>
     <PackageTags>umbraco plugin package umbraco-marketplace</PackageTags>
     <Authors>Luke Fisher</Authors>
     <Copyright>Copyright 2023-2025 Luke Fisher</Copyright>
@@ -28,8 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[16.0.0,17.0.0)" />
-    <PackageReference Include="Umbraco.Cms.Web.Common" Version="[16.0.0,17.0.0)" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[17.0.0,18.0.0)" />
+    <PackageReference Include="Umbraco.Cms.Web.Common" Version="[17.0.0,18.0.0)" />
   </ItemGroup>
 
   <ItemGroup>

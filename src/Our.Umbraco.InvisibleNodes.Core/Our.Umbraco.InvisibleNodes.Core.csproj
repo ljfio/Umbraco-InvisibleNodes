@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
@@ -8,7 +8,7 @@
         <Product>Our.Umbraco.InvisibleNodes.Core</Product>
         <PackageId>Our.Umbraco.InvisibleNodes.Core</PackageId>
         <Title>Our.Umbraco.InvisibleNodes.Core</Title>
-        <Description>Invisible Nodes for Umbraco 16</Description>
+        <Description>Invisible Nodes for Umbraco 17</Description>
         <PackageTags>umbraco plugin package</PackageTags>
         <Authors>Luke Fisher</Authors>
         <Copyright>Copyright 2023-2025 Luke Fisher</Copyright>
@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Umbraco.Cms.Core" Version="[16.0.0,17.0.0)" />
+        <PackageReference Include="Umbraco.Cms.Core" Version="[17.0.0,18.0.0)" />
     </ItemGroup>
 
     <ItemGroup>
