@@ -1,4 +1,4 @@
-// Copyright 2023 Luke Fisher
+// Copyright 2023-2025 Luke Fisher
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
@@ -72,19 +72,20 @@ public class OtherUrlTests(TestWebApplicationFactory factory) : IntegrationTestB
         nestedPublishResult.Success.Should().BeTrue();
 
         // Check other URLs
+        var expectedEnglishUri = new Uri("https://en.example.org/content/nested/");
+        var expectedDanishUri = new Uri("https://da.example.org/content/nested/");
+        
         var englishUri = new Uri("https://en.example.org/");
         var englishOtherUrls = PublishedUrlProvider.GetOtherUrls(nestedNode.Id, englishUri).ToArray();
 
         englishOtherUrls.Should()
-            .Contain(url => url.Text
-                .Equals("https://da.example.org/content/nested/", StringComparison.InvariantCultureIgnoreCase));
+            .Contain(url => Equals(expectedDanishUri, url.Url));
 
         var danishUri = new Uri("https://da.example.org/");
         var danishOtherUrls = PublishedUrlProvider.GetOtherUrls(nestedNode.Id, danishUri).ToArray();
 
         danishOtherUrls.Should()
-            .Contain(url => url.Text
-                .Equals("https://en.example.org/content/nested/", StringComparison.InvariantCultureIgnoreCase));
+            .Contain(url => Equals(expectedEnglishUri, url.Url));
     }
 
     public void Dispose()

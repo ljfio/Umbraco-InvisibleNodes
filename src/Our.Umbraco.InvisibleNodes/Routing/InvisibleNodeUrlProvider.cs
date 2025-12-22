@@ -4,9 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Our.Umbraco.InvisibleNodes.Core;
 using Umbraco.Cms.Core.Configuration.Models;
+using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PublishedCache;
 using Umbraco.Cms.Core.Routing;
@@ -44,6 +46,8 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         _rulesManager = rulesManager;
         _requestHandlerOptions = requestHandlerOptions;
     }
+
+    public string Alias => "invisibleNodesUrlProvider";
 
     /// <inheritdoc />
     public UrlInfo? GetUrl(IPublishedContent content, UrlMode mode, string? culture, Uri current)
@@ -99,7 +103,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
             return Enumerable.Empty<UrlInfo>();
 
         var domainCache = umbracoContext.Domains;
-        
+
         string defaultCulture = domainCache.DefaultCulture;
 
         var mappedDomains = GetMatchingDomains(domainCache, content, current);
@@ -124,6 +128,11 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         }
 
         return urls;
+    }
+
+    public Task<UrlInfo?> GetPreviewUrlAsync(IContent content, string? culture, string? segment)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -230,9 +239,9 @@ public class InvisibleNodeUrlProvider : IUrlProvider
             : UrlMode.Relative;
 
         if (newMode != UrlMode.Absolute)
-            return UrlInfo.Url(uri.AbsolutePath, culture);
+            return UrlInfo.AsUrl(uri.AbsolutePath, Alias, culture);
 
-        return UrlInfo.Url(uri.ToString(), culture);
+        return UrlInfo.AsUrl(uri.ToString(), Alias, culture);
     }
 
     /// <summary>

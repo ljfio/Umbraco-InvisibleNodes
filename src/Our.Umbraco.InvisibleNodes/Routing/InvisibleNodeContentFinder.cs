@@ -6,8 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Core.Caching;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.PublishedCache;
 using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Services.Navigation;
 using Umbraco.Cms.Core.Web;
+using Umbraco.Extensions;
 
 namespace Our.Umbraco.InvisibleNodes.Routing;
 
@@ -16,26 +20,30 @@ public class InvisibleNodeContentFinder : IContentFinder
     private readonly IUmbracoContextAccessor _umbracoContextAccessor;
     private readonly IInvisibleNodeCache _invisibleNodeCache;
     private readonly IInvisibleNodeLocator _invisibleNodeLocator;
-
+    private readonly IDocumentNavigationQueryService _navigationQueryService;
+    
     public InvisibleNodeContentFinder(
         IUmbracoContextAccessor umbracoContextAccessor,
         IInvisibleNodeCache invisibleNodeCache,
-        IInvisibleNodeLocator invisibleNodeLocator)
+        IInvisibleNodeLocator invisibleNodeLocator,
+        IDocumentNavigationQueryService navigationQueryService)
     {
         _umbracoContextAccessor = umbracoContextAccessor;
         _invisibleNodeCache = invisibleNodeCache;
         _invisibleNodeLocator = invisibleNodeLocator;
+        _navigationQueryService = navigationQueryService;
     }
 
     /// <inheritdoc />
-    public Task<bool> TryFindContent(IPublishedRequestBuilder request)
+    public async Task<bool> TryFindContent(IPublishedRequestBuilder request)
     {
         if (!_umbracoContextAccessor.TryGetUmbracoContext(out var context))
-            return Task.FromResult(false);
+            return false;
 
         string host = request.Uri.GetLeftPart(UriPartial.Authority);
         string path = request.Uri.AbsolutePath;
 
+        // Check the cache first
         int? cached = _invisibleNodeCache.GetRoute(host, path);
 
         if (cached.HasValue)
@@ -45,30 +53,47 @@ public class InvisibleNodeContentFinder : IContentFinder
             if (cachedContent is not null)
             {
                 request.SetPublishedContent(cachedContent);
-                return Task.FromResult(true);
+                return true;
             }
             
             _invisibleNodeCache.ClearRoute(host, path);
         }
         
+        // Locate the root for the request
         string culture = request.Culture ?? context.Domains.DefaultCulture;
 
-        var root = request.Domain is not null
-            ? context.Content.GetById(request.Domain.ContentId)
-            : context.Content.GetAtRoot(culture).FirstOrDefault();
-
-        if (root is null)
-            return Task.FromResult(false);
+        var root = await LocateRootNode(context.Content, request.Domain, culture);
         
+        if (root is null)
+            return false;
+        
+        // Find the matching node
         var foundNode = _invisibleNodeLocator.Locate(context.Content, root, path, culture);
 
-        if (foundNode is not null)
-        {
-            _invisibleNodeCache.StoreRoute(host, path, foundNode.Id);
-            request.SetPublishedContent(foundNode);
-            return Task.FromResult(true);
-        }
+        if (foundNode is null)
+            return false;
+        
+        _invisibleNodeCache.StoreRoute(host, path, foundNode.Id);
+        request.SetPublishedContent(foundNode);
+        return true;
+    }
 
-        return Task.FromResult(false);
+    private async Task<IPublishedContent?> LocateRootNode(
+        IPublishedContentCache cache,
+        DomainAndUri? domain, 
+        string? culture)
+    {
+        if (domain is not null)
+            return await cache.GetByIdAsync(domain.ContentId);
+        
+        if (!_navigationQueryService.TryGetRootKeys(out var keys))
+            return null;
+        
+        var roots = await Task.WhenAll(keys.Select(k => cache.GetByIdAsync(k)));
+
+        var matchingCulture = roots.WhereNotNull()
+            .FirstOrDefault(r => r.HasCulture(culture));
+        
+        return matchingCulture ?? roots.FirstOrDefault();
     }
 }

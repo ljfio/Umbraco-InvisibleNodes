@@ -108,6 +108,6 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
         urls.Should()
             .NotBeNullOrEmpty()
             .And
-            .ContainSingle(value => value.Text == "https://example.com/");
+            .ContainSingle(value => Equals(uri, value.Url));
     }
 }

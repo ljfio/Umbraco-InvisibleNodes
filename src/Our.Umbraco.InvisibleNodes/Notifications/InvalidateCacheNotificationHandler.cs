@@ -68,8 +68,8 @@ public class InvalidateCacheNotificationHandler :
             .Distinct();
 
         var otherUris = _publishedUrlProvider.GetOtherUrls(entity.Id)
-            .Where(info => info.IsUrl)
-            .Select(info => new Uri(info.Text));
+            .Where(info => info.Url is not null)
+            .Select(info => info.Url);
         
         foreach (var uri in uris.Concat(otherUris)) 
             _invisibleNodeCache.ClearRoute(uri.GetLeftPart(UriPartial.Authority), uri.AbsolutePath);
