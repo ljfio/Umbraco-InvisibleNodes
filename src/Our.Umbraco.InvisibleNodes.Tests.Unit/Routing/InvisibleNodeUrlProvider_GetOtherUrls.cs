@@ -91,6 +91,7 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
             .Returns(false);
 
         var uri = new Uri("https://example.org/");
+        var otherUri = new Uri("https://example.com/");
 
         var provider = new InvisibleNodeUrlProvider(
             umbracoContextAccessor,
@@ -108,6 +109,6 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
         urls.Should()
             .NotBeNullOrEmpty()
             .And
-            .ContainSingle(value => Equals(uri, value.Url));
+            .ContainSingle(value => Equals(otherUri, value.Url));
     }
 }

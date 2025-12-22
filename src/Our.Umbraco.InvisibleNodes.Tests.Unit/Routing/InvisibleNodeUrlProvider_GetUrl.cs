@@ -67,8 +67,7 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         // Assert
         url.Should().NotBeNull();
-        url.Text.Should().Be("/");
-        url.IsUrl.Should().Be(true);
+        url.Url.Should().Be(new Uri("/", UriKind.Relative));
         url.Culture.Should().BeNull();
     }
 
@@ -105,8 +104,7 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         // Assert
         url.Should().NotBeNull();
-        url.Text.Should().Be("/page/");
-        url.IsUrl.Should().Be(true);
+        url.Url.Should().Be(new Uri("/page/", UriKind.Relative));
         url.Culture.Should().BeNull();
     }
 
@@ -143,8 +141,7 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         // Assert
         url.Should().NotBeNull();
-        url.Text.Should().Be("/page/nested/");
-        url.IsUrl.Should().Be(true);
+        url.Url.Should().Be(new Uri("/page/nested/", UriKind.Relative));
         url.Culture.Should().BeNull();
     }
 
@@ -181,8 +178,7 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         // Assert
         url.Should().NotBeNull();
-        url.Text.Should().Be("/page/page/");
-        url.IsUrl.Should().Be(true);
+        url.Url.Should().Be(new Uri("/page/page/", UriKind.Relative));
         url.Culture.Should().BeNull();
     }
 
@@ -223,8 +219,7 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         // Assert
         url.Should().NotBeNull();
-        url.Text.Should().Be("/page/");
-        url.IsUrl.Should().Be(true);
+        url.Url.Should().Be(new Uri("/page/", UriKind.Relative));
         url.Culture.Should().BeNull();
     }
 
@@ -266,8 +261,7 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         // Assert
         url.Should().NotBeNull();
-        url.Text.Should().Be("/page/hidden/");
-        url.IsUrl.Should().Be(true);
+        url.Url.Should().Be(new Uri("/page/hidden/", UriKind.Relative));
         url.Culture.Should().BeNull();
     }
 
@@ -307,8 +301,7 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         // Assert
         url.Should().NotBeNull();
-        url.Text.Should().Be("https://example.org/");
-        url.IsUrl.Should().Be(true);
+        url.Url.Should().Be(new Uri("https://example.org/"));
         url.Culture.Should().BeNull();
     }
 
@@ -346,8 +339,7 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         // Assert
         url.Should().NotBeNull();
-        url.Text.Should().Be("https://example.org/page/");
-        url.IsUrl.Should().Be(true);
+        url.Url.Should().Be(new Uri("https://example.org/page/"));
         url.Culture.Should().BeNull();
     }
 
@@ -386,8 +378,7 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         // Assert
         url.Should().NotBeNull();
-        url.Text.Should().Be("https://example.org/page/nested/");
-        url.IsUrl.Should().Be(true);
+        url.Url.Should().Be(new Uri("https://example.org/page/nested/"));
         url.Culture.Should().BeNull();
     }
 
@@ -430,8 +421,7 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         // Assert
         url.Should().NotBeNull();
-        url.Text.Should().Be("https://example.org/page/");
-        url.IsUrl.Should().Be(true);
+        url.Url.Should().Be(new Uri("https://example.org/page/"));
         url.Culture.Should().BeNull();
     }
 
@@ -475,8 +465,7 @@ public class InvisibleNodeUrlProvider_GetUrl
 
         // Assert
         url.Should().NotBeNull();
-        url.Text.Should().Be("https://example.org/page/hidden/");
-        url.IsUrl.Should().Be(true);
+        url.Url.Should().Be(new Uri("https://example.org/page/hidden/"));
         url.Culture.Should().BeNull();
     }
 
