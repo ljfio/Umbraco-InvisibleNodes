@@ -130,10 +130,9 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         return urls;
     }
 
-    public Task<UrlInfo?> GetPreviewUrlAsync(IContent content, string? culture, string? segment)
-    {
-        throw new NotImplementedException();
-    }
+    /// <inheritdoc />
+    public Task<UrlInfo?> GetPreviewUrlAsync(IContent content, string? culture, string? segment) =>
+        Task.FromResult<UrlInfo?>(null);
 
     /// <summary>
     /// Generates out the correct route based on the <see cref="InvisibleNodeRulesManager"/>
