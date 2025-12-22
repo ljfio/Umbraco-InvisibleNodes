@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Our.Umbraco.InvisibleNodes.Core;
@@ -16,18 +15,15 @@ namespace Our.Umbraco.InvisibleNodes;
 
 public class InvisibleNodeLocator : IInvisibleNodeLocator
 {
-    private readonly IVariationContextAccessor _variationContextAccessor;
     private readonly IDocumentNavigationQueryService _navigationQueryService;
     private readonly IInvisibleNodeRulesManager _rulesManager;
     private readonly IDocumentUrlService _documentUrlService;
 
     public InvisibleNodeLocator(
-        IVariationContextAccessor variationContextAccessor,
         IDocumentNavigationQueryService navigationQueryService,
         IDocumentUrlService documentUrlService,
         IInvisibleNodeRulesManager rulesManager)
     {
-        _variationContextAccessor = variationContextAccessor;
         _navigationQueryService = navigationQueryService;
         _documentUrlService = documentUrlService;
         _rulesManager = rulesManager;

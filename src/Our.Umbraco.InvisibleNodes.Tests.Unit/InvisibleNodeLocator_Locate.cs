@@ -26,7 +26,6 @@ public class InvisibleNodeLocator_Locate
     public async Task Should_Return_Null()
     {
         // Given
-        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
 
         var node = _contentCache.Generate("Home", "home");
@@ -35,7 +34,6 @@ public class InvisibleNodeLocator_Locate
         string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
-            variationContextAccessor,
             _contentCache.DocumentNavigationQueryService,
             _contentCache.DocumentUrlService,
             mockRulesManager.Object);
@@ -51,7 +49,6 @@ public class InvisibleNodeLocator_Locate
     public async Task Should_Throw_NullArgumentException()
     {
         // Given
-        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
 
         IPublishedContent? node = null;
@@ -59,7 +56,6 @@ public class InvisibleNodeLocator_Locate
         string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
-            variationContextAccessor,
             _contentCache.DocumentNavigationQueryService,
             _contentCache.DocumentUrlService,
             mockRulesManager.Object);
@@ -75,7 +71,6 @@ public class InvisibleNodeLocator_Locate
     public async Task Should_Return_First_Child()
     {
         // Given
-        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
 
         mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()))
@@ -88,7 +83,6 @@ public class InvisibleNodeLocator_Locate
         string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
-            variationContextAccessor,
             _contentCache.DocumentNavigationQueryService,
             _contentCache.DocumentUrlService,
             mockRulesManager.Object);
@@ -104,7 +98,6 @@ public class InvisibleNodeLocator_Locate
     public async Task Should_Return_Nested_Child()
     {
         // Given
-        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
 
         mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()))
@@ -118,7 +111,6 @@ public class InvisibleNodeLocator_Locate
         string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
-            variationContextAccessor,
             _contentCache.DocumentNavigationQueryService,
             _contentCache.DocumentUrlService,
             mockRulesManager.Object);
@@ -134,7 +126,6 @@ public class InvisibleNodeLocator_Locate
     public async Task Should_Return_Child_Same_Name()
     {
         // Given
-        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
         var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
 
         mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()))
@@ -148,7 +139,6 @@ public class InvisibleNodeLocator_Locate
         string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
-            variationContextAccessor,
             _contentCache.DocumentNavigationQueryService,
             _contentCache.DocumentUrlService,
             mockRulesManager.Object);
@@ -164,8 +154,6 @@ public class InvisibleNodeLocator_Locate
     public async Task Should_Return_Hidden_Child()
     {
         // Given
-        var variationContextAccessor = new ThreadCultureVariationContextAccessor();
-
         var home = _contentCache.Generate("Home", "home");
         var hidden = _contentCache.Generate("Hidden", "hidden", parent: home);
         var node = _contentCache.Generate("Node", "node", parent: hidden);
@@ -182,7 +170,6 @@ public class InvisibleNodeLocator_Locate
         string culture = string.Empty;
 
         var locator = new InvisibleNodeLocator(
-            variationContextAccessor,
             _contentCache.DocumentNavigationQueryService,
             _contentCache.DocumentUrlService,
             mockRulesManager.Object);
