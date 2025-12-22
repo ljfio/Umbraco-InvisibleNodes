@@ -1,4 +1,4 @@
-// Copyright 2023 Luke Fisher
+// Copyright 2023-2025 Luke Fisher
 // SPDX-License-Identifier: Apache-2.0
 
 namespace Our.Umbraco.InvisibleNodes.Core.Caching;

@@ -5,7 +5,7 @@
 [![nuget](https://img.shields.io/nuget/v/Our.Umbraco.InvisibleNodes?logo=nuget)][nuget]
 [![marketplace](https://img.shields.io/badge/marketplace-3544B1?logo=umbraco&logoColor=white&label=umbraco)][marketplace]
 
-The package for Umbraco 16 that hides nodes in the content tree making them 'invisible' to front end users.
+The package for Umbraco 17 that hides nodes in the content tree making them 'invisible' to front end users.
 
 Use this package to create logical groupings for nodes, where you want to exclude that grouping node from the generated URL.
 
@@ -38,7 +38,7 @@ Please raise any issues with the package on [GitHub][github].
 
 ## License
 
-Copyright 2023 Luke Fisher
+Copyright 2023-2025 Luke Fisher
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
