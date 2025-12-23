@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using FluentAssertions;
+using AwesomeAssertions;
 using Our.Umbraco.InvisibleNodes.Tests.Integration.Core;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.ContentEditing;
