@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ["v16/dev"]
+    branches: ["v17/dev"]
   pull_request:
-    branches: ["v16/dev"]
+    branches: ["v17/dev"]
 
 env:
   SOLUTION_PATH: src/Our.Umbraco.InvisibleNodes.sln
@@ -21,7 +21,7 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: |
-          8.x
+          10.x
     - name: Cache NuGet Packages
       uses: actions/cache@v3
       with:
