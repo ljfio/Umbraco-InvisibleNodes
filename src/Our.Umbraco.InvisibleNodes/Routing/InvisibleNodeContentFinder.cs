@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Core.Caching;
@@ -80,20 +79,30 @@ public class InvisibleNodeContentFinder : IContentFinder
 
     private async Task<IPublishedContent?> LocateRootNode(
         IPublishedContentCache cache,
-        DomainAndUri? domain, 
+        DomainAndUri? domain,
         string? culture)
     {
         if (domain is not null)
             return await cache.GetByIdAsync(domain.ContentId);
-        
+
         if (!_navigationQueryService.TryGetRootKeys(out var keys))
             return null;
-        
-        var roots = await Task.WhenAll(keys.Select(k => cache.GetByIdAsync(k)));
 
-        var matchingCulture = roots.WhereNotNull()
-            .FirstOrDefault(r => r.HasCulture(culture));
-        
-        return matchingCulture ?? roots.FirstOrDefault();
+        IPublishedContent? fallback = null;
+
+        foreach (var key in keys)
+        {
+            var root = await cache.GetByIdAsync(key);
+
+            if (root is null)
+                continue;
+
+            if (root.HasCulture(culture))
+                return root;
+
+            fallback ??= root;
+        }
+
+        return fallback;
     }
 }

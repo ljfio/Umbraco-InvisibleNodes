@@ -63,12 +63,15 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
         if (!_navigationQueryService.TryGetChildrenKeys(node.Key, out var keys))
             return null;
 
-        var children = await Task.WhenAll(keys.Select(k => cache.GetByIdAsync(k)));
-        
-        foreach (var child in children.WhereNotNull())
+        foreach (var key in keys)
         {
+            var child = await cache.GetByIdAsync(key);
+
+            if (child is null)
+                continue;
+
             var childSegment = _documentUrlService.GetUrlSegment(child.Key, culture, child.IsDraft(culture));
-            
+
             if (string.Equals(childSegment, segment))
             {
                 if (segments.Length == 1)
