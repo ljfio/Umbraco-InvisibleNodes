@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Our.Umbraco.InvisibleNodes.Core;
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
@@ -28,6 +29,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     private readonly IPublishedStatusFilteringService _filteringService;
     private readonly IInvisibleNodeRulesManager _rulesManager;
     private readonly IOptions<RequestHandlerSettings> _requestHandlerOptions;
+    private readonly IRuntimeState _runtimeState;
 
     public InvisibleNodeUrlProvider(
         IUmbracoContextAccessor umbracoContextAccessor,
@@ -36,7 +38,8 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         IDocumentUrlService documentUrlService,
         IPublishedContentStatusFilteringService filteringService,
         IInvisibleNodeRulesManager rulesManager,
-        IOptions<RequestHandlerSettings> requestHandlerOptions)
+        IOptions<RequestHandlerSettings> requestHandlerOptions,
+        IRuntimeState runtimeState)
     {
         _umbracoContextAccessor = umbracoContextAccessor;
         _siteDomainMapper = siteDomainMapper;
@@ -45,6 +48,7 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         _filteringService = filteringService;
         _rulesManager = rulesManager;
         _requestHandlerOptions = requestHandlerOptions;
+        _runtimeState = runtimeState;
     }
 
     public string Alias => "invisibleNodesUrlProvider";
@@ -52,6 +56,10 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// <inheritdoc />
     public UrlInfo? GetUrl(IPublishedContent content, UrlMode mode, string? culture, Uri current)
     {
+        // IDocumentUrlService is not initialized until the runtime is running (it is skipped while upgrading)
+        if (_runtimeState.Level != RuntimeLevel.Run)
+            return null;
+
         if (!_umbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext))
             return null;
 
@@ -94,6 +102,9 @@ public class InvisibleNodeUrlProvider : IUrlProvider
     /// <inheritdoc />
     public IEnumerable<UrlInfo> GetOtherUrls(int id, Uri current)
     {
+        if (_runtimeState.Level != RuntimeLevel.Run)
+            return Enumerable.Empty<UrlInfo>();
+
         if (!_umbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext))
             return Enumerable.Empty<UrlInfo>();
 

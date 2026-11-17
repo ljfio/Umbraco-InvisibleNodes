@@ -5,9 +5,11 @@ using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Routing;
 using Our.Umbraco.InvisibleNodes.Tests.Unit.Fakes;
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Services;
 
 namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Routing;
 
@@ -17,6 +19,9 @@ public class InvisibleNodeUrlProvider_GetUrl
     private readonly FakeDomainCache _domainCache;
     private readonly FakePublishedStatusFilteringService _filteringService;
     private readonly FakeUmbracoContext _umbracoContext;
+
+    private static IRuntimeState RuntimeState(RuntimeLevel level) =>
+        Mock.Of<IRuntimeState>(r => r.Level == level);
 
     private static readonly IOptions<RequestHandlerSettings> RequestHandlerOptions = Options.Create(
         new RequestHandlerSettings
@@ -60,7 +65,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             _contentCache.DocumentUrlService,
             _filteringService,
             rulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var url = provider.GetUrl(root, UrlMode.Default, null, uri);
@@ -97,7 +103,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             _contentCache.DocumentUrlService,
             _filteringService,
             rulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var url = provider.GetUrl(page, UrlMode.Default, null, uri);
@@ -134,7 +141,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             _contentCache.DocumentUrlService,
             _filteringService,
             rulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var url = provider.GetUrl(nested, UrlMode.Default, null, uri);
@@ -171,7 +179,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             _contentCache.DocumentUrlService,
             _filteringService,
             rulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var url = provider.GetUrl(nested, UrlMode.Default, null, uri);
@@ -212,7 +221,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             _contentCache.DocumentUrlService,
             _filteringService,
             rulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var url = provider.GetUrl(invisible, UrlMode.Default, null, uri);
@@ -254,7 +264,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             _contentCache.DocumentUrlService,
             _filteringService,
             rulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var url = provider.GetUrl(hidden, UrlMode.Default, null, uri);
@@ -294,7 +305,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             _contentCache.DocumentUrlService,
             _filteringService,
             rulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var url = provider.GetUrl(root, UrlMode.Absolute, null, uri);
@@ -332,7 +344,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             _contentCache.DocumentUrlService,
             _filteringService,
             rulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var url = provider.GetUrl(page, UrlMode.Absolute, null, uri);
@@ -371,7 +384,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             _contentCache.DocumentUrlService,
             _filteringService,
             rulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var url = provider.GetUrl(nested, UrlMode.Absolute, null, uri);
@@ -414,7 +428,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             _contentCache.DocumentUrlService,
             _filteringService,
             rulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var url = provider.GetUrl(invisible, UrlMode.Absolute, null, uri);
@@ -458,7 +473,8 @@ public class InvisibleNodeUrlProvider_GetUrl
             _contentCache.DocumentUrlService,
             _filteringService,
             rulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var url = provider.GetUrl(hidden, UrlMode.Absolute, null, uri);
@@ -467,6 +483,45 @@ public class InvisibleNodeUrlProvider_GetUrl
         url.Should().NotBeNull();
         url.Url.Should().Be(new Uri("https://example.org/page/hidden/"));
         url.Culture.Should().BeNull();
+    }
+
+    #endregion
+
+    #region Runtime Level
+
+    [Theory]
+    [InlineData(RuntimeLevel.Upgrade)]
+    [InlineData(RuntimeLevel.Install)]
+    [InlineData(RuntimeLevel.BootFailed)]
+    public void Should_ReturnNull_WhenRuntimeNotRunning(RuntimeLevel level)
+    {
+        // Arrange
+        var rulesManager = new Mock<IInvisibleNodeRulesManager>();
+
+        // IDocumentUrlService throws when used before initialization, which is skipped while upgrading
+        var documentUrlService = new Mock<IDocumentUrlService>(MockBehavior.Strict);
+
+        var root = _contentCache.Generate("Home", "home");
+        var page = _contentCache.Generate("Page", "page", root);
+
+        var provider = new InvisibleNodeUrlProvider(
+            _umbracoContext.GetUmbracoContextAccessor(),
+            new SiteDomainMapper(),
+            _contentCache.DocumentNavigationQueryService,
+            documentUrlService.Object,
+            _filteringService,
+            rulesManager.Object,
+            RequestHandlerOptions,
+            RuntimeState(level));
+
+        // Act
+        var url = provider.GetUrl(page, UrlMode.Default, null, new Uri("https://example.org/"));
+        var otherUrls = provider.GetOtherUrls(page.Id, new Uri("https://example.org/"));
+
+        // Assert
+        url.Should().BeNull();
+        otherUrls.Should().BeEmpty();
+        documentUrlService.VerifyNoOtherCalls();
     }
 
     #endregion

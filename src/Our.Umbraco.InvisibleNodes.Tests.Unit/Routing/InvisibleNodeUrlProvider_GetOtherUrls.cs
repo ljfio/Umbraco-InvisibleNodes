@@ -9,6 +9,8 @@ using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Routing;
 using Our.Umbraco.InvisibleNodes.Tests.Unit.Fakes;
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
@@ -21,6 +23,9 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
     private readonly FakeDomainCache _domainCache;
     private readonly FakePublishedStatusFilteringService _filteringService;
     private readonly FakeUmbracoContext _umbracoContext;
+
+    private static IRuntimeState RuntimeState(RuntimeLevel level) =>
+        Mock.Of<IRuntimeState>(r => r.Level == level);
 
     private static readonly IOptions<RequestHandlerSettings> RequestHandlerOptions = Options.Create(
         new RequestHandlerSettings
@@ -64,7 +69,8 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
             _contentCache.DocumentUrlService,
             _filteringService,
             mockRulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var urls = provider.GetOtherUrls(root.Id, uri);
@@ -100,7 +106,8 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
             _contentCache.DocumentUrlService,
             _filteringService,
             mockRulesManager.Object,
-            RequestHandlerOptions);
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 
         // Act
         var urls = provider.GetOtherUrls(root.Id, uri).ToArray();
