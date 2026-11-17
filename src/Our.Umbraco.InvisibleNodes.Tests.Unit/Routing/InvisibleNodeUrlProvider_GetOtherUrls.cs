@@ -118,4 +118,68 @@ public class InvisibleNodeUrlProvider_GetOtherUrls
             .And
             .ContainSingle(value => Equals(otherUri, value.Url));
     }
+
+    [Fact]
+    public void Should_Return_EmptyForInvisibleNode_WithMultipleHostnames()
+    {
+        // Arrange
+        var root = _contentCache.Generate("Home", "home");
+        var news = _contentCache.Generate("News", "page", root);
+        var invisible = _contentCache.Generate("2026", "folder", news);
+        _contentCache.Generate("Article", "page", invisible);
+
+        _domainCache.AddRange(root.Id, "example.org", "example.com");
+
+        var provider = CreateProvider(InvisibleRulesManager(invisible));
+
+        // Act
+        var urls = provider.GetOtherUrls(invisible.Id, new Uri("https://example.org/"));
+
+        // Assert
+        urls.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Should_Return_1UrlForHiddenDescendant_WithMultipleHostnames()
+    {
+        // Arrange
+        var root = _contentCache.Generate("Home", "home");
+        var news = _contentCache.Generate("News", "page", root);
+        var invisible = _contentCache.Generate("2026", "folder", news);
+        var article = _contentCache.Generate("Article", "page", invisible);
+
+        _domainCache.AddRange(root.Id, "example.org", "example.com");
+
+        var provider = CreateProvider(InvisibleRulesManager(invisible));
+
+        // Act
+        var urls = provider.GetOtherUrls(article.Id, new Uri("https://example.org/")).ToArray();
+
+        // Assert
+        urls.Should()
+            .ContainSingle()
+            .Which.Url.Should().Be(new Uri("https://example.com/news/article/"));
+    }
+
+    private static IInvisibleNodeRulesManager InvisibleRulesManager(params IPublishedContent[] invisible)
+    {
+        var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
+
+        mockRulesManager
+            .Setup(m => m.IsInvisibleNode(It.IsAny<IPublishedContent>()))
+            .Returns((IPublishedContent content) => invisible.Contains(content));
+
+        return mockRulesManager.Object;
+    }
+
+    private InvisibleNodeUrlProvider CreateProvider(IInvisibleNodeRulesManager rulesManager) =>
+        new(
+            _umbracoContext.GetUmbracoContextAccessor(),
+            new SiteDomainMapper(),
+            _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
+            _filteringService,
+            rulesManager,
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
 }

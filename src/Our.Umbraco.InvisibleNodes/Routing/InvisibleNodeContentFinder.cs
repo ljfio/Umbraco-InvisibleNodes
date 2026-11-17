@@ -3,11 +3,13 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Core.Caching;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PublishedCache;
 using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Services.Navigation;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Extensions;
@@ -20,17 +22,29 @@ public class InvisibleNodeContentFinder : IContentFinder
     private readonly IInvisibleNodeCache _invisibleNodeCache;
     private readonly IInvisibleNodeLocator _invisibleNodeLocator;
     private readonly IDocumentNavigationQueryService _navigationQueryService;
-    
+    private readonly IDocumentUrlService _documentUrlService;
+    private readonly IPublishedUrlProvider _publishedUrlProvider;
+    private readonly IInvisibleNodeRulesManager _rulesManager;
+    private readonly IOptionsMonitor<InvisibleNodeSettings> _settings;
+
     public InvisibleNodeContentFinder(
         IUmbracoContextAccessor umbracoContextAccessor,
         IInvisibleNodeCache invisibleNodeCache,
         IInvisibleNodeLocator invisibleNodeLocator,
-        IDocumentNavigationQueryService navigationQueryService)
+        IDocumentNavigationQueryService navigationQueryService,
+        IDocumentUrlService documentUrlService,
+        IPublishedUrlProvider publishedUrlProvider,
+        IInvisibleNodeRulesManager rulesManager,
+        IOptionsMonitor<InvisibleNodeSettings> settings)
     {
         _umbracoContextAccessor = umbracoContextAccessor;
         _invisibleNodeCache = invisibleNodeCache;
         _invisibleNodeLocator = invisibleNodeLocator;
         _navigationQueryService = navigationQueryService;
+        _documentUrlService = documentUrlService;
+        _publishedUrlProvider = publishedUrlProvider;
+        _rulesManager = rulesManager;
+        _settings = settings;
     }
 
     /// <inheritdoc />
@@ -107,11 +121,89 @@ public class InvisibleNodeContentFinder : IContentFinder
         var foundNode = await _invisibleNodeLocator.Locate(context.Content, root, relativePath, culture);
 
         if (foundNode is null)
-            return false;
+            return HandleNativeUrl(request, context, root, relativePath);
         
         _invisibleNodeCache.StoreRoute(host, path, foundNode.Id);
         request.SetPublishedContent(foundNode);
         return true;
+    }
+
+    /// <summary>
+    /// Handles a request for the URL a node would have without this package, i.e. one that includes the segment
+    /// of an invisible node, which Umbraco would otherwise go on to serve
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="context"></param>
+    /// <param name="root"></param>
+    /// <param name="relativePath">path relative to the <paramref name="root"/></param>
+    /// <returns>true when the request has been handled and Umbraco should not serve the content</returns>
+    private bool HandleNativeUrl(
+        IPublishedRequestBuilder request,
+        IUmbracoContext context,
+        IPublishedContent root,
+        string relativePath)
+    {
+        var behavior = _settings.CurrentValue.NativeUrls;
+
+        if (behavior == NativeUrlBehavior.Allow)
+            return false;
+
+        string route = Uri.UnescapeDataString(relativePath).EnsureStartsWith('/');
+
+        var key = _documentUrlService.GetDocumentKeyByRoute(
+            route,
+            request.Culture,
+            request.Domain?.ContentId,
+            context.InPreviewMode);
+
+        if (!key.HasValue)
+            return false;
+
+        var node = context.Content.GetById(context.InPreviewMode, key.Value);
+
+        if (node is null || !HasInvisibleSegment(context.Content, node, root))
+            return false;
+
+        // The invisible node itself does not have a URL to redirect to
+        if (behavior == NativeUrlBehavior.Redirect && !node.IsInvisibleNode(_rulesManager))
+        {
+            string url = _publishedUrlProvider.GetUrl(node, UrlMode.Default, request.Culture, request.Uri);
+
+            if (!string.IsNullOrEmpty(url) && !url.StartsWith('#'))
+            {
+                request.SetRedirectPermanent(url + request.Uri.Query);
+                return true;
+            }
+        }
+
+        // Handled without any content, so the request is not found
+        return true;
+    }
+
+    /// <summary>
+    /// Checks if the native URL of the node includes the segment of an invisible node
+    /// </summary>
+    /// <param name="cache"></param>
+    /// <param name="node"></param>
+    /// <param name="root"></param>
+    /// <returns></returns>
+    private bool HasInvisibleSegment(IPublishedContentCache cache, IPublishedContent node, IPublishedContent root)
+    {
+        if (node.Level > root.Level && node.IsInvisibleNode(_rulesManager))
+            return true;
+
+        if (!_navigationQueryService.TryGetAncestorsKeys(node.Key, out var ancestorKeys))
+            return false;
+
+        foreach (var ancestorKey in ancestorKeys)
+        {
+            var ancestor = cache.GetById(ancestorKey);
+
+            if (ancestor is not null && ancestor.Level > root.Level && ancestor.IsInvisibleNode(_rulesManager))
+                return true;
+        }
+
+        return false;
     }
 
     private async Task<IPublishedContent?> LocateRootNode(

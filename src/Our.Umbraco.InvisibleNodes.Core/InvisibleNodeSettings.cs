@@ -20,4 +20,9 @@ public class InvisibleNodeSettings
     /// Defines the content types for the nodes that are invisible
     /// </summary>
     public string[] ContentTypes { get; set; } = Array.Empty<string>();
+
+    /// <summary>
+    /// Defines what happens when a URL that includes the segment of an invisible node is requested
+    /// </summary>
+    public NativeUrlBehavior NativeUrls { get; set; } = NativeUrlBehavior.Redirect;
 }

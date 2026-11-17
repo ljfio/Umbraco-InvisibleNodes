@@ -12,6 +12,7 @@ using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
+using Umbraco.Cms.Core.Routing;
 
 namespace Our.Umbraco.InvisibleNodes.Composing;
 
@@ -24,6 +25,11 @@ public class PackageComposer : IComposer
 
         builder.UrlProviders()
             .Insert<InvisibleNodeUrlProvider>();
+
+        // Only the invisible node URL provider generates content URLs
+        if (builder.UrlProviders().Has<NewDefaultUrlProvider>())
+            builder.UrlProviders()
+                .Replace<NewDefaultUrlProvider, InvisibleNodeDefaultUrlProvider>();
 
         builder.Services
             .Configure<InvisibleNodeSettings>(builder.Config.GetSection(InvisibleNodeSettings.InvisibleNodes));

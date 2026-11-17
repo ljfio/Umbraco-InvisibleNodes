@@ -83,6 +83,10 @@ public class InvisibleNodeUrlProvider : IUrlProvider
                 ? matchingDomain.Uri
                 : new Uri(current.GetLeftPart(UriPartial.Authority));
 
+            // Invisible nodes are hidden, so they do not have a URL
+            if (IsHidden(content, root))
+                return null;
+
             bool includeNode = matchingDomain is null && content.SortOrder > 0;
 
             string requestedCulture = culture ?? defaultCulture;
@@ -126,6 +130,9 @@ public class InvisibleNodeUrlProvider : IUrlProvider
             var root = umbracoContext.Content.GetById(mappedDomain.ContentId);
             string culture = mappedDomain.Culture ?? defaultCulture;
 
+            if (IsHidden(content, root))
+                continue;
+
             string route = GenerateRoute(content, root, culture, false);
 
             var uri = CombineUri(mappedDomain.Uri, route);
@@ -168,6 +175,16 @@ public class InvisibleNodeUrlProvider : IUrlProvider
         return string.Join('/', segments)
             .EnsureStartsWith("/");
     }
+
+    /// <summary>
+    /// Checks if the node is an invisible node below the root, which is hidden and so does not have a URL
+    /// </summary>
+    /// <param name="node"></param>
+    /// <param name="root"></param>
+    /// <returns></returns>
+    private bool IsHidden(IPublishedContent node, IPublishedContent? root) =>
+        node.IsInvisibleNode(_rulesManager) &&
+        (root is not null ? node.Level > root.Level : node.Level > 1);
 
     /// <summary>
     /// Checks if the node is visible in the URL

@@ -27,10 +27,23 @@ To make a node invisible, you can configure the app settings to make a content t
     "CachingEnabled": true,
     "ContentTypes": [
       "hiddenNode"
-    ]
+    ],
+    "NativeUrls": "Redirect"
   }
 }
 ```
+
+Invisible nodes are hidden, so they do not have a URL of their own and only the nodes beneath them are served,
+without the invisible node's segment in the URL.
+
+`NativeUrls` sets what happens when the URL a node would have had without the package is requested,
+e.g. `/products/product-category-1/product-1`:
+
+| Value                | Behaviour                                                                                              |
+|----------------------|--------------------------------------------------------------------------------------------------------|
+| `Redirect` (default) | Permanently redirects to the URL without the invisible node, the invisible node itself is not found   |
+| `NotFound`           | The request is not found                                                                               |
+| `Allow`              | Umbraco serves the content at that URL as well                                                         |
 
 ## Contributing
 

@@ -192,7 +192,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     }
 
     [Fact]
-    public void Should_Return_DefaultInvisible()
+    public void Should_Return_Null_DefaultInvisible()
     {
         // Arrange
         var umbracoContextAccessor = _umbracoContext.GetUmbracoContextAccessor();
@@ -228,9 +228,8 @@ public class InvisibleNodeUrlProvider_GetUrl
         var url = provider.GetUrl(invisible, UrlMode.Default, null, uri);
 
         // Assert
-        url.Should().NotBeNull();
-        url.Url.Should().Be(new Uri("/page/", UriKind.Relative));
-        url.Culture.Should().BeNull();
+        // Invisible nodes do not have a URL
+        url.Should().BeNull();
     }
 
     [Fact]
@@ -397,7 +396,7 @@ public class InvisibleNodeUrlProvider_GetUrl
     }
 
     [Fact]
-    public void Should_Return_AbsoluteInvisible()
+    public void Should_Return_Null_AbsoluteInvisible()
     {
         // Arrange
         var domain = _domainCache.Add(1, "example.org");
@@ -435,9 +434,8 @@ public class InvisibleNodeUrlProvider_GetUrl
         var url = provider.GetUrl(invisible, UrlMode.Absolute, null, uri);
 
         // Assert
-        url.Should().NotBeNull();
-        url.Url.Should().Be(new Uri("https://example.org/page/"));
-        url.Culture.Should().BeNull();
+        // Invisible nodes do not have a URL
+        url.Should().BeNull();
     }
 
     [Fact]

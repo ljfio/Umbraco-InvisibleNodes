@@ -70,28 +70,31 @@ public class InvisibleNodeLocator : IInvisibleNodeLocator
             if (child is null)
                 continue;
 
-            var childSegment = _documentUrlService.GetUrlSegment(child.Key, culture, child.IsDraft(culture));
-
-            if (string.Equals(childSegment, segment))
-            {
-                if (segments.Length == 1)
-                    return child;
-
-                string[] childSegments = segments.Skip(1).ToArray();
-
-                var grandChild = await WalkContentTree(cache, child, childSegments, culture);
-
-                if (grandChild is not null)
-                    return grandChild;
-            }
-
+            // Invisible nodes do not have a segment in the path, so only their descendants can match
             if (child.IsInvisibleNode(_rulesManager))
             {
                 var hiddenChild = await WalkContentTree(cache, child, segments, culture);
 
                 if (hiddenChild is not null)
                     return hiddenChild;
+
+                continue;
             }
+
+            var childSegment = _documentUrlService.GetUrlSegment(child.Key, culture, child.IsDraft(culture));
+
+            if (!string.Equals(childSegment, segment))
+                continue;
+
+            if (segments.Length == 1)
+                return child;
+
+            string[] childSegments = segments.Skip(1).ToArray();
+
+            var grandChild = await WalkContentTree(cache, child, childSegments, culture);
+
+            if (grandChild is not null)
+                return grandChild;
         }
 
         return null;

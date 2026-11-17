@@ -180,4 +180,34 @@ public class InvisibleNodeLocator_Locate
         // Then
         result.Should().Be(node);
     }
+
+    [Theory]
+    [InlineData("/hidden")]
+    [InlineData("/hidden/node")]
+    public async Task Should_Return_Null_For_Hidden_Segment(string path)
+    {
+        // Given
+        var home = _contentCache.Generate("Home", "home");
+        var hidden = _contentCache.Generate("Hidden", "hidden", parent: home);
+        _contentCache.Generate("Node", "node", parent: hidden);
+
+        var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
+
+        mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsIn(hidden)))
+            .Returns(true);
+
+        mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsNotIn(hidden)))
+            .Returns(false);
+
+        var locator = new InvisibleNodeLocator(
+            _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
+            mockRulesManager.Object);
+
+        // When
+        var result = await locator.Locate(_contentCache, home, path, string.Empty);
+
+        // Then
+        result.Should().BeNull();
+    }
 }

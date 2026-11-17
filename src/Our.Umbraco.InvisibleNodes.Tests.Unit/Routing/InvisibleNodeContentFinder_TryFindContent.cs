@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using AwesomeAssertions;
+using Microsoft.Extensions.Options;
 using Moq;
 using Our.Umbraco.InvisibleNodes.Core;
 using Our.Umbraco.InvisibleNodes.Core.Caching;
@@ -12,6 +13,7 @@ using Our.Umbraco.InvisibleNodes.Tests.Unit.Fakes;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PublishedCache;
 using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Services;
 
 namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Routing;
 
@@ -23,6 +25,10 @@ public class InvisibleNodeContentFinder_TryFindContent
     private readonly FakeUmbracoContext _umbracoContext;
     private readonly Mock<IInvisibleNodeCache> _cache;
     private readonly Mock<IInvisibleNodeLocator> _locator;
+    private readonly Mock<IDocumentUrlService> _documentUrlService;
+    private readonly Mock<IPublishedUrlProvider> _publishedUrlProvider;
+    private readonly Mock<IInvisibleNodeRulesManager> _rulesManager;
+    private readonly InvisibleNodeSettings _settings;
 
     private readonly IPublishedContent _root;
     private readonly IPublishedContent _section;
@@ -38,6 +44,10 @@ public class InvisibleNodeContentFinder_TryFindContent
 
         _cache = new Mock<IInvisibleNodeCache>();
         _locator = new Mock<IInvisibleNodeLocator>();
+        _documentUrlService = new Mock<IDocumentUrlService>();
+        _publishedUrlProvider = new Mock<IPublishedUrlProvider>();
+        _rulesManager = new Mock<IInvisibleNodeRulesManager>();
+        _settings = new InvisibleNodeSettings();
 
         _root = _contentCache.Generate("Home", "home");
         _section = _contentCache.Generate("Section", "section", _root);
@@ -222,6 +232,147 @@ public class InvisibleNodeContentFinder_TryFindContent
         _locator.VerifyNoOtherCalls();
     }
 
+    #region Native URLs
+
+    [Fact]
+    public async Task Should_Redirect_Native_Url_Below_Invisible_Node()
+    {
+        // Arrange
+        _rulesManager.Setup(m => m.IsInvisibleNode(_section)).Returns(true);
+
+        var request = CreateRequest($"{Host}/section/page?page=2");
+
+        _documentUrlService.Setup(m => m.GetDocumentKeyByRoute("/section/page", null, null, false))
+            .Returns(_page.Key);
+        _publishedUrlProvider.Setup(m => m.GetUrl(_page, UrlMode.Default, null, request.Object.Uri))
+            .Returns("/page/");
+
+        var finder = CreateFinder();
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert
+        found.Should().BeTrue();
+        request.Verify(m => m.SetRedirectPermanent("/page/?page=2"), Times.Once);
+        request.Verify(m => m.SetPublishedContent(It.IsAny<IPublishedContent>()), Times.Never);
+        _cache.Verify(m => m.StoreRoute(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Should_Redirect_Native_Url_Relative_To_Domain()
+    {
+        // Arrange
+        var invisible = _contentCache.Generate("Invisible", "invisible", _section);
+        var nested = _contentCache.Generate("Nested", "page", invisible);
+
+        _rulesManager.Setup(m => m.IsInvisibleNode(invisible)).Returns(true);
+
+        var request = CreateRequest($"{Host}/en/invisible/nested");
+        request.SetupGet(m => m.Domain).Returns(CreateDomain(_section, $"{Host}/en", request.Object.Uri));
+
+        _documentUrlService.Setup(m => m.GetDocumentKeyByRoute("/invisible/nested", null, _section.Id, false))
+            .Returns(nested.Key);
+        _publishedUrlProvider.Setup(m => m.GetUrl(nested, UrlMode.Default, null, request.Object.Uri))
+            .Returns("/en/nested/");
+
+        var finder = CreateFinder();
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert
+        found.Should().BeTrue();
+        request.Verify(m => m.SetRedirectPermanent("/en/nested/"), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(NativeUrlBehavior.Redirect)]
+    [InlineData(NativeUrlBehavior.NotFound)]
+    public async Task Should_Not_Find_Content_For_Native_Url_Of_Invisible_Node(NativeUrlBehavior behavior)
+    {
+        // Arrange
+        _settings.NativeUrls = behavior;
+        _rulesManager.Setup(m => m.IsInvisibleNode(_section)).Returns(true);
+
+        _documentUrlService.Setup(m => m.GetDocumentKeyByRoute("/section", null, null, false))
+            .Returns(_section.Key);
+
+        var request = CreateRequest($"{Host}/section");
+        var finder = CreateFinder();
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert, handled without content so no other content finder serves it
+        found.Should().BeTrue();
+        request.Verify(m => m.SetPublishedContent(It.IsAny<IPublishedContent>()), Times.Never);
+        request.Verify(m => m.SetRedirectPermanent(It.IsAny<string>()), Times.Never);
+        _publishedUrlProvider.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Should_Not_Redirect_Native_Url_When_NotFound()
+    {
+        // Arrange
+        _settings.NativeUrls = NativeUrlBehavior.NotFound;
+        _rulesManager.Setup(m => m.IsInvisibleNode(_section)).Returns(true);
+
+        _documentUrlService.Setup(m => m.GetDocumentKeyByRoute("/section/page", null, null, false))
+            .Returns(_page.Key);
+
+        var request = CreateRequest($"{Host}/section/page");
+        var finder = CreateFinder();
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert
+        found.Should().BeTrue();
+        request.Verify(m => m.SetPublishedContent(It.IsAny<IPublishedContent>()), Times.Never);
+        request.Verify(m => m.SetRedirectPermanent(It.IsAny<string>()), Times.Never);
+        _publishedUrlProvider.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Should_Leave_Native_Url_When_Allowed()
+    {
+        // Arrange
+        _settings.NativeUrls = NativeUrlBehavior.Allow;
+        _rulesManager.Setup(m => m.IsInvisibleNode(_section)).Returns(true);
+
+        var request = CreateRequest($"{Host}/section/page");
+        var finder = CreateFinder();
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert, left for Umbraco to serve
+        found.Should().BeFalse();
+        request.Verify(m => m.SetRedirectPermanent(It.IsAny<string>()), Times.Never);
+        _documentUrlService.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Should_Leave_Url_Without_Invisible_Node()
+    {
+        // Arrange
+        _documentUrlService.Setup(m => m.GetDocumentKeyByRoute("/section/page", null, null, false))
+            .Returns(_page.Key);
+
+        var request = CreateRequest($"{Host}/section/page");
+        var finder = CreateFinder();
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert
+        found.Should().BeFalse();
+        request.Verify(m => m.SetRedirectPermanent(It.IsAny<string>()), Times.Never);
+    }
+
+    #endregion
+
     private static DomainAndUri CreateDomain(IPublishedContent content, string url, Uri current) =>
         new(new Domain(1, url, content.Id, null, false, 0), current);
 
@@ -230,7 +381,11 @@ public class InvisibleNodeContentFinder_TryFindContent
             _umbracoContext.GetUmbracoContextAccessor(),
             _cache.Object,
             _locator.Object,
-            _contentCache.DocumentNavigationQueryService);
+            _contentCache.DocumentNavigationQueryService,
+            _documentUrlService.Object,
+            _publishedUrlProvider.Object,
+            _rulesManager.Object,
+            Mock.Of<IOptionsMonitor<InvisibleNodeSettings>>(m => m.CurrentValue == _settings));
 
     private static Mock<IPublishedRequestBuilder> CreateRequest(string url)
     {
