@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AwesomeAssertions;
 using Our.Umbraco.InvisibleNodes.Tests.Integration.Core;
@@ -404,6 +405,66 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
 
             (await response.Content.ReadAsStringAsync()).Should().Contain("Content Page: Hidden");
         }
+    }
+
+    // https://github.com/ljfio/Umbraco-InvisibleNodes/issues/5
+    [Fact]
+    public async Task Should_Return_Variant_Root_With_Domain_Path()
+    {
+        using var context = UmbracoContext;
+
+        // Content
+        var homeNode = ContentService.CreateAndSave("Home", Constants.System.Root, HomePage.ModelTypeAlias);
+        ContentService.Publish(homeNode, []).Success.Should().BeTrue();
+
+        var folderNode = ContentService.CreateAndSave("Folder", homeNode, HiddenNode.ModelTypeAlias);
+        ContentService.Publish(folderNode, []).Success.Should().BeTrue();
+
+        var pageNode = ContentService.CreateAndSave("Page", folderNode, ContentPage.ModelTypeAlias);
+        ContentService.Publish(pageNode, []).Success.Should().BeTrue();
+
+        // Domains, the same host with a path for the second culture
+        var updateDomainsResult = await DomainService.UpdateDomainsAsync(homeNode.Key, new DomainsUpdateModel
+        {
+            Domains =
+            [
+                new DomainModel { IsoCode = "en-US", DomainName = "https://example.org/" },
+                new DomainModel { IsoCode = "da-DK", DomainName = "https://example.org/da" },
+            ],
+        });
+        updateDomainsResult.Success.Should().BeTrue();
+
+        var current = new Uri("https://example.org/");
+
+        // Check root URLs
+        var publishedHome = UmbracoContext.Content.GetById(homeNode.Id);
+        publishedHome.Should().NotBeNull();
+
+        PublishedUrlProvider.GetUrl(publishedHome!, culture: "en-US", current: current).Should().Be("/");
+        PublishedUrlProvider.GetUrl(publishedHome!, culture: "da-DK", current: current).Should().Be("/da/");
+        PublishedUrlProvider.GetUrl(publishedHome!, UrlMode.Absolute, "en-US").Should().Be("https://example.org/");
+        PublishedUrlProvider.GetUrl(publishedHome!, UrlMode.Absolute, "da-DK").Should().Be("https://example.org/da/");
+
+        // Check page URLs below the invisible folder
+        var publishedPage = UmbracoContext.Content.GetById(pageNode.Id);
+        publishedPage.Should().NotBeNull();
+
+        PublishedUrlProvider.GetUrl(publishedPage!, culture: "en-US", current: current).Should().Be("/page/");
+        PublishedUrlProvider.GetUrl(publishedPage!, culture: "da-DK", current: current).Should().Be("/da/page/");
+
+        // Check routes
+        using var client = HttpClient;
+
+        string[] urls =
+        [
+            "https://example.org/",
+            "https://example.org/da/",
+            "https://example.org/page/",
+            "https://example.org/da/page/",
+        ];
+
+        foreach (string url in urls)
+            (await client.GetAsync(url)).StatusCode.Should().Be(HttpStatusCode.OK, url);
     }
 
     public void Dispose()
