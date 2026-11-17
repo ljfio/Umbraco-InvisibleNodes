@@ -42,25 +42,52 @@ public class InvisibleNodeContentFinder : IContentFinder
         string host = request.Uri.GetLeftPart(UriPartial.Authority);
         string path = request.Uri.AbsolutePath;
 
-        // Check the cache first
-        int? cached = _invisibleNodeCache.GetRoute(host, path);
+        string culture = request.Culture ?? context.Domains.DefaultCulture;
 
-        if (cached.HasValue)
+        string[] segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        // Check the cache first, starting with the full path and then working up through its ancestors
+        for (int length = segments.Length; length > 0; length--)
         {
+            string cachedPath = string.Join('/', segments[..length]).EnsureStartsWith('/');
+
+            int? cached = _invisibleNodeCache.GetRoute(host, cachedPath);
+
+            if (!cached.HasValue)
+                continue;
+
             var cachedContent = context.Content.GetById(cached.Value);
 
-            if (cachedContent is not null)
+            if (cachedContent is null)
+            {
+                _invisibleNodeCache.ClearRoute(host, cachedPath);
+                continue;
+            }
+
+            // The full path is cached
+            if (length == segments.Length)
             {
                 request.SetPublishedContent(cachedContent);
                 return true;
             }
-            
-            _invisibleNodeCache.ClearRoute(host, path);
-        }
-        
-        // Locate the root for the request
-        string culture = request.Culture ?? context.Domains.DefaultCulture;
 
+            // An ancestor is cached, so only walk the tree below it
+            string remainingPath = string.Join('/', segments[length..]);
+
+            var descendant = await _invisibleNodeLocator.Locate(context.Content, cachedContent, remainingPath, culture);
+
+            if (descendant is not null)
+            {
+                _invisibleNodeCache.StoreRoute(host, path, descendant.Id);
+                request.SetPublishedContent(descendant);
+                return true;
+            }
+
+            // Not below the nearest cached ancestor, fall back to walking from the root
+            break;
+        }
+
+        // Locate the root for the request
         var root = await LocateRootNode(context.Content, request.Domain, culture);
         
         if (root is null)
