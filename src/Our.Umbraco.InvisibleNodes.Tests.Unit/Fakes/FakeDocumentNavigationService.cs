@@ -200,13 +200,7 @@ public class FakeDocumentNavigationService : IDocumentNavigationQueryService, ID
 
     public bool UpdateSortOrder(Guid key, int newSortOrder)
     {
-        if (_structure.TryGetValue(key, out var node))
-        {
-            node.UpdateSortOrder(newSortOrder);
-            return true;
-        }
-
-        return false;
+        throw new NotImplementedException();
     }
 
     public Task RebuildBinAsync()
@@ -220,6 +214,23 @@ public class FakeDocumentNavigationService : IDocumentNavigationQueryService, ID
     }
 
     public bool RestoreFromBin(Guid key, Guid? targetParentKey = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool TryGetHasChildren(Guid parentKey, out bool hasChildren)
+    {
+        if (_structure.TryGetValue(parentKey, out var node))
+        {
+            hasChildren = node.Children.Count > 0;
+            return true;
+        }
+
+        hasChildren = false;
+        return false;
+    }
+
+    public bool TryGetHasChildrenInBin(Guid parentKey, out bool hasChildren)
     {
         throw new NotImplementedException();
     }

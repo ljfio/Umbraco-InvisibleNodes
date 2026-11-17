@@ -82,4 +82,19 @@ public class FakeDocumentUrlService : IDocumentUrlService
     {
         throw new NotImplementedException();
     }
+
+    public Guid? GetDocumentKeyByUri(Uri uri, bool isDraft)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateUrlSegmentCacheAsync(Guid key)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateUrlSegmentCacheWithDescendantsAsync(Guid key)
+    {
+        throw new NotImplementedException();
+    }
 }

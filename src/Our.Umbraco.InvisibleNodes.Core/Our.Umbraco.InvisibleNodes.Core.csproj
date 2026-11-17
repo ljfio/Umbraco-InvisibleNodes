@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFramework>net11.0</TargetFramework>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Umbraco.Cms.Core" Version="[18.0.0,19.0.0)" />
+        <PackageReference Include="Umbraco.Cms.Core" Version="[19.0.0-rc1,20.0.0)" />
     </ItemGroup>
 
     <ItemGroup>
