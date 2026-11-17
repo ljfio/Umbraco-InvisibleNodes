@@ -78,7 +78,22 @@ public class FakeDocumentNavigationService : IDocumentNavigationQueryService, ID
 
     public bool TryGetChildrenKeysOfType(Guid parentKey, string contentTypeAlias, out IEnumerable<Guid> childrenKeys)
     {
-        throw new NotImplementedException();
+        var contentType = _cache.GetContentType(contentTypeAlias);
+
+        if (contentType is null || !_structure.TryGetValue(parentKey, out var parent))
+        {
+            childrenKeys = [];
+            return false;
+        }
+
+        var matchingKeys = new List<Guid>();
+
+        foreach (var childKey in parent.Children)
+            if (_structure.TryGetValue(childKey, out var node) && node.ContentTypeKey == contentType.Key)
+                matchingKeys.Add(childKey);
+
+        childrenKeys = matchingKeys;
+        return true;
     }
 
     public bool TryGetDescendantsKeys(Guid parentKey, out IEnumerable<Guid> descendantsKeys)

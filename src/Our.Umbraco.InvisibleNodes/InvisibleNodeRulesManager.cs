@@ -1,6 +1,7 @@
 // Copyright 2023-2025 Luke Fisher
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using Our.Umbraco.InvisibleNodes.Core;
@@ -23,4 +24,6 @@ public class InvisibleNodeRulesManager : IInvisibleNodeRulesManager
     {
         return _settings.ContentTypes.Contains(content.ContentType.Alias);
     }
+
+    public IReadOnlyCollection<string>? InvisibleContentTypes => _settings.ContentTypes;
 }

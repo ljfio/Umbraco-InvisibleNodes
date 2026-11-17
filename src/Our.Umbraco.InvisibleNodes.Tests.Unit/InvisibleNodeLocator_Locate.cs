@@ -210,4 +210,45 @@ public class InvisibleNodeLocator_Locate
         // Then
         result.Should().BeNull();
     }
+
+    [Theory]
+    [InlineData("/node", "node")]
+    [InlineData("/nested", "nested")]
+    [InlineData("/node/child", "child")]
+    [InlineData("/sibling", "sibling")]
+    [InlineData("/hidden", null)]
+    [InlineData("/missing", null)]
+    public async Task Should_Locate_By_Content_Type(string path, string? expected)
+    {
+        // Given
+        var home = _contentCache.Generate("Home", "home");
+        _contentCache.Generate("Sibling", "page", parent: home);
+        var hidden = _contentCache.Generate("Hidden", "hidden", parent: home);
+        var node = _contentCache.Generate("Node", "page", parent: hidden);
+        _contentCache.Generate("Child", "page", parent: node);
+        var nestedHidden = _contentCache.Generate("Nested Hidden", "hidden", parent: hidden);
+        _contentCache.Generate("Nested", "page", parent: nestedHidden);
+
+        var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
+
+        mockRulesManager.Setup(s => s.InvisibleContentTypes)
+            .Returns(["hidden"]);
+
+        var locator = new InvisibleNodeLocator(
+            _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
+            mockRulesManager.Object);
+
+        // When
+        var result = await locator.Locate(_contentCache, home, path, string.Empty);
+
+        // Then
+        result?.Name.ToLowerInvariant().Should().Be(expected);
+
+        if (expected is null)
+            result.Should().BeNull();
+
+        // The content types are enough, so each node's content isn't checked
+        mockRulesManager.Verify(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()), Times.Never);
+    }
 }
