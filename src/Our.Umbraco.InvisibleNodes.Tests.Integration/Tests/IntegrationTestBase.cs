@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Our.Umbraco.InvisibleNodes.Tests.Integration.Core;
 using Umbraco.Cms.Core;
@@ -37,6 +38,17 @@ public abstract class IntegrationTestBase(TestWebApplicationFactory factory)
         .EnsureUmbracoContext();
 
     protected IUmbracoContext UmbracoContext => UmbracoContextReference.UmbracoContext;
+
+    /// <summary>
+    /// Changes a setting of the running site, as if appsettings.json had been edited
+    /// </summary>
+    protected void SetConfiguration(string key, string? value)
+    {
+        var configuration = (IConfigurationRoot)Services.GetRequiredService<IConfiguration>();
+
+        configuration[key] = value;
+        configuration.Reload();
+    }
 
     /// <summary>
     /// Removes the domains from every node that has any assigned
