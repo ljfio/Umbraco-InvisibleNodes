@@ -371,6 +371,111 @@ public class InvisibleNodeContentFinder_TryFindContent
         request.Verify(m => m.SetRedirectPermanent(It.IsAny<string>()), Times.Never);
     }
 
+    [Theory]
+    [InlineData("#")]
+    [InlineData("")]
+    public async Task Should_Not_Redirect_Native_Url_When_Target_Has_No_Url(string url)
+    {
+        // Arrange
+        _rulesManager.Setup(m => m.IsInvisibleNode(_section)).Returns(true);
+
+        var request = CreateRequest($"{Host}/section/page");
+
+        _documentUrlService.Setup(m => m.GetDocumentKeyByRoute("/section/page", null, null, false))
+            .Returns(_page.Key);
+        _publishedUrlProvider.Setup(m => m.GetUrl(_page, UrlMode.Default, null, request.Object.Uri))
+            .Returns(url);
+
+        var finder = CreateFinder();
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert, handled without content so the request is not found rather than redirected
+        found.Should().BeTrue();
+        request.Verify(m => m.SetRedirectPermanent(It.IsAny<string>()), Times.Never);
+        request.Verify(m => m.SetPublishedContent(It.IsAny<IPublishedContent>()), Times.Never);
+    }
+
+    #endregion
+
+    #region Root
+
+    [Fact]
+    public async Task Should_Walk_From_Root_With_Request_Culture()
+    {
+        // Arrange
+        var danishRoot = _contentCache.Generate("Hjem", "home", culture: "da-DK");
+        var danishPage = _contentCache.Generate("Side", "page", danishRoot, culture: "da-DK");
+
+        _locator.Setup(m => m.Locate(_contentCache, danishRoot, "side", "da-DK")).ReturnsAsync(danishPage);
+
+        var request = CreateRequest($"{Host}/side");
+        request.SetupGet(m => m.Culture).Returns("da-DK");
+
+        var finder = CreateFinder();
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert
+        found.Should().BeTrue();
+        request.Verify(m => m.SetPublishedContent(danishPage), Times.Once);
+        _locator.Verify(m => m.Locate(_contentCache, _root, It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Should_Fall_Back_To_First_Root_Without_Request_Culture()
+    {
+        // Arrange
+        _contentCache.Generate("Home GB", "home", culture: "en-GB");
+
+        _locator.Setup(m => m.Locate(_contentCache, _root, "section/page", "da-DK")).ReturnsAsync(_page);
+
+        var request = CreateRequest($"{Host}/section/page");
+        request.SetupGet(m => m.Culture).Returns("da-DK");
+
+        var finder = CreateFinder();
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert
+        found.Should().BeTrue();
+        request.Verify(m => m.SetPublishedContent(_page), Times.Once);
+    }
+
+    [Fact]
+    public async Task Should_Not_Find_Content_Without_Root()
+    {
+        // Arrange
+        var emptyCache = new FakePublishedContentCache();
+        var emptyContext = new FakeUmbracoContext(
+            emptyCache,
+            new FakePublishedMediaCache(),
+            new FakeDomainCache(string.Empty));
+
+        var finder = new InvisibleNodeContentFinder(
+            emptyContext.GetUmbracoContextAccessor(),
+            _cache.Object,
+            _locator.Object,
+            emptyCache.DocumentNavigationQueryService,
+            _documentUrlService.Object,
+            _publishedUrlProvider.Object,
+            _rulesManager.Object,
+            Mock.Of<IOptionsMonitor<InvisibleNodeSettings>>(m => m.CurrentValue == _settings));
+
+        var request = CreateRequest($"{Host}/section/page");
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert
+        found.Should().BeFalse();
+        _locator.VerifyNoOtherCalls();
+        request.Verify(m => m.SetPublishedContent(It.IsAny<IPublishedContent>()), Times.Never);
+    }
+
     #endregion
 
     private static DomainAndUri CreateDomain(IPublishedContent content, string url, Uri current) =>
