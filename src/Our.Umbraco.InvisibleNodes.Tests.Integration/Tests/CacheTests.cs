@@ -14,7 +14,7 @@ using Umbraco.Cms.Web.Common.PublishedModels;
 namespace Our.Umbraco.InvisibleNodes.Tests.Integration.Tests;
 
 // Each test requests a page first so its route is cached, then changes the content or hostnames
-// and checks the cached route is no longer served.
+// and checks the cached route is no longer served. Umbraco redirects the routes of renamed and moved nodes.
 [Collection("Web")]
 public class CacheTests(TestWebApplicationFactory factory) : IntegrationTestBase(factory), IDisposable
 {
@@ -33,7 +33,7 @@ public class CacheTests(TestWebApplicationFactory factory) : IntegrationTestBase
         ContentService.Save(page);
         ContentService.Publish(page, []).Success.Should().BeTrue();
 
-        (await client.GetAsync("/old-name")).StatusCode.Should().Be(HttpStatusCode.NotFound);
+        await ShouldRedirect("/old-name", "/new-name/");
         (await client.GetAsync("/new-name")).StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -62,7 +62,7 @@ public class CacheTests(TestWebApplicationFactory factory) : IntegrationTestBase
         ContentService.Save(sectionNode);
         ContentService.Publish(sectionNode, []).Success.Should().BeTrue();
 
-        (await client.GetAsync("/old-section/page")).StatusCode.Should().Be(HttpStatusCode.NotFound);
+        await ShouldRedirect("/old-section/page", "/new-section/page/");
         (await client.GetAsync("/new-section/page")).StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -82,7 +82,7 @@ public class CacheTests(TestWebApplicationFactory factory) : IntegrationTestBase
 
         ContentService.Move(page, sectionNode.Id).Success.Should().BeTrue();
 
-        (await client.GetAsync("/page")).StatusCode.Should().Be(HttpStatusCode.NotFound);
+        await ShouldRedirect("/page", "/section/page/");
         (await client.GetAsync("/section/page")).StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -151,6 +151,19 @@ public class CacheTests(TestWebApplicationFactory factory) : IntegrationTestBase
     }
 
     /// <summary>
+    /// Checks the old route is no longer served, as Umbraco redirects it to the new route
+    /// </summary>
+    private async Task ShouldRedirect(string oldPath, string newPath)
+    {
+        using var client = NonRedirectingHttpClient;
+
+        var response = await client.GetAsync(oldPath);
+
+        response.StatusCode.Should().Be(HttpStatusCode.MovedPermanently);
+        response.Headers.Location?.ToString().Should().EndWith(newPath);
+    }
+
+    /// <summary>
     /// Creates and publishes Home > Invisible > page
     /// </summary>
     private (IContent Home, IContent Invisible, IContent Page) CreateContent(string pageName)
@@ -169,9 +182,7 @@ public class CacheTests(TestWebApplicationFactory factory) : IntegrationTestBase
 
     public void Dispose()
     {
-        // Cleanup domains
-        foreach (var domain in DomainService.GetAll(true))
-            DomainService.Delete(domain);
+        ClearDomains();
 
         // Cleanup content
         foreach (var content in ContentService.GetRootContent())

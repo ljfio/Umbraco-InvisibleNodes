@@ -152,9 +152,7 @@ public class HostnameTests(TestWebApplicationFactory factory) : IntegrationTestB
 
     public void Dispose()
     {
-        // Cleanup domains
-        foreach (var domain in DomainService.GetAll(true))
-            DomainService.Delete(domain);
+        ClearDomains();
 
         // Cleanup content
         foreach (var content in ContentService.GetRootContent())

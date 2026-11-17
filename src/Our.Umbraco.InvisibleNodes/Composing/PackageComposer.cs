@@ -27,9 +27,9 @@ public class PackageComposer : IComposer
             .Insert<InvisibleNodeUrlProvider>();
 
         // Only the invisible node URL provider generates content URLs
-        if (builder.UrlProviders().Has<NewDefaultUrlProvider>())
+        if (builder.UrlProviders().Has<DefaultUrlProvider>())
             builder.UrlProviders()
-                .Replace<NewDefaultUrlProvider, InvisibleNodeDefaultUrlProvider>();
+                .Replace<DefaultUrlProvider, InvisibleNodeDefaultUrlProvider>();
 
         builder.Services
             .Configure<InvisibleNodeSettings>(builder.Config.GetSection(InvisibleNodeSettings.InvisibleNodes));

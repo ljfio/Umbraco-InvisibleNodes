@@ -36,6 +36,8 @@ public class FakeUmbracoContext : IUmbracoContext
 
     public IDomainCache Domains { get; }
 
+    public IPublishedElementCache Elements { get; } = null!;
+
     public IPublishedRequest? PublishedRequest { get; set; }
 
     public bool IsDebug { get; set; }

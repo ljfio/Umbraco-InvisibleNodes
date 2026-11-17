@@ -469,9 +469,7 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
 
     public void Dispose()
     {
-        // Cleanup domains
-        foreach (var content in DomainService.GetAll(true))
-            DomainService.Delete(content);
+        ClearDomains();
 
         // Cleanup content
         foreach (var content in ContentService.GetRootContent())

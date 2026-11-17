@@ -27,4 +27,12 @@ public class FakePublishedStatusFilteringService : IPublishedContentStatusFilter
             .WhereNotNull()
             .ToList();
     }
+
+    public IEnumerable<IPublishedContent> Unfiltered(IEnumerable<Guid> candidateKeys)
+    {
+        return candidateKeys
+            .Select(_cache.GetById)
+            .WhereNotNull()
+            .ToList();
+    }
 }

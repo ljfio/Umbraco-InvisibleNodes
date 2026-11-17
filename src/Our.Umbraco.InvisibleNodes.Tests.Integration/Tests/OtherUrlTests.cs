@@ -90,12 +90,10 @@ public class OtherUrlTests(TestWebApplicationFactory factory) : IntegrationTestB
 
     public void Dispose()
     {
+        ClearDomains();
+
         // Cleanup content
         foreach (var content in ContentService.GetRootContent())
             ContentService.Delete(content);
-
-        // Cleanup domains
-        foreach (var domain in DomainService.GetAll(true))
-            DomainService.Delete(domain);
     }
 }

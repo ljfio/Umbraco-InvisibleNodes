@@ -2,10 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Linq;
 using System.Net.Http;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Our.Umbraco.InvisibleNodes.Tests.Integration.Core;
 using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Models.ContentEditing;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
@@ -18,6 +21,11 @@ public abstract class IntegrationTestBase(TestWebApplicationFactory factory)
 
     protected HttpClient HttpClient => factory.CreateClient();
 
+    protected HttpClient NonRedirectingHttpClient => factory.CreateClient(new WebApplicationFactoryClientOptions
+    {
+        AllowAutoRedirect = false,
+    });
+
     protected IContentService ContentService => Services.GetRequiredService<IContentService>();
 
     protected IDomainService DomainService => Services.GetRequiredService<IDomainService>();
@@ -29,4 +37,30 @@ public abstract class IntegrationTestBase(TestWebApplicationFactory factory)
         .EnsureUmbracoContext();
 
     protected IUmbracoContext UmbracoContext => UmbracoContextReference.UmbracoContext;
+
+    /// <summary>
+    /// Removes the domains from every node that has any assigned
+    /// </summary>
+    protected void ClearDomains()
+    {
+        var domains = DomainService.GetAllAsync(true).GetAwaiter().GetResult();
+
+        var rootIds = domains
+            .Select(domain => domain.RootContentId)
+            .OfType<int>()
+            .Distinct();
+
+        foreach (int rootId in rootIds)
+        {
+            var content = ContentService.GetById(rootId);
+
+            if (content is null)
+                continue;
+
+            DomainService
+                .UpdateDomainsAsync(content.Key, new DomainsUpdateModel { Domains = [] })
+                .GetAwaiter()
+                .GetResult();
+        }
+    }
 }

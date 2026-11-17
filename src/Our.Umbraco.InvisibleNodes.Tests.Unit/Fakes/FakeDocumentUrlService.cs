@@ -13,6 +13,8 @@ namespace Our.Umbraco.InvisibleNodes.Tests.Unit.Fakes;
 
 public class FakeDocumentUrlService : IDocumentUrlService
 {
+    public bool IsInitialized => true;
+
     private readonly FakePublishedCache _publishedCache;
 
     public FakeDocumentUrlService(FakePublishedCache publishedCache)

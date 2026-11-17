@@ -25,11 +25,11 @@ namespace Our.Umbraco.InvisibleNodes.Routing;
 /// the segments of invisible nodes alongside those from the <see cref="InvisibleNodeUrlProvider"/>. The built-in
 /// provider is kept for everything else Umbraco uses it for, such as preview URLs and redirect URL management.
 /// </remarks>
-public class InvisibleNodeDefaultUrlProvider : NewDefaultUrlProvider
+public class InvisibleNodeDefaultUrlProvider : DefaultUrlProvider
 {
     public InvisibleNodeDefaultUrlProvider(
         IOptionsMonitor<RequestHandlerSettings> requestSettings,
-        ILogger<NewDefaultUrlProvider> logger,
+        ILogger<DefaultUrlProvider> logger,
         ISiteDomainMapper siteDomainMapper,
         IUmbracoContextAccessor umbracoContextAccessor,
         UriUtility uriUtility,
