@@ -44,9 +44,7 @@ public class PackageComposer : IComposer
             });
 
         builder
-            .AddNotificationHandler<ContentSavingNotification, InvalidateCacheNotificationHandler>()
-            .AddNotificationHandler<ContentUnpublishingNotification, InvalidateCacheNotificationHandler>()
-            .AddNotificationHandler<ContentMovingNotification, InvalidateCacheNotificationHandler>()
-            .AddNotificationHandler<ContentMovingToRecycleBinNotification, InvalidateCacheNotificationHandler>();
+            .AddNotificationHandler<ContentCacheRefresherNotification, InvalidateCacheNotificationHandler>()
+            .AddNotificationHandler<DomainCacheRefresherNotification, InvalidateCacheNotificationHandler>();
     }
 }

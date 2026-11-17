@@ -1,76 +1,47 @@
 // Copyright 2023-2025 Luke Fisher
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Linq;
 using Our.Umbraco.InvisibleNodes.Core.Caching;
+using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Events;
-using Umbraco.Cms.Core.Models;
-using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Notifications;
-using Umbraco.Cms.Core.Routing;
-using Umbraco.Extensions;
 
 namespace Our.Umbraco.InvisibleNodes.Notifications;
 
+/// <summary>
+/// Clears the cached routes when the content or hostnames change
+/// </summary>
+/// <remarks>
+/// The cache refresher notifications are published on every server, after Umbraco has updated its own caches, for
+/// any content change (save, publish, unpublish, move, sort, trash, delete) and any hostname change. A change can
+/// alter the route of any number of other nodes (descendants, nodes below an invisible node, nodes below another
+/// hostname), and the previous routes are no longer known by this point, so all the cached routes are cleared.
+/// </remarks>
 public class InvalidateCacheNotificationHandler :
-    INotificationHandler<ContentSavingNotification>,
-    INotificationHandler<ContentUnpublishingNotification>,
-    INotificationHandler<ContentMovingNotification>,
-    INotificationHandler<ContentMovingToRecycleBinNotification>
+    INotificationHandler<ContentCacheRefresherNotification>,
+    INotificationHandler<DomainCacheRefresherNotification>
 {
     private readonly IInvisibleNodeCache _invisibleNodeCache;
-    private readonly IPublishedUrlProvider _publishedUrlProvider;
 
-    public InvalidateCacheNotificationHandler(
-        IInvisibleNodeCache invisibleNodeCache,
-        IPublishedUrlProvider publishedUrlProvider)
+    public InvalidateCacheNotificationHandler(IInvisibleNodeCache invisibleNodeCache)
     {
         _invisibleNodeCache = invisibleNodeCache;
-        _publishedUrlProvider = publishedUrlProvider;
     }
 
-    public void Handle(ContentSavingNotification notification)
+    public void Handle(ContentCacheRefresherNotification notification)
     {
-        foreach (var publishedEntity in notification.SavedEntities.EmptyNull())
-            RemoveEntityFromCache(publishedEntity);
-    }
-    
-    public void Handle(ContentUnpublishingNotification notification)
-    {
-        foreach (var publishedEntity in notification.UnpublishedEntities.EmptyNull())
-            RemoveEntityFromCache(publishedEntity);
-    }
+        // Blueprints are not routable
+        if (notification.MessageObject is ContentCacheRefresher.JsonPayload[] payloads &&
+            payloads.Length > 0 &&
+            payloads.All(payload => payload.Blueprint))
+            return;
 
-    public void Handle(ContentMovingNotification notification)
-    {
-        foreach (var moveEventInfo in notification.MoveInfoCollection.EmptyNull())
-            RemoveEntityFromCache(moveEventInfo.Entity);
+        _invisibleNodeCache.ClearAll();
     }
 
-    public void Handle(ContentMovingToRecycleBinNotification notification)
+    public void Handle(DomainCacheRefresherNotification notification)
     {
-        foreach (var moveEventInfo in notification.MoveInfoCollection.EmptyNull())
-            RemoveEntityFromCache(moveEventInfo.Entity);
-    }
-
-    private void RemoveEntityFromCache(IContent entity)
-    {
-        var cultures = entity.PublishedCultures
-            .Append(null)
-            .Distinct();
-
-        var uris = cultures
-            .Select(culture => _publishedUrlProvider.GetUrl(entity.Id, UrlMode.Absolute, culture))
-            .Where(url => !string.IsNullOrEmpty(url) && !url.Equals("#"))
-            .Select(url => new Uri(url))
-            .Distinct();
-
-        var otherUris = _publishedUrlProvider.GetOtherUrls(entity.Id)
-            .Where(info => info.Url is not null)
-            .Select(info => info.Url);
-        
-        foreach (var uri in uris.Concat(otherUris)) 
-            _invisibleNodeCache.ClearRoute(uri.GetLeftPart(UriPartial.Authority), uri.AbsolutePath);
+        _invisibleNodeCache.ClearAll();
     }
 }

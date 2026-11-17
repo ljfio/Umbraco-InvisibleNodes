@@ -120,7 +120,7 @@ public class InvisibleNodeContentFinder_TryFindContent
 
         _locator.Setup(m => m.Locate(_contentCache, _section, "page", string.Empty))
             .ReturnsAsync((IPublishedContent?)null);
-        _locator.Setup(m => m.Locate(_contentCache, _root, "/section/page", string.Empty)).ReturnsAsync(_page);
+        _locator.Setup(m => m.Locate(_contentCache, _root, "section/page", string.Empty)).ReturnsAsync(_page);
 
         var request = CreateRequest($"{Host}/section/page");
         var finder = CreateFinder();
@@ -141,7 +141,7 @@ public class InvisibleNodeContentFinder_TryFindContent
         // Arrange
         _cache.Setup(m => m.GetRoute(Host, "/section")).Returns(int.MaxValue);
 
-        _locator.Setup(m => m.Locate(_contentCache, _root, "/section/page", string.Empty)).ReturnsAsync(_page);
+        _locator.Setup(m => m.Locate(_contentCache, _root, "section/page", string.Empty)).ReturnsAsync(_page);
 
         var request = CreateRequest($"{Host}/section/page");
         var finder = CreateFinder();
@@ -153,7 +153,7 @@ public class InvisibleNodeContentFinder_TryFindContent
         found.Should().BeTrue();
         _cache.Verify(m => m.ClearRoute(Host, "/section"), Times.Once);
         request.Verify(m => m.SetPublishedContent(_page), Times.Once);
-        _locator.Verify(m => m.Locate(_contentCache, _root, "/section/page", string.Empty), Times.Once);
+        _locator.Verify(m => m.Locate(_contentCache, _root, "section/page", string.Empty), Times.Once);
         _locator.VerifyNoOtherCalls();
     }
 
@@ -172,6 +172,58 @@ public class InvisibleNodeContentFinder_TryFindContent
         request.Verify(m => m.SetPublishedContent(It.IsAny<IPublishedContent>()), Times.Never);
         _cache.Verify(m => m.StoreRoute(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()), Times.Never);
     }
+
+    [Fact]
+    public async Task Should_Walk_From_Domain_Root_With_Path_Relative_To_Domain()
+    {
+        // Arrange
+        _locator.Setup(m => m.Locate(_contentCache, _section, "page", string.Empty)).ReturnsAsync(_page);
+
+        var request = CreateRequest($"{Host}/en/page");
+        request.SetupGet(m => m.Domain).Returns(CreateDomain(_section, $"{Host}/en", request.Object.Uri));
+
+        var finder = CreateFinder();
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert
+        found.Should().BeTrue();
+        request.Verify(m => m.SetPublishedContent(_page), Times.Once);
+        _cache.Verify(m => m.StoreRoute(Host, "/en/page", _page.Id), Times.Once);
+    }
+
+    [Fact]
+    public async Task Should_Not_Use_Cached_Path_Above_Domain_Path()
+    {
+        // Arrange
+        var other = _contentCache.Generate("En", "page", _root);
+
+        // A route cached for another hostname on the same host, e.g. example.org/ assigned to the home node
+        _cache.Setup(m => m.GetRoute(Host, "/en")).Returns(other.Id);
+
+        _locator.Setup(m => m.Locate(_contentCache, _section, "page", string.Empty)).ReturnsAsync(_page);
+
+        var request = CreateRequest($"{Host}/en/shop/page");
+        request.SetupGet(m => m.Domain).Returns(CreateDomain(_section, $"{Host}/en/shop", request.Object.Uri));
+
+        var finder = CreateFinder();
+
+        // Act
+        bool found = await finder.TryFindContent(request.Object);
+
+        // Assert
+        found.Should().BeTrue();
+        request.Verify(m => m.SetPublishedContent(_page), Times.Once);
+        _cache.Verify(m => m.GetRoute(Host, "/en/shop/page"), Times.Once);
+        _cache.Verify(m => m.GetRoute(Host, "/en/shop"), Times.Never);
+        _cache.Verify(m => m.GetRoute(Host, "/en"), Times.Never);
+        _locator.Verify(m => m.Locate(_contentCache, _section, "page", string.Empty), Times.Once);
+        _locator.VerifyNoOtherCalls();
+    }
+
+    private static DomainAndUri CreateDomain(IPublishedContent content, string url, Uri current) =>
+        new(new Domain(1, url, content.Id, null, false, 0), current);
 
     private InvisibleNodeContentFinder CreateFinder() =>
         new(

@@ -46,8 +46,16 @@ public class InvisibleNodeContentFinder : IContentFinder
 
         string[] segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
+        // Routes are cached by host and full path, but a hostname can include a path (e.g. example.org/en) and be
+        // assigned below the home node, so only the segments after the hostname's path belong to its content
+        int domainLength = request.Domain is null
+            ? 0
+            : Math.Min(
+                request.Domain.Uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries).Length,
+                segments.Length);
+
         // Check the cache first, starting with the full path and then working up through its ancestors
-        for (int length = segments.Length; length > 0; length--)
+        for (int length = segments.Length; length > domainLength; length--)
         {
             string cachedPath = string.Join('/', segments[..length]).EnsureStartsWith('/');
 
@@ -94,7 +102,9 @@ public class InvisibleNodeContentFinder : IContentFinder
             return false;
         
         // Find the matching node
-        var foundNode = await _invisibleNodeLocator.Locate(context.Content, root, path, culture);
+        string relativePath = string.Join('/', segments[domainLength..]);
+
+        var foundNode = await _invisibleNodeLocator.Locate(context.Content, root, relativePath, culture);
 
         if (foundNode is null)
             return false;

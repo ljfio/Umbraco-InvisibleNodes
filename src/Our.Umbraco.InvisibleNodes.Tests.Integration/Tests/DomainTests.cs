@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AwesomeAssertions;
 using Our.Umbraco.InvisibleNodes.Tests.Integration.Core;
@@ -354,6 +355,55 @@ public class DomainTests(TestWebApplicationFactory factory) : IntegrationTestBas
         PublishedUrlProvider.GetUrl(secondPublishedNode!, current: danishUri)
             .Should()
             .Be("/");
+    }
+
+    [Fact]
+    public async Task Should_Route_Hidden_Below_Domain_Path()
+    {
+        using var context = UmbracoContext;
+
+        // Content
+        var homeNode = ContentService.CreateAndSave("Home", Constants.System.Root, HomePage.ModelTypeAlias);
+        ContentService.Publish(homeNode, []).Success.Should().BeTrue();
+
+        var contentNode = ContentService.CreateAndSave("Content", homeNode, ContentPage.ModelTypeAlias);
+        ContentService.Publish(contentNode, []).Success.Should().BeTrue();
+
+        var invisibleNode = ContentService.CreateAndSave("Invisible", contentNode, HiddenNode.ModelTypeAlias);
+        ContentService.Publish(invisibleNode, []).Success.Should().BeTrue();
+
+        var hiddenNode = ContentService.CreateAndSave("Hidden", invisibleNode, ContentPage.ModelTypeAlias);
+        ContentService.Publish(hiddenNode, []).Success.Should().BeTrue();
+
+        // Domains, one on the home node and one on a node below it
+        var homeDomainResult = await DomainService.UpdateDomainsAsync(homeNode.Key, new DomainsUpdateModel
+        {
+            Domains = [new DomainModel { IsoCode = "en-US", DomainName = "https://example.org/en" }],
+        });
+        homeDomainResult.Success.Should().BeTrue();
+
+        var contentDomainResult = await DomainService.UpdateDomainsAsync(contentNode.Key, new DomainsUpdateModel
+        {
+            Domains = [new DomainModel { IsoCode = "en-US", DomainName = "https://sub.example.org/" }],
+        });
+        contentDomainResult.Success.Should().BeTrue();
+
+        // Check pages, requesting twice to exercise the route cache
+        using var client = HttpClient;
+
+        string[] urls =
+        [
+            "https://example.org/en/content/hidden",
+            "https://sub.example.org/hidden",
+        ];
+
+        foreach (string url in urls.Concat(urls))
+        {
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            (await response.Content.ReadAsStringAsync()).Should().Contain("Content Page: Hidden");
+        }
     }
 
     public void Dispose()
