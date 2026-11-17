@@ -523,4 +523,43 @@ public class InvisibleNodeUrlProvider_GetUrl
     }
 
     #endregion
+
+    #region Cultures
+
+    [Theory]
+    [InlineData(null, "/page/")]
+    [InlineData("en-US", "/page/")]
+    [InlineData("da-DK", null)]
+    public void Should_Only_Return_Default_Culture_Without_Domain(string? culture, string? expected)
+    {
+        // Arrange, the default language is en-US and no hostnames are assigned
+        var umbracoContext = new FakeUmbracoContext(
+            _contentCache,
+            new FakePublishedMediaCache(),
+            new FakeDomainCache("en-US"));
+
+        var root = _contentCache.Generate("Home", "home", culture: "en-US");
+        var page = _contentCache.Generate("Page", "page", root, culture: "en-US");
+
+        var provider = new InvisibleNodeUrlProvider(
+            umbracoContext.GetUmbracoContextAccessor(),
+            new SiteDomainMapper(),
+            _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
+            _filteringService,
+            Mock.Of<IInvisibleNodeRulesManager>(),
+            RequestHandlerOptions,
+            RuntimeState(RuntimeLevel.Run));
+
+        // Act
+        var url = provider.GetUrl(page, UrlMode.Default, culture, new Uri("https://example.org/"));
+
+        // Assert, another language needs a hostname to have a URL
+        url?.Url.Should().Be(new Uri(expected!, UriKind.Relative));
+
+        if (expected is null)
+            url.Should().BeNull();
+    }
+
+    #endregion
 }

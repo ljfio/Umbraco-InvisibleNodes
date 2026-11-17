@@ -251,4 +251,55 @@ public class InvisibleNodeLocator_Locate
         // The content types are enough, so each node's content isn't checked
         mockRulesManager.Verify(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()), Times.Never);
     }
+
+    [Theory]
+    [InlineData(false, "/page")]
+    [InlineData(false, "/draft")]
+    [InlineData(true, "/page")]
+    [InlineData(true, "/draft")]
+    public async Task Should_Not_Return_Unpublished_Child(bool byContentType, string path)
+    {
+        // Given the unpublished nodes are in the navigation but not in the published cache
+        var home = _contentCache.Generate("Home", "home");
+        var hidden = _contentCache.Generate("Hidden", "hidden", parent: home);
+        _contentCache.Generate("Page", "page", parent: hidden, preview: true);
+        _contentCache.Generate("Draft", "page", parent: home, preview: true);
+
+        var mockRulesManager = new Mock<IInvisibleNodeRulesManager>();
+
+        if (byContentType)
+            mockRulesManager.Setup(s => s.InvisibleContentTypes).Returns(["hidden"]);
+        else
+            mockRulesManager.Setup(s => s.IsInvisibleNode(It.IsAny<IPublishedContent>()))
+                .Returns<IPublishedContent>(content => content == hidden);
+
+        var locator = new InvisibleNodeLocator(
+            _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
+            mockRulesManager.Object);
+
+        // When
+        var result = await locator.Locate(_contentCache, home, path, string.Empty);
+
+        // Then
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Should_Return_Null_When_Node_Has_No_Children()
+    {
+        // Given
+        var home = _contentCache.Generate("Home", "home");
+
+        var locator = new InvisibleNodeLocator(
+            _contentCache.DocumentNavigationQueryService,
+            _contentCache.DocumentUrlService,
+            Mock.Of<IInvisibleNodeRulesManager>());
+
+        // When
+        var result = await locator.Locate(_contentCache, home, "/page", string.Empty);
+
+        // Then
+        result.Should().BeNull();
+    }
 }

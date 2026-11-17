@@ -16,7 +16,8 @@ public class FakeDocumentNavigationService : IDocumentNavigationQueryService, ID
     private readonly ConcurrentDictionary<Guid, NavigationNode> _structure = new();
     private readonly ConcurrentDictionary<Guid, NavigationNode> _recycleBinStructure = new();
 
-    private readonly ConcurrentBag<Guid> _rootKeys = new();
+    // Ordered like the sort order of the root nodes in Umbraco
+    private readonly List<Guid> _rootKeys = new();
     private readonly ConcurrentBag<Guid> _recycleBinRootKeys = new();
 
     private readonly FakePublishedCache _cache;
